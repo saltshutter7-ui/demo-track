@@ -1196,6 +1196,19 @@ table.cmpt input.ci{width:70px;text-align:center;font:inherit;font-weight:800;bo
  :is(#sout .k-ws,#sout .k-pd,#sout .k-cap) tr.t td{background:#f6ead8!important}
  #sout .z{color:#8a7c69!important;font-weight:700!important}
  #sout .tbl11d{overflow-x:auto}
+ #mrout .card{margin:0 0 14px!important;background:#fffdf8;border:1px solid #e3d8c8!important;border-top:1px solid #e3d8c8!important;border-radius:12px!important;padding:14px 16px!important}
+ #mrout .card h3{font-size:13px!important;letter-spacing:1.2px!important;color:#9a3412!important;margin:0 0 10px!important}
+ #mrout .card h3::before{display:none}
+ #mrout .card h3 .muted{color:#4f4234!important;font-weight:700!important;font-size:12px!important}
+ :is(#mrout .k-ws,#mrout .k-pd,#mrout .k-cap) table{width:100%;border-collapse:collapse}
+ :is(#mrout .k-ws,#mrout .k-pd,#mrout .k-cap) th{background:#f2e8d9;color:#2a2118!important;font-weight:800;border:1px solid #e3d8c8!important}
+ :is(#mrout .k-ws,#mrout .k-pd,#mrout .k-cap) th.g1{background:#fbd9b5!important;color:#2a2118!important}
+ :is(#mrout .k-ws,#mrout .k-pd,#mrout .k-cap) th.g2{background:#cdeedd!important;color:#14532d!important}
+ :is(#mrout .k-ws,#mrout .k-pd,#mrout .k-cap) td{text-align:center;font-size:13px;font-weight:800;border:1px solid #e3d8c8!important;color:#2a2118}
+ :is(#mrout .k-ws,#mrout .k-pd,#mrout .k-cap) td.l{text-align:left;background:#fffdf8}
+ :is(#mrout .k-ws,#mrout .k-pd,#mrout .k-cap) tr.t td{background:#f6ead8!important}
+ #mrout .z{color:#8a7c69!important;font-weight:700!important}
+ #mrout .tbl11d{overflow-x:auto}
 }
 #sbtog{display:none}
 @media(min-width:901px){
@@ -4547,17 +4560,23 @@ function mrSumDraw() {
   var capSet = {}; STD_CAPS.forEach(function (c) { capSet[c] = 1; }); r.cap.forEach(function (x) { if (x[1]) capSet[x[1]] = 1; });
   var caps = Object.keys(capSet).map(Number).sort(function (a, b) { return a - b; }), C = {};
   r.cap.forEach(function (x) { (C[x[1]] = C[x[1]] || {})[x[0]] = x; });
-  [['PR received', 2, ''], ['DTC done', 3, ''], ['Pending for DTC', 4, ' pe']].forEach(function (m) {
-    h += '<div class="card k-ws"><h3>Capacity wise - ' + m[0] + ' <span class="muted" style="text-transform:none">(PR date ' + esc(S.f) + ' to ' + esc(S.t) + ')</span></h3><div class="wrap tbl11d"><table><thead><tr><th class="l">CAPACITY IN KVA</th>' +
-      ws.map(function (w) { return '<th class="g2">' + esc(w) + '</th>'; }).join('') + (ws.length > 1 ? '<th class="g1">TOTAL</th>' : '') + '</tr></thead><tbody>';
-    var col = zero(ws.length), all = 0;
-    caps.forEach(function (c) {
-      var row = 0; h += '<tr><td class="l">' + c + '</td>';
-      ws.forEach(function (w, j) { var v = C[c] && C[c][w] ? C[c][w][m[1]] : 0; row += v; col[j] += v; h += '<td class="' + (v ? '' : 'z') + m[2] + '">' + v + '</td>'; });
-      all += row; if (ws.length > 1) h += '<td class="sub"><b>' + row + '</b></td>'; h += '</tr>';
+  // one table like the R&R "Capacity wise summary": capacity rows; groups PR RECEIVED / DTC DONE / PENDING FOR DTC, each with the workshops and a TOTAL
+  var G = [['PR RECEIVED', 2, 'g2', ''], ['DTC DONE', 3, 'g2', ''], ['PENDING FOR DTC', 4, 'g1', 'pe']], nw = ws.length, span = nw + (nw > 1 ? 1 : 0), GT = G.map(function () { return zero(nw); });
+  h += '<div class="card k-cap"><h3>Capacity wise summary <span class="muted" style="text-transform:none">(PR date ' + esc(S.f) + ' to ' + esc(S.t) + ')</span></h3><div class="wrap tbl11d capt capfull"><table><tbody><tr><th class="l" rowspan="2">CAPACITY IN KVA</th>' +
+    G.map(function (g) { return '<th class="' + g[2] + '" colspan="' + span + '">' + g[0] + '</th>'; }).join('') + '</tr><tr>' +
+    G.map(function () { return ws.map(function (w) { return '<th>' + esc(w) + '</th>'; }).join('') + (nw > 1 ? '<th>TOTAL</th>' : ''); }).join('') + '</tr>';
+  caps.forEach(function (c) {
+    h += '<tr><td class="l"><b>' + c + '</b></td>';
+    G.forEach(function (g, gi) {
+      var row = 0;
+      ws.forEach(function (w, j) { var v = C[c] && C[c][w] ? C[c][w][g[1]] : 0; row += v; GT[gi][j] += v; h += '<td class="' + (j === 0 ? 'gs ' : '') + (v ? g[3] : '') + '">' + (v ? v : '<span class="z">0</span>') + '</td>'; });
+      if (nw > 1) h += '<td class="sub"><b>' + (row ? row : '<span class="z">0</span>') + '</b></td>';
     });
-    h += '<tr class="t"><td class="l">TOTAL</td>' + col.map(function (v) { return '<td>' + v + '</td>'; }).join('') + (ws.length > 1 ? '<td>' + all + '</td>' : '') + '</tr></tbody></table></div></div>';
+    h += '</tr>';
   });
+  h += '<tr class="t"><td class="l">TOTAL</td>';
+  G.forEach(function (g, gi) { var all = 0; GT[gi].forEach(function (v) { all += v; h += '<td>' + (v ? v : '<span class="z">0</span>') + '</td>'; }); if (nw > 1) h += '<td>' + (all ? all : '<span class="z">0</span>') + '</td>'; });
+  h += '</tr></tbody></table></div></div>';
   $('mrout').innerHTML = h;
 }
 $('mrbtn').onclick = mrSumLoad;
@@ -4565,7 +4584,11 @@ $('mrpr').onclick = function () { if (!MR.sum) return; printHtml('M&R Summary - 
 function mrTbl(t) { var rows = []; [].forEach.call(t.querySelectorAll('tr'), function (tr) { rows.push([].map.call(tr.children, function (c) { var v = c.textContent.trim(); return /^\d+$/.test(v) ? +v : v; })); }); return rows; }
 $('mrxl').onclick = function () {
   if (!MR.sum) return; var sheets = [];
-  [].forEach.call($('mrout').querySelectorAll('.card'), function (c, i) { sheets.push({ name: ['Workshop', 'PR received', 'DTC done', 'Pending DTC'][i] || 'Sheet' + i, rows: mrTbl(c.querySelector('table')), hdr: 1 }); });
+  [].forEach.call($('mrout').querySelectorAll('.card'), function (c, i) {
+    var t = c.querySelector('table'); if (!t) return;
+    var a = tableToAoa(t), title = (c.querySelector('h3') || {}).textContent || '', head = [[{ v: title, s: 3 }], [{ v: 'Date ' + MR.sum.d + '   |   From ' + MR.sum.f + ' to ' + MR.sum.t, s: 0 }]];
+    sheets.push({ name: ['Workshop', 'Capacity'][i] || 'Sheet' + (i + 1), rows: head.concat(a.rows), merges: a.merges.map(function (x) { return [x[0] + 2, x[1], x[2] + 2, x[3]]; }), hdr: 0, skipw: 2 });
+  });
   xlsxDownload('MR_Summary_' + mrFile(MR.sum.d) + '.xlsx', sheets);
 };
 
