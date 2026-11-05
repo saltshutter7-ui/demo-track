@@ -2555,3 +2555,76 @@ end $$;
 revoke all on function public.rr_json(text, date), public.rr_save(text, date, jsonb) from public, anon;
 grant execute on function public.rr_json(text, date), public.rr_save(text, date, jsonb) to authenticated;
 notify pgrst, 'reload schema';
+-- STEP 45 : M&R "CHAMBER ASSEMBLY" report  -- TEST project.  Run after steps 40..44.
+-- One report for a date, all your workshops x capacity (10,16,25,63,100,160,250,400,630,1000):
+--   UNREPAIRED   = Kitty-tab unrepaired + the repairs the Kitty already deducted (a repaired T/F comes out of the OVEN, not out of unrepaired) - ASSEMBLY entries
+--   AVAILABILITY = Kitty-tab net kitty
+--   ASSEMBLY     = start figure + ASSEMBLY entries - OVEN entries
+--   OVEN         = start figure + OVEN entries - the daily REPAIR of the Kitty tab (a repaired transformer leaves the oven)
+--   Total including Oven & Assembly = availability + assembly + oven
+-- The start figures (assembly, oven) are typed ONCE by the Admin.  The Repair tab's 250(AL) and 250(CU) are added together as 250.
+create table if not exists public.ch_base (
+  workshop text not null, day date not null, cap int not null check (cap in (10,16,25,63,100,160,250,400,630,1000)),
+  assembly int not null default 0 check (assembly >= 0), oven int not null default 0 check (oven >= 0),
+  by_login text, at timestamptz not null default now(),
+  primary key (workshop, day, cap)
+);
+alter table public.ch_base enable row level security;
+revoke all on public.ch_base from public, anon, authenticated;
+
+create or replace function public.ch_report_json(p_day date) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare w text; k jsonb; bd date; out jsonb := '[]'; rj jsonb; nob text[] := '{}'; nok text[] := '{}';
+begin
+  if not public.mr_ok() then raise exception 'No access to the M&R dashboard.'; end if;
+  for w in select unnest(public.my_workshops()) loop
+    k := public.kitty_json(w, p_day);
+    if (k->>'base') is null then nok := nok || w; end if;
+    select max(day) into bd from public.ch_base where workshop = w and day <= p_day;
+    if bd is null then nob := nob || w; end if;
+    with caps as (select unnest(array[10,16,25,63,100,160,250,400,630,1000]) cap),
+    kr as (select (e->>0)::int cap, (e->>2)::int unrep, (e->>7)::int net from jsonb_array_elements(coalesce(k->'rows', '[]'::jsonb)) e),
+    bs as (select cap, assembly, oven from public.ch_base where workshop = w and day = bd),
+    kp as (select cap, sum(repair)::int q from public.kitty_day where workshop = w and day < p_day and day >= coalesce((k->>'base')::date, p_day) group by cap),
+    ko as (select cap, sum(repair)::int q from public.kitty_day where workshop = w and day <= p_day and (bd is null or day > bd) group by cap),
+    en as (select case when cap in ('250AL','250CU') then 250 else cap::int end cap, block, sum(qty)::int q
+             from public.rr_entry where workshop = w and day <= p_day and (bd is null or day > bd) and block in ('ASSEMBLY','OVEN') group by 1, 2)
+    select jsonb_agg(jsonb_build_array(w, caps.cap, coalesce(kr.unrep, 0) + coalesce(kp.q, 0) - coalesce(a.q, 0), coalesce(kr.net, 0),
+                                        coalesce(bs.assembly, 0) + coalesce(a.q, 0) - coalesce(o.q, 0), coalesce(bs.oven, 0) + coalesce(o.q, 0) - coalesce(ko.q, 0)) order by caps.cap)
+      into rj
+      from caps left join kr on kr.cap = caps.cap left join bs on bs.cap = caps.cap left join kp on kp.cap = caps.cap left join ko on ko.cap = caps.cap
+                left join en a on a.cap = caps.cap and a.block = 'ASSEMBLY' left join en o on o.cap = caps.cap and o.block = 'OVEN';
+    out := out || coalesce(rj, '[]'::jsonb);
+  end loop;
+  return jsonb_build_object('rows', out, 'nobase', to_jsonb(nob), 'nokitty', to_jsonb(nok));
+end $$;
+
+-- the start figures in force on a date: {day, rows [[cap, assembly, oven]]}
+create or replace function public.ch_base_json(p_ws text, p_day date) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare bd date;
+begin
+  if not public.mr_ok() or not (p_ws = any (public.my_workshops())) then raise exception 'You cannot see this workshop.'; end if;
+  select max(day) into bd from public.ch_base where workshop = p_ws and day <= p_day;
+  return jsonb_build_object('day', bd, 'rows', coalesce((select jsonb_agg(jsonb_build_array(cap, assembly, oven) order by cap) from public.ch_base where workshop = p_ws and day = bd), '[]'::jsonb));
+end $$;
+
+-- the Admin types the start figures once: p_rows = [{cap, assembly, oven}, ...]
+create or replace function public.ch_base_set(p_ws text, p_day date, p_rows jsonb) returns text
+language plpgsql security definer set search_path = public as $$
+declare e jsonb; c public.profiles := public.tf_caller(); n int := 0;
+begin
+  if not public.mr_admin_ok(p_ws) then raise exception 'Only the Admin of this workshop can set the start figures.'; end if;
+  if p_day is null or p_day > current_date then raise exception 'Choose today or an earlier date.'; end if;
+  delete from public.ch_base where workshop = p_ws and day = p_day;
+  for e in select * from jsonb_array_elements(coalesce(p_rows, '[]')) loop
+    if (e->>'cap')::int not in (10,16,25,63,100,160,250,400,630,1000) then continue; end if;
+    if coalesce((e->>'assembly')::int, 0) < 0 or coalesce((e->>'oven')::int, 0) < 0 or coalesce((e->>'assembly')::int, 0) > 100000 or coalesce((e->>'oven')::int, 0) > 100000 then raise exception 'Numbers must be 0 or more.'; end if;
+    insert into public.ch_base(workshop, day, cap, assembly, oven, by_login, at) values (p_ws, p_day, (e->>'cap')::int, coalesce((e->>'assembly')::int, 0), coalesce((e->>'oven')::int, 0), c.login_id, now());
+    n := n + 1;
+  end loop;
+  return 'saved ' || n;
+end $$;
+revoke all on function public.ch_report_json(date), public.ch_base_json(text, date), public.ch_base_set(text, date, jsonb) from public, anon;
+grant execute on function public.ch_report_json(date), public.ch_base_json(text, date), public.ch_base_set(text, date, jsonb) to authenticated;
+notify pgrst, 'reload schema';
