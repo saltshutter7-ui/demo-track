@@ -2332,3 +2332,177 @@ begin
    where user_id = t.user_id;
   return 'OK';
 end $$;
+-- STEP 41 : M&R  part 2  (run in the TEST project AFTER step 40)
+--  * DTC Sheet shows firm + driver name (not issue / replacement date)
+--  * "Next month need": last year's same month  ->  repair added to the kitty, PR (+2%) subtracted
+--  * last year's repair typed as a MONTH TOTAL per capacity (only while the kitty has no own data of that time)
+--  * Kitty compare: net kitty of all your workshops, capacity wise
+
+-- 1) DTC list: columns  [id, workshop, division, substation, feeder, place, cap, complain, pr_no, pr_date, je_name, firm, driver_name, return_date, dtc_no, dtc_date, editable]
+create or replace function public.mr_list_json(p_month date, p_ws text default null, p_status text default 'all', p_q text default null, p_limit int default 300, p_offset int default 0) returns jsonb
+language plpgsql stable set search_path = public as $$
+declare m1 date := date_trunc('month', p_month)::date; m2 date := (date_trunc('month', p_month) + interval '1 month - 1 day')::date; q text := nullif(btrim(coalesce(p_q, '')), ''); r jsonb;
+begin
+  if not public.mr_ok() then raise exception 'No access to the M&R dashboard.'; end if;
+  with b as (select x.*, t.dtc_no, t.dtc_date, (nullif(btrim(t.dtc_no), '') is not null) done
+               from public.data x left join public.dtc t on t.data_id = x.id
+              where not x.dup and x.workshop = any (public.my_workshops()) and x.pr_date between m1 and m2
+                and (p_ws is null or x.workshop = p_ws)
+                and (q is null or x.pr_no ilike '%' || q || '%' or coalesce(x.complain_no, '') ilike '%' || q || '%' or coalesce(x.place_of_damage, '') ilike '%' || q || '%' or coalesce(t.dtc_no, '') ilike '%' || q || '%')),
+  f as (select * from b where p_status = 'all' or (p_status = 'pending' and not done) or (p_status = 'done' and done))
+  select jsonb_build_object(
+    'all', (select count(*) from b), 'pending', (select count(*) from b where not done), 'done', (select count(*) from b where done), 'shown', (select count(*) from f),
+    'rows', coalesce((select jsonb_agg(jsonb_build_array(id, workshop, division, substation, feeder, place_of_damage, capacity, complain_no, pr_no, pr_date, je_name, firm, driver_name, return_date, dtc_no, dtc_date,
+                        case when public.mr_edit_ok(workshop) then 1 else 0 end) order by pr_date, pr_no collate "C")
+                        from (select * from f order by pr_date, pr_no collate "C" limit least(greatest(p_limit, 1), 1000) offset greatest(p_offset, 0)) z), '[]'))
+    into r;
+  return r;
+end $$;
+
+-- 2) last year's repair, one number per workshop + month + capacity ----------------------------------------------
+create table if not exists public.kitty_ly (
+  workshop text not null, month date not null, cap int not null,
+  repair int not null default 0 check (repair >= 0),
+  by_login text, at timestamptz not null default now(),
+  primary key (workshop, month, cap)
+);
+alter table public.kitty_ly enable row level security;
+revoke all on public.kitty_ly from public, anon, authenticated;
+
+create or replace function public.kitty_ly_json(p_ws text, p_month date) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare m date := date_trunc('month', p_month)::date;
+begin
+  if not public.mr_ok() then raise exception 'No access to the M&R dashboard.'; end if;
+  if not (p_ws = any (public.my_workshops())) then raise exception 'This workshop is not yours.'; end if;
+  return jsonb_build_object('month', m, 'edit', public.mr_edit_ok(p_ws),
+    'rows', (select jsonb_agg(jsonb_build_array(c.cap, coalesce(k.repair, 0)) order by c.cap)
+               from (select unnest(array[10, 16, 25, 63, 100, 160, 250, 400, 630]) cap) c
+               left join public.kitty_ly k on k.workshop = p_ws and k.month = m and k.cap = c.cap));
+end $$;
+
+create or replace function public.kitty_ly_set(p_ws text, p_month date, p_rows jsonb) returns text
+language plpgsql security definer set search_path = public as $$
+declare e jsonb; c public.profiles := public.tf_caller(); m date := date_trunc('month', p_month)::date; n int := 0;
+begin
+  if not public.mr_edit_ok(p_ws) then raise exception 'You cannot change the kitty of this workshop.'; end if;
+  if m >= date_trunc('month', current_date)::date then raise exception 'Choose a month of the past.'; end if;
+  for e in select * from jsonb_array_elements(coalesce(p_rows, '[]')) loop
+    if (e->>'cap')::int not in (10, 16, 25, 63, 100, 160, 250, 400, 630) then continue; end if;
+    if coalesce((e->>'repair')::int, 0) < 0 or coalesce((e->>'repair')::int, 0) > 100000 then raise exception 'Numbers must be 0 or more.'; end if;
+    insert into public.kitty_ly(workshop, month, cap, repair, by_login, at) values (p_ws, m, (e->>'cap')::int, coalesce((e->>'repair')::int, 0), c.login_id, now())
+      on conflict (workshop, month, cap) do update set repair = excluded.repair, by_login = excluded.by_login, at = now();
+    n := n + 1;
+  end loop;
+  return 'saved ' || n;
+end $$;
+
+-- 3) NEXT MONTH NEED -------------------------------------------------------------------------------------------
+--  kitty        = net kitty of the viewed day
+--  window       = the same date LAST YEAR, p_days days long
+--  last-year PR = PR of that window (Data Sheet), made 2% more
+--  last-year repair = the kitty's own daily repair of that window when the kitty already had data then,
+--                     else the month totals typed in kitty_ly (shared by the days of the window)
+--  result       = kitty + repair - PR(+2%);  need = the missing part (0 when the kitty is enough)
+-- rows: [cap, kitty, repair_ly, pr_ly, pr_plus2, result, need]
+create or replace function public.kitty_need_json(p_ws text, p_day date, p_days int default 30) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare k jsonb; n int := least(greatest(coalesce(p_days, 30), 1), 120); w1 date := (p_day - interval '1 year')::date; w2 date; bmin date; manual boolean; rows jsonb; mons jsonb;
+begin
+  if not public.mr_ok() then raise exception 'No access to the M&R dashboard.'; end if;
+  if not (p_ws = any (public.my_workshops())) then raise exception 'This workshop is not yours.'; end if;
+  w2 := w1 + n - 1;
+  k := public.kitty_json(p_ws, p_day);
+  if k->'base' is null or k->>'base' is null then raise exception 'The Admin must first set the start figures of the kitty (see Start figures).'; end if;
+  select min(day) into bmin from public.kitty_base where workshop = p_ws;
+  manual := (bmin is null or w1 < bmin);
+  with caps as (select unnest(array[10, 16, 25, 63, 100, 160, 250, 400, 630]) cap),
+  kit as (select (e->>0)::int cap, (e->>7)::int net from jsonb_array_elements(k->'rows') e),
+  pr as (select capacity cap, count(*) n from public.data where not dup and workshop = p_ws and pr_date between w1 and w2 group by 1),
+  own as (select cap, sum(repair) n from public.kitty_day where workshop = p_ws and day between w1 and w2 group by 1),
+  man as (select l.cap, sum(l.repair::numeric * (least(w2, (l.month + interval '1 month - 1 day')::date) - greatest(w1, l.month) + 1) / extract(day from (l.month + interval '1 month - 1 day'))) n
+            from public.kitty_ly l where l.workshop = p_ws and l.month <= w2 and (l.month + interval '1 month - 1 day')::date >= w1 group by 1),
+  x as (select caps.cap, coalesce(kit.net, 0) kitty, round(case when manual then coalesce(man.n, 0) else coalesce(own.n, 0) end)::int rep, coalesce(pr.n, 0)::int prn,
+               ceil(coalesce(pr.n, 0) * 1.02)::int pr2
+          from caps left join kit using (cap) left join pr using (cap) left join own using (cap) left join man using (cap))
+  select jsonb_agg(jsonb_build_array(cap, kitty, rep, prn, pr2, kitty + rep - pr2, greatest(0, pr2 - kitty - rep)) order by cap) into rows from x;
+  select coalesce(jsonb_agg(m order by m), '[]') into mons from (select distinct date_trunc('month', g)::date m from generate_series(w1, w2, interval '1 day') g) q;
+  return jsonb_build_object('rows', rows, 'w1', w1, 'w2', w2, 'days', n, 'manual', manual, 'months', mons, 'edit', public.mr_edit_ok(p_ws));
+end $$;
+
+-- 4) KITTY COMPARE : net kitty of the day, capacity wise, one column per workshop of the caller --------------------
+-- ws: [names]   rows: [cap, n1, n2, ...]   nobase: workshops whose kitty is not started on that day
+create or replace function public.kitty_cmp_json(p_day date) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare w text; names jsonb := '[]'; nob jsonb := '[]'; vals jsonb := '{}'; k jsonb; e jsonb; res jsonb := '[]'; cp int;
+begin
+  if not public.mr_ok() then raise exception 'No access to the M&R dashboard.'; end if;
+  for w in select unnest(public.my_workshops()) order by 1 loop
+    names := names || to_jsonb(w);
+    k := public.kitty_json(w, p_day);
+    if k->>'base' is null then nob := nob || to_jsonb(w);
+    else for e in select * from jsonb_array_elements(k->'rows') loop vals := jsonb_set(vals, array[w || '|' || (e->>0)], to_jsonb((e->>7)::int), true); end loop;
+    end if;
+  end loop;
+  foreach cp in array array[10, 16, 25, 63, 100, 160, 250, 400, 630] loop
+    res := res || jsonb_build_array(jsonb_build_array(cp) || coalesce((select jsonb_agg(coalesce(vals->(n || '|' || cp), 'null'::jsonb) order by ord) from jsonb_array_elements_text(names) with ordinality t(n, ord)), '[]'));
+  end loop;
+  return jsonb_build_object('ws', names, 'rows', res, 'nobase', nob);
+end $$;
+
+grant execute on function public.kitty_ly_json(text, date), public.kitty_ly_set(text, date, jsonb), public.kitty_need_json(text, date, int), public.kitty_cmp_json(date) to authenticated;
+-- STEP 42 : M&R part 3  (run in the TEST project AFTER step 41)
+-- "Next month need" now sends only the NEED per capacity (all the calculation stays here in the database):
+--   need = PR of last year's same days (+2%, rounded up)  -  (kitty of the viewed day + last year's repair of those days), never below 0
+-- rows: [cap, need]     ly_any = true when last year's repair of the window has been filled (own daily figures or month totals)
+create or replace function public.kitty_need_json(p_ws text, p_day date, p_days int default 30) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare k jsonb; n int := least(greatest(coalesce(p_days, 30), 1), 120); w1 date := (p_day - interval '1 year')::date; w2 date; bmin date; manual boolean; rows jsonb; any_rep boolean;
+begin
+  if not public.mr_ok() then raise exception 'No access to the M&R dashboard.'; end if;
+  if not (p_ws = any (public.my_workshops())) then raise exception 'This workshop is not yours.'; end if;
+  w2 := w1 + n - 1;
+  k := public.kitty_json(p_ws, p_day);
+  if k->>'base' is null then raise exception 'The Admin must first set the start figures of the kitty (see Start figures).'; end if;
+  select min(day) into bmin from public.kitty_base where workshop = p_ws;
+  manual := (bmin is null or w1 < bmin);
+  with caps as (select unnest(array[10, 16, 25, 63, 100, 160, 250, 400, 630]) cap),
+  kit as (select (e->>0)::int cap, (e->>7)::int net from jsonb_array_elements(k->'rows') e),
+  pr as (select capacity cap, count(*) n from public.data where not dup and workshop = p_ws and pr_date between w1 and w2 group by 1),
+  own as (select cap, sum(repair) n from public.kitty_day where workshop = p_ws and day between w1 and w2 group by 1),
+  man as (select l.cap, sum(l.repair::numeric * (least(w2, (l.month + interval '1 month - 1 day')::date) - greatest(w1, l.month) + 1) / extract(day from (l.month + interval '1 month - 1 day'))) n
+            from public.kitty_ly l where l.workshop = p_ws and l.month <= w2 and (l.month + interval '1 month - 1 day')::date >= w1 group by 1),
+  x as (select caps.cap, coalesce(kit.net, 0) kitty, round(case when manual then coalesce(man.n, 0) else coalesce(own.n, 0) end)::int rep, ceil(coalesce(pr.n, 0) * 1.02)::int pr2
+          from caps left join kit using (cap) left join pr using (cap) left join own using (cap) left join man using (cap))
+  select jsonb_agg(jsonb_build_array(cap, greatest(0, pr2 - kitty - rep)) order by cap), coalesce(bool_or(rep > 0), false) into rows, any_rep from x;
+  return jsonb_build_object('rows', rows, 'w1', w1, 'w2', w2, 'days', n, 'manual', manual, 'ly_any', any_rep);
+end $$;
+-- STEP 43 : M&R part 4  (run in the TEST project AFTER step 42)
+-- "Next month need" again shows the full calculation (kitty, last year repair, last year PR, PR + x%, kitty after, need).
+-- PR of last year is made x% more: x is chosen on the screen, 0 to 5 (default 5), rounded up.
+-- rows: [cap, kitty, repair_ly, pr_ly, pr_plus, result, need]
+drop function if exists public.kitty_need_json(text, date, int);
+create or replace function public.kitty_need_json(p_ws text, p_day date, p_days int default 30, p_pct numeric default 5) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare k jsonb; n int := least(greatest(coalesce(p_days, 30), 1), 120); pc numeric := least(greatest(coalesce(p_pct, 5), 0), 5); w1 date := (p_day - interval '1 year')::date; w2 date; bmin date; manual boolean; rows jsonb; any_rep boolean;
+begin
+  if not public.mr_ok() then raise exception 'No access to the M&R dashboard.'; end if;
+  if not (p_ws = any (public.my_workshops())) then raise exception 'This workshop is not yours.'; end if;
+  w2 := w1 + n - 1;
+  k := public.kitty_json(p_ws, p_day);
+  if k->>'base' is null then raise exception 'The Admin must first set the start figures of the kitty (see Start figures).'; end if;
+  select min(day) into bmin from public.kitty_base where workshop = p_ws;
+  manual := (bmin is null or w1 < bmin);
+  with caps as (select unnest(array[10, 16, 25, 63, 100, 160, 250, 400, 630]) cap),
+  kit as (select (e->>0)::int cap, (e->>7)::int net from jsonb_array_elements(k->'rows') e),
+  pr as (select capacity cap, count(*) n from public.data where not dup and workshop = p_ws and pr_date between w1 and w2 group by 1),
+  own as (select cap, sum(repair) n from public.kitty_day where workshop = p_ws and day between w1 and w2 group by 1),
+  man as (select l.cap, sum(l.repair::numeric * (least(w2, (l.month + interval '1 month - 1 day')::date) - greatest(w1, l.month) + 1) / extract(day from (l.month + interval '1 month - 1 day'))) n
+            from public.kitty_ly l where l.workshop = p_ws and l.month <= w2 and (l.month + interval '1 month - 1 day')::date >= w1 group by 1),
+  x as (select caps.cap, coalesce(kit.net, 0) kitty, round(case when manual then coalesce(man.n, 0) else coalesce(own.n, 0) end)::int rep, coalesce(pr.n, 0)::int prn,
+               ceil(coalesce(pr.n, 0) * (1 + pc / 100))::int pr2
+          from caps left join kit using (cap) left join pr using (cap) left join own using (cap) left join man using (cap))
+  select jsonb_agg(jsonb_build_array(cap, kitty, rep, prn, pr2, kitty + rep - pr2, greatest(0, pr2 - kitty - rep)) order by cap), coalesce(bool_or(rep > 0), false) into rows, any_rep from x;
+  return jsonb_build_object('rows', rows, 'w1', w1, 'w2', w2, 'days', n, 'pct', pc, 'manual', manual, 'ly_any', any_rep);
+end $$;
+grant execute on function public.kitty_need_json(text, date, int, numeric) to authenticated;

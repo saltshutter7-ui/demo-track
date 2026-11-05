@@ -2021,10 +2021,20 @@ nav button#tmr{margin-top:auto}
           <div class="ptitle"><b>Kitty</b><span>daily stock of repaired transformers</span></div>
           <div><label>Workshop</label><select id="mkw"></select></div>
           <div><label>Date</label><div class="tg"><button class="ib" id="mkprev" title="Previous day">&#9664;</button><div class="dt"><input type="text" class="dtx" id="mkd" inputmode="numeric" placeholder="DD.MM.YYYY"><span class="calw">&#128197;<input type="date" data-c="mkd"></span></div><button class="ib" id="mknext" title="Next day">&#9654;</button><button class="btn sec sm" id="mktoday" type="button">Today</button></div></div>
+          <div class="tg" style="align-self:flex-end"><button class="btn sec sm" id="mkcmpb" type="button" title="Compare the kitty of your workshops">Compare</button><button class="btn sec sm hide" id="mklyb" type="button" title="Fill last year's repair">LY repair</button></div>
         </div>
       </div>
       <div id="mkmsg"></div>
+      <div id="mkcmp" class="hide"></div>
       <div id="mkout"></div>
+      <div id="mklyo" class="ov hide" style="z-index:80"><div class="md" style="max-width:460px">
+        <div class="bar" style="justify-content:space-between;align-items:center"><h2 style="margin:0">Last year repair</h2><button class="btn sec" id="mklyx" type="button">Close &#10005;</button></div>
+        <div class="muted" style="font-size:12.5px;margin:6px 0">How many transformers were repaired in each capacity in the month (total). Used for "Next month need". This button goes away by itself once the kitty has its own repair figures for that time.</div>
+        <div class="bar"><div><label>Month</label><input type="month" id="mklym"></div></div>
+        <div id="mklyt"></div>
+        <div class="bar" style="margin-top:8px"><button class="btn" id="mklys" type="button">Save last year repair</button></div>
+        <div id="mklymsg"></div>
+      </div></div>
     </section>
   </main>
 </div>
@@ -4535,10 +4545,10 @@ function mrDtcDraw() {
   var c = MR.cnt; $('mrmt').textContent = mrMonthTxt();
   document.querySelectorAll('#mrchips .chip').forEach(function (x) { x.classList.toggle('on', x.dataset.s === MR.st); });
   $('mrc-all').textContent = c.all; $('mrc-pending').textContent = c.pending; $('mrc-done').textContent = c.done;
-  var H = ['WORKSHOP', 'SUBSTATION', 'PLACE OF DAMAGE', 'CAP', 'COMPLAIN NO', 'PR NO', 'PR DATE', 'ISSUE DATE', 'REPL. DATE', 'RETURN DATE'], h = '<thead><tr>' + H.map(function (x) { return '<th>' + x + '</th>'; }).join('') + '<th class="ed">DTC NO &#9998;</th><th class="ed">DTC DATE &#9998;</th></tr></thead><tbody>';
+  var H = ['WORKSHOP', 'SUBSTATION', 'PLACE OF DAMAGE', 'CAP', 'COMPLAIN NO', 'PR NO', 'PR DATE', 'RETURN DATE', 'ISSUED TO FIRM', 'DRIVER NAME'], h = '<thead><tr>' + H.map(function (x) { return '<th>' + x + '</th>'; }).join('') + '<th class="ed">DTC NO &#9998;</th><th class="ed">DTC DATE &#9998;</th></tr></thead><tbody>';
   MR.rows.forEach(function (r) {
     var id = r[0], d = MR.dirty[id], no = d ? d.no : (r[14] || ''), dt = d ? d.date : mrDmy(r[15]), can = r[16] === 1;
-    var cells = [r[1], r[3], r[5], r[6] || '', r[7], r[8], mrDmy(r[9]), mrDmy(r[11]), mrDmy(r[12]), mrDmy(r[13])];
+    var cells = [r[1], r[3], r[5], r[6] || '', r[7], r[8], mrDmy(r[9]), mrDmy(r[13]), r[11] || '', r[12] || ''];
     h += '<tr data-id="' + id + '" class="' + (d ? 'dirty' : (r[14] ? 'done' : 'pend')) + '">' + cells.map(function (v, i) { return '<td class="lk" data-h="' + H[i] + '">' + esc(v) + '</td>'; }).join('');
     if (can) h += '<td class="ed" data-h="DTC NO"><input type="text" class="mrdn" maxlength="40" value="' + esc(no) + '" placeholder="DTC no" autocomplete="off"></td><td class="ed" data-h="DTC DATE"><input type="text" class="dtx mrdd" inputmode="numeric" value="' + esc(dt) + '" placeholder="DD.MM.YYYY" autocomplete="off"></td>';
     else h += '<td class="lk" data-h="DTC NO">' + esc(no) + '</td><td class="lk" data-h="DTC DATE">' + esc(dt) + '</td>';
@@ -4582,8 +4592,8 @@ $('mrq').oninput = function () { clearTimeout(MR.qt); var v = this.value.trim();
 $('mrchips').onclick = function (e) { var c = e.target.closest('.chip'); if (!c) return; MR.st = c.dataset.s; mrDtcLoad(); };
 $('mrmore').onclick = function () { mrDtcLoad(true); };
 $('mrdxl').onclick = function () {
-  var rows = [['WORKSHOP', 'DIVISION', 'SUBSTATION', 'FEEDER', 'PLACE OF DAMAGE', 'CAPACITY', 'COMPLAIN NO', 'PR NO', 'PR DATE', 'JE NAME', 'ISSUE DATE', 'REPLACEMENT DATE', 'RETURN DATE', 'DTC NO', 'DTC DATE']];
-  MR.rows.forEach(function (r) { rows.push([r[1], r[2], r[3], r[4], r[5], r[6] || '', r[7], r[8], mrDmy(r[9]), r[10], mrDmy(r[11]), mrDmy(r[12]), mrDmy(r[13]), r[14] || '', mrDmy(r[15])]); });
+  var rows = [['WORKSHOP', 'DIVISION', 'SUBSTATION', 'FEEDER', 'PLACE OF DAMAGE', 'CAPACITY', 'COMPLAIN NO', 'PR NO', 'PR DATE', 'JE NAME', 'ISSUED TO FIRM', 'DRIVER NAME', 'RETURN DATE', 'DTC NO', 'DTC DATE']];
+  MR.rows.forEach(function (r) { rows.push([r[1], r[2], r[3], r[4], r[5], r[6] || '', r[7], r[8], mrDmy(r[9]), r[10], r[11] || '', r[12] || '', mrDmy(r[13]), r[14] || '', mrDmy(r[15])]); });
   xlsxDownload('DTC_Sheet_' + MR.month.slice(0, 7) + '.xlsx', [{ name: 'DTC', rows: rows, hdr: 1, freeze: true }]);
 };
 
@@ -4600,6 +4610,7 @@ function mrKitLoad(force) {
 function mrKitInp(c, k, v, can) { return can ? '<input type="number" min="0" step="1" class="mkn" data-c="' + c + '" data-k="' + k + '" value="' + (v || 0) + '">' : String(v || 0); }
 function mrKitDraw() {
   var K = MR.kd, r = K.r, h = '', adm = !!r.admin, can = !!r.edit;
+  mrKitTop(K, r);
   if (!r.base) {
     h = '<div class="card"><div class="msg info">' + (r.first ? 'The kitty starts on <b>' + mrDmy(r.first) + '</b>. Choose that date or a later one.' : 'The kitty is not started for <b>' + esc(K.ws) + '</b> yet.') + (adm ? '' : ' Ask your Admin to set the start figures.') + '</div></div>';
     $('mkout').innerHTML = h + (adm ? mrBaseHtml(null) : ''); return;
@@ -4611,8 +4622,9 @@ function mrKitDraw() {
     h += '<tr data-c="' + c + '"><td class="l">' + c + '</td><td class="o">' + x[1] + '</td><td class="u">' + x[2] + '</td><td class="i">' + x[3] + '</td><td class="ed">' + mrKitInp(c, 'repair', x[4], can) + '</td><td class="ed">' + mrKitInp(c, 'to_other', x[5], can) + '</td><td class="ed">' + mrKitInp(c, 'from_other', x[6], can) + '</td><td class="n"><b>' + x[7] + '</b></td></tr>';
   });
   h += '<tr class="t" id="mktot"><td class="l">TOTAL</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table></div>';
-  h += '<div class="bar" style="margin-top:10px"><span class="muted" style="font-size:12px;flex:1">Issue comes from the Data Sheet (issue date). Unrepaired grows with the return date and falls the next day by the repair. Net kitty = opening + repair + receive &minus; issue &minus; issue to other workshop.</span>' +
+  h += '<div class="bar" style="margin-top:10px"><span class="muted" style="font-size:12px;flex:1">Issue comes from the Data Sheet. Unrepaired grows with the return date and falls the next day by the repair. Net kitty = opening + repair + receive &minus; issue &minus; issue to other workshop.</span>' +
     (can ? '<button class="btn" id="mksave" type="button" disabled>Save kitty</button>' : '') + (adm ? '<button class="btn sec" id="mkbase" type="button">Start figures (Admin)</button>' : '') + '<button class="btn sec" id="mkxl" type="button">&#11015; Excel</button></div></div>';
+  h += mrNeedHtml();
   $('mkout').innerHTML = h + (adm ? '<div id="mkbw" class="hide"></div>' : ''); mrKitTotal();
 }
 function mrKitTotal() {
@@ -4660,6 +4672,103 @@ $('mkw').onchange = function () { MR.kws = this.value; mrKitLoad(); };
 $('mkd').addEventListener('change', function () { if (validD(this.value.trim())) mrKitLoad(); });
 $('mkd').addEventListener('keydown', function (e) { if (e.key === 'Enter') mrKitLoad(); });
 document.addEventListener('change', function (e) { var t = e.target; if (t && t.matches && t.matches('.calw input[data-c="mkd"]')) setTimeout(mrKitLoad, 50); });
+
+
+
+/* ---- KITTY: small buttons on top (Compare, LY repair), next month need ---- */
+function mrKitTop(K, r) {
+  var d = parseD(K.d), ly = (d.getFullYear() - 1) + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate());
+  MR.kmanual = !!r.base && !!r.edit && (!r.first || ly < r.first);      // last year of this date is before the kitty started
+  $('mklyb').classList.toggle('hide', !MR.kmanual);
+  if (!MR.kmanual) $('mklyo').classList.add('hide');
+}
+function mrNeedHtml() {
+  return '<div class="card" id="mkneed"><h3>Next month need <span class="muted" style="text-transform:none;font-weight:600">- last year same month</span></h3>' +
+    '<div class="muted" style="font-size:12.5px;margin-bottom:8px">Takes the kitty of this date, <b>adds</b> last year\'s repair of the next days and <b>subtracts</b> last year\'s PR of the same days (made a little more). It tells how many transformers you still need.</div>' +
+    '<div class="bar"><div><label>Days</label><input type="number" id="mkdays" min="1" max="120" step="1" value="' + (MR.ndays || 30) + '" style="width:90px"></div><div><label>PR increase %</label><input type="number" id="mkpct" min="0" max="5" step="0.5" value="' + (MR.npct == null ? 5 : MR.npct) + '" style="width:90px"></div><button class="btn" id="mkneedb" type="button">Check need</button></div><div id="mkneedmsg"></div><div id="mkneedout"></div></div>';
+}
+function mrNeedLoad() {
+  var K = MR.kd; if (!K) return; var n = Math.max(1, Math.min(120, parseInt($('mkdays').value, 10) || 30)); MR.ndays = n; $('mkdays').value = n; var pc = parseFloat($('mkpct').value); pc = isNaN(pc) ? 5 : Math.max(0, Math.min(5, pc)); MR.npct = pc; $('mkpct').value = pc;
+  var b = $('mkneedb'); busy(b, true, 'Checking...'); msg('mkneedmsg', '');
+  rpc('kitty_need_json', { p_ws: K.ws, p_day: mrIso(K.d), p_days: n, p_pct: pc }).then(function (r) { busy(b, false); MR.need = r; mrNeedDraw(); })
+    .catch(function (er) { busy(b, false); $('mkneedout').innerHTML = ''; msg('mkneedmsg', esc(er.message), 'err'); });
+}
+function mrNeedDraw() {
+  var r = MR.need, K = MR.kd, tot = [0, 0, 0, 0, 0, 0], need = [];
+  var h = '';
+  if (r.manual && !r.ly_any) h += '<div class="msg info" style="margin:8px 0">Last year\'s repair is not filled yet. Tap <b>LY repair</b> at the top and fill it, then check again.</div>';
+  h += '<div class="muted" style="font-size:12.5px;margin:8px 0 6px">Kitty of <b>' + esc(K.d) + '</b> &middot; last year days <b>' + mrDmy(r.w1) + '</b> to <b>' + mrDmy(r.w2) + '</b> (' + r.days + ' days)</div>' +
+    '<div class="wrap"><table class="mkt"><thead><tr><th class="l">CAPACITY IN KVA</th><th>KITTY</th><th>+ LAST YEAR REPAIR</th><th>LAST YEAR PR</th><th>PR + ' + r.pct + '%</th><th>KITTY AFTER</th><th class="ed">NEED</th></tr></thead><tbody>';
+  r.rows.forEach(function (x) {
+    h += '<tr><td class="l">' + x[0] + '</td><td>' + x[1] + '</td><td>' + x[2] + '</td><td>' + x[3] + '</td><td>' + x[4] + '</td><td class="' + (x[5] < 0 ? 'neg' : '') + '"><b>' + x[5] + '</b></td><td class="ed">' + (x[6] ? '<b style="color:#c2410c">' + x[6] + '</b>' : '0') + '</td></tr>';
+    tot[0] += x[1]; tot[1] += x[2]; tot[2] += x[3]; tot[3] += x[4]; tot[4] += x[5]; tot[5] += x[6]; if (x[6]) need.push(x[6] + ' of ' + x[0] + ' KVA');
+  });
+  h += '<tr class="t"><td class="l">TOTAL</td>' + tot.map(function (v, i) { return '<td' + (i === 5 ? ' class="ed"' : '') + '><b>' + v + '</b></td>'; }).join('') + '</tr></tbody></table></div>';
+  h += '<div class="msg ' + (tot[5] ? 'info' : 'ok') + '" style="margin-top:8px">' + (tot[5] ? 'In the next <b>' + r.days + ' days</b> you will need <b>' + tot[5] + '</b> more transformers: ' + esc(need.join(', ')) + '.' : 'The kitty is enough for the next <b>' + r.days + ' days</b>.') + '</div>';
+  $('mkneedout').innerHTML = h;
+}
+function mrMonName(m) { var x = /^(\d{4})-(\d{2})/.exec(m || ''); return x ? ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'][+x[2] - 1] + ' ' + x[1] : ''; }
+
+/* LY repair: last year's repair, a month total per capacity */
+function mrLyOpen() {
+  var K = MR.kd; if (!K) return; var d = parseD(K.d), m = (d.getFullYear() - 1) + '-' + p2(d.getMonth() + 1);
+  var o = $('mklyo'); o.classList.remove('hide'); $('mklym').value = MR.lym || m; mrLyLoad();
+}
+function mrLyLoad() {
+  var m = $('mklym').value; if (!/^\d{4}-\d{2}$/.test(m)) return; MR.lym = m; msg('mklymsg', ''); $('mklyt').innerHTML = '<div class="msg info">Loading...</div>';
+  rpc('kitty_ly_json', { p_ws: MR.kd.ws, p_month: m + '-01' }).then(function (r) {
+    if ($('mklym').value !== m) return;
+    var h = '<div class="wrap"><table class="mkt"><thead><tr><th class="l">CAPACITY IN KVA</th><th class="ed">REPAIR IN THE MONTH</th></tr></thead><tbody>';
+    r.rows.forEach(function (x) { h += '<tr><td class="l">' + x[0] + '</td><td class="ed"><input type="number" min="0" step="1" class="mkly" data-c="' + x[0] + '" value="' + (x[1] || 0) + '"></td></tr>'; });
+    $('mklyt').innerHTML = h + '</tbody></table></div>';
+  }).catch(function (er) { $('mklyt').innerHTML = ''; msg('mklymsg', esc(er.message), 'err'); });
+}
+$('mklyb').onclick = mrLyOpen;
+$('mklym').addEventListener('change', mrLyLoad);
+$('mklyx').onclick = function () { $('mklyo').classList.add('hide'); };
+$('mklys').onclick = function () {
+  var b = this, rows = [].map.call(document.querySelectorAll('#mklyt .mkly'), function (i) { return { cap: +i.dataset.c, repair: Math.max(0, parseInt(i.value, 10) || 0) }; });
+  if (!rows.length) return; busy(b, true, 'Saving...');
+  rpc('kitty_ly_set', { p_ws: MR.kd.ws, p_month: MR.lym + '-01', p_rows: rows }).then(function () { busy(b, false); msg('mklymsg', 'Saved.', 'ok'); if ($('mkneedout') && $('mkneedout').innerHTML) mrNeedLoad(); })
+    .catch(function (er) { busy(b, false); msg('mklymsg', esc(er.message), 'err'); });
+};
+document.addEventListener('click', function (e) { var t = e.target; if (t.closest && t.closest('#mkneedb')) mrNeedLoad(); });
+document.addEventListener('keydown', function (e) { if (e.key === 'Enter' && e.target && e.target.id === 'mkdays') mrNeedLoad(); });
+
+/* KITTY COMPARE: on top of the Kitty tab, for the date of the Kitty tab */
+function mrCmpLoad() {
+  var d = $('mkd').value.trim(); if (!validD(d)) return msg('mkmsg', 'Enter the date in DD.MM.YYYY format.', 'err');
+  var w = $('mkcmp'); w.classList.remove('hide'); w.innerHTML = '<div class="card"><div class="msg info">Loading...</div></div>';
+  rpc('kitty_cmp_json', { p_day: mrIso(d) }).then(function (r) { MR.cmp = { r: r, d: d }; mrCmpDraw(); }).catch(function (er) { w.innerHTML = '<div class="card"><div class="msg err">' + esc(er.message) + '</div></div>'; });
+}
+function mrCmpRows() {
+  var C = MR.cmp, r = C.r, ord = mrWs().filter(function (w) { return r.ws.indexOf(w) >= 0; }), idx = ord.map(function (w) { return r.ws.indexOf(w) + 1; });
+  return { ord: ord, idx: idx, rows: r.rows, nobase: r.nobase };
+}
+function mrCmpDraw() {
+  var C = MR.cmp, c = mrCmpRows(), tot = c.ord.map(function () { return 0; }), gt = 0;
+  var h = '<div class="card"><div class="bar" style="justify-content:space-between;align-items:center"><h3 style="margin:0">Kitty compare <span class="muted" style="text-transform:none;font-weight:600">- net kitty on ' + esc(C.d) + '</span></h3><span><button class="btn sec sm" id="mcxl" type="button">&#11015; Excel</button> <button class="btn sec sm" id="mcx" type="button">Close &#10005;</button></span></div>' +
+    '<div class="wrap"><table class="mkt" id="mckt"><thead><tr><th class="l">CAPACITY IN KVA</th>' + c.ord.map(function (w) { return '<th>' + esc(w) + '</th>'; }).join('') + '<th>TOTAL</th></tr></thead><tbody>';
+  c.rows.forEach(function (x) {
+    var s = 0; h += '<tr><td class="l">' + x[0] + '</td>' + c.idx.map(function (j, i) { var v = x[j]; if (v == null) return '<td class="muted">-</td>'; s += v; tot[i] += v; return '<td class="' + (v < 0 ? 'neg' : '') + '">' + v + '</td>'; }).join('') + '<td class="' + (s < 0 ? 'neg' : '') + '"><b>' + s + '</b></td></tr>'; gt += s;
+  });
+  h += '<tr class="t"><td class="l">TOTAL</td>' + tot.map(function (v) { return '<td><b>' + v + '</b></td>'; }).join('') + '<td><b>' + gt + '</b></td></tr></tbody></table></div>';
+  if (c.nobase.length) h += '<div class="muted" style="font-size:12px;margin-top:6px">Kitty not started on this date for: ' + esc(c.nobase.join(', ')) + '.</div>';
+  $('mkcmp').innerHTML = h + '</div>';
+}
+$('mkcmpb').onclick = function () { if (!$('mkcmp').classList.contains('hide')) { $('mkcmp').classList.add('hide'); return; } mrCmpLoad(); };
+document.addEventListener('click', function (e) {
+  var t = e.target; if (!t.closest) return;
+  if (t.closest('#mcx')) { $('mkcmp').classList.add('hide'); return; }
+  if (t.closest('#mcxl')) {
+    var C = MR.cmp; if (!C) return; var c = mrCmpRows(), rows = [['CAPACITY IN KVA'].concat(c.ord, ['TOTAL'])], tot = c.ord.map(function () { return 0; }), gt = 0;
+    c.rows.forEach(function (x) { var s = 0; rows.push([x[0]].concat(c.idx.map(function (j, i) { var v = x[j]; if (v == null) return ''; s += v; tot[i] += v; return v; }), [s])); gt += s; });
+    rows.push(['TOTAL'].concat(tot, [gt])); xlsxDownload('Kitty_Compare_' + mrFile(C.d) + '.xlsx', [{ name: 'Kitty', rows: rows, hdr: 1 }]);
+  }
+});
+// the compare follows the date of the Kitty tab
+var _mrKitLoad = mrKitLoad;
+mrKitLoad = function (force) { var x = _mrKitLoad(force); if (!$('mkcmp').classList.contains('hide')) mrCmpLoad(); return x; };
 
 </script>
 <script>if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(function () {});</script>
