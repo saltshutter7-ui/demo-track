@@ -2506,3 +2506,52 @@ begin
   return jsonb_build_object('rows', rows, 'w1', w1, 'w2', w2, 'days', n, 'pct', pc, 'manual', manual, 'ly_any', any_rep);
 end $$;
 grant execute on function public.kitty_need_json(text, date, int, numeric) to authenticated;
+-- STEP 44 : M&R "REPAIR" tab  (REPAIR / ASSEMBLY / OVEN, firm-wise and capacity-wise, typed by the M&R user)  -- TEST project.
+-- Run after step 40..43.  One row = workshop + date + block + firm + capacity -> qty.  Nothing existing is changed.
+create table if not exists public.rr_entry (
+  workshop text not null, day date not null, block text not null check (block in ('REPAIR','ASSEMBLY','OVEN')),
+  firm text not null, cap text not null check (cap in ('10','16','25','63','100','160','250AL','250CU','400','630','1000')),
+  qty int not null default 0 check (qty >= 0 and qty <= 100000),
+  by_login text, at timestamptz not null default now(),
+  primary key (workshop, day, block, firm, cap)
+);
+alter table public.rr_entry enable row level security;
+revoke all on public.rr_entry from public, anon, authenticated;
+
+-- read one day:  rows [block, firm, cap, qty];  firms = firm names of the latest earlier day (to pre-fill an empty day)
+create or replace function public.rr_json(p_ws text, p_day date) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare r jsonb; pd date;
+begin
+  if not public.mr_ok() or not (p_ws = any (public.my_workshops())) then raise exception 'You cannot see this workshop.'; end if;
+  select max(day) into pd from public.rr_entry where workshop = p_ws and day < p_day;
+  select jsonb_build_object(
+    'rows', coalesce((select jsonb_agg(jsonb_build_array(block, firm, cap, qty) order by block, firm, cap) from public.rr_entry where workshop = p_ws and day = p_day), '[]'::jsonb),
+    'firms', coalesce((select jsonb_agg(jsonb_build_array(block, firm) order by block, firm) from (select distinct block, firm from public.rr_entry where workshop = p_ws and day = pd) f), '[]'::jsonb),
+    'edit', public.mr_edit_ok(p_ws)) into r;
+  return r;
+end $$;
+
+-- save one day (replaces that day): p_rows = [{block, firm, cap, qty}, ...]
+create or replace function public.rr_save(p_ws text, p_day date, p_rows jsonb) returns text
+language plpgsql security definer set search_path = public as $$
+declare e jsonb; c public.profiles := public.tf_caller(); n int := 0; f text;
+begin
+  if not public.mr_edit_ok(p_ws) then raise exception 'You cannot change the figures of this workshop.'; end if;
+  if p_day is null or p_day > current_date then raise exception 'Choose today or an earlier date.'; end if;
+  delete from public.rr_entry where workshop = p_ws and day = p_day;
+  for e in select * from jsonb_array_elements(coalesce(p_rows, '[]')) loop
+    f := btrim(coalesce(e->>'firm', ''));
+    if f = '' then continue; end if;
+    if length(f) > 60 then raise exception 'Firm name is too long.'; end if;
+    if coalesce((e->>'qty')::int, 0) < 0 or coalesce((e->>'qty')::int, 0) > 100000 then raise exception 'Numbers must be 0 or more.'; end if;
+    insert into public.rr_entry(workshop, day, block, firm, cap, qty, by_login, at)
+      values (p_ws, p_day, e->>'block', f, e->>'cap', coalesce((e->>'qty')::int, 0), c.login_id, now())
+      on conflict (workshop, day, block, firm, cap) do update set qty = excluded.qty, by_login = excluded.by_login, at = now();
+    n := n + 1;
+  end loop;
+  return 'saved ' || n;
+end $$;
+revoke all on function public.rr_json(text, date), public.rr_save(text, date, jsonb) from public, anon;
+grant execute on function public.rr_json(text, date), public.rr_save(text, date, jsonb) to authenticated;
+notify pgrst, 'reload schema';
