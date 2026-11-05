@@ -2267,7 +2267,7 @@ language plpgsql security definer set search_path = public as $$
 declare e jsonb; c public.profiles := public.tf_caller(); bd date; n int := 0;
 begin
   if not public.mr_edit_ok(p_ws) then raise exception 'You cannot change the kitty of this workshop.'; end if;
-  if p_day is null or p_day > current_date then raise exception 'Choose today or an earlier date.'; end if;
+  if p_day is null or p_day > current_date + 1 then raise exception 'Choose today or an earlier date.'; end if;
   select max(day) into bd from public.kitty_base where workshop = p_ws and day <= p_day;
   if bd is null then raise exception 'The Admin must first set the opening kitty and the unrepaired T/F (start date).'; end if;
   for e in select * from jsonb_array_elements(coalesce(p_rows, '[]')) loop
@@ -2288,7 +2288,7 @@ language plpgsql security definer set search_path = public as $$
 declare e jsonb; c public.profiles := public.tf_caller(); n int := 0;
 begin
   if not public.mr_admin_ok(p_ws) then raise exception 'Only the Admin of this workshop can set the start figures.'; end if;
-  if p_day is null or p_day > current_date then raise exception 'Choose today or an earlier date.'; end if;
+  if p_day is null or p_day > current_date + 1 then raise exception 'Choose today or an earlier date.'; end if;
   for e in select * from jsonb_array_elements(coalesce(p_rows, '[]')) loop
     if (e->>'cap')::int not in (10, 16, 25, 63, 100, 160, 250, 400, 630) then continue; end if;
     if coalesce((e->>'opening')::int, 0) < 0 or coalesce((e->>'unrep')::int, 0) < 0 then raise exception 'Numbers must be 0 or more.'; end if;
@@ -2538,7 +2538,7 @@ language plpgsql security definer set search_path = public as $$
 declare e jsonb; c public.profiles := public.tf_caller(); n int := 0; f text;
 begin
   if not public.mr_edit_ok(p_ws) then raise exception 'You cannot change the figures of this workshop.'; end if;
-  if p_day is null or p_day > current_date then raise exception 'Choose today or an earlier date.'; end if;
+  if p_day is null or p_day > current_date + 1 then raise exception 'Choose today or an earlier date.'; end if;
   delete from public.rr_entry where workshop = p_ws and day = p_day;
   for e in select * from jsonb_array_elements(coalesce(p_rows, '[]')) loop
     f := btrim(coalesce(e->>'firm', ''));
@@ -2562,6 +2562,7 @@ notify pgrst, 'reload schema';
 --   ASSEMBLY     = start figure + ASSEMBLY entries - OVEN entries
 --   OVEN         = start figure + OVEN entries - the daily REPAIR of the Kitty tab (a repaired transformer leaves the oven)
 --   Total including Oven & Assembly = availability + assembly + oven
+-- The start figures (assembly, oven) are typed ONCE by the Admin and are the figures in the MORNING of the start date (entries of the start date itself are counted).
 -- The start figures (assembly, oven) are typed ONCE by the Admin.  The Repair tab's 250(AL) and 250(CU) are added together as 250.
 create table if not exists public.ch_base (
   workshop text not null, day date not null, cap int not null check (cap in (10,16,25,63,100,160,250,400,630,1000)),
@@ -2586,9 +2587,9 @@ begin
     kr as (select (e->>0)::int cap, (e->>2)::int unrep, (e->>7)::int net from jsonb_array_elements(coalesce(k->'rows', '[]'::jsonb)) e),
     bs as (select cap, assembly, oven from public.ch_base where workshop = w and day = bd),
     kp as (select cap, sum(repair)::int q from public.kitty_day where workshop = w and day < p_day and day >= coalesce((k->>'base')::date, p_day) group by cap),
-    ko as (select cap, sum(repair)::int q from public.kitty_day where workshop = w and day <= p_day and (bd is null or day > bd) group by cap),
+    ko as (select cap, sum(repair)::int q from public.kitty_day where workshop = w and day <= p_day and (bd is null or day >= bd) group by cap),
     en as (select case when cap in ('250AL','250CU') then 250 else cap::int end cap, block, sum(qty)::int q
-             from public.rr_entry where workshop = w and day <= p_day and (bd is null or day > bd) and block in ('ASSEMBLY','OVEN') group by 1, 2)
+             from public.rr_entry where workshop = w and day <= p_day and (bd is null or day >= bd) and block in ('ASSEMBLY','OVEN') group by 1, 2)
     select jsonb_agg(jsonb_build_array(w, caps.cap, coalesce(kr.unrep, 0) + coalesce(kp.q, 0) - coalesce(a.q, 0), coalesce(kr.net, 0),
                                         coalesce(bs.assembly, 0) + coalesce(a.q, 0) - coalesce(o.q, 0), coalesce(bs.oven, 0) + coalesce(o.q, 0) - coalesce(ko.q, 0)) order by caps.cap)
       into rj
@@ -2615,7 +2616,7 @@ language plpgsql security definer set search_path = public as $$
 declare e jsonb; c public.profiles := public.tf_caller(); n int := 0;
 begin
   if not public.mr_admin_ok(p_ws) then raise exception 'Only the Admin of this workshop can set the start figures.'; end if;
-  if p_day is null or p_day > current_date then raise exception 'Choose today or an earlier date.'; end if;
+  if p_day is null or p_day > current_date + 1 then raise exception 'Choose today or an earlier date.'; end if;
   delete from public.ch_base where workshop = p_ws and day = p_day;
   for e in select * from jsonb_array_elements(coalesce(p_rows, '[]')) loop
     if (e->>'cap')::int not in (10,16,25,63,100,160,250,400,630,1000) then continue; end if;
@@ -2627,4 +2628,81 @@ begin
 end $$;
 revoke all on function public.ch_report_json(date), public.ch_base_json(text, date), public.ch_base_set(text, date, jsonb) from public, anon;
 grant execute on function public.ch_report_json(date), public.ch_base_json(text, date), public.ch_base_set(text, date, jsonb) to authenticated;
+notify pgrst, 'reload schema';
+-- STEP 46 : date check allows 'today' also for users whose day has already turned (India is ahead of the database clock, UTC).
+-- Re-creates 4 functions only (no data is touched).  Safe to run again.
+
+create or replace function public.kitty_save(p_ws text, p_day date, p_rows jsonb) returns text
+language plpgsql security definer set search_path = public as $$
+declare e jsonb; c public.profiles := public.tf_caller(); bd date; n int := 0;
+begin
+  if not public.mr_edit_ok(p_ws) then raise exception 'You cannot change the kitty of this workshop.'; end if;
+  if p_day is null or p_day > current_date + 1 then raise exception 'Choose today or an earlier date.'; end if;
+  select max(day) into bd from public.kitty_base where workshop = p_ws and day <= p_day;
+  if bd is null then raise exception 'The Admin must first set the opening kitty and the unrepaired T/F (start date).'; end if;
+  for e in select * from jsonb_array_elements(coalesce(p_rows, '[]')) loop
+    if (e->>'cap')::int not in (10, 16, 25, 63, 100, 160, 250, 400, 630) then continue; end if;
+    if coalesce((e->>'repair')::int, 0) < 0 or coalesce((e->>'to_other')::int, 0) < 0 or coalesce((e->>'from_other')::int, 0) < 0
+       or coalesce((e->>'repair')::int, 0) > 100000 or coalesce((e->>'to_other')::int, 0) > 100000 or coalesce((e->>'from_other')::int, 0) > 100000 then raise exception 'Numbers must be 0 or more.'; end if;
+    insert into public.kitty_day(workshop, day, cap, repair, to_other, from_other, by_login, at)
+      values (p_ws, p_day, (e->>'cap')::int, coalesce((e->>'repair')::int, 0), coalesce((e->>'to_other')::int, 0), coalesce((e->>'from_other')::int, 0), c.login_id, now())
+      on conflict (workshop, day, cap) do update set repair = excluded.repair, to_other = excluded.to_other, from_other = excluded.from_other, by_login = excluded.by_login, at = now();
+    n := n + 1;
+  end loop;
+  return 'saved ' || n;
+end $$;
+
+create or replace function public.kitty_base_set(p_ws text, p_day date, p_rows jsonb) returns text
+language plpgsql security definer set search_path = public as $$
+declare e jsonb; c public.profiles := public.tf_caller(); n int := 0;
+begin
+  if not public.mr_admin_ok(p_ws) then raise exception 'Only the Admin of this workshop can set the start figures.'; end if;
+  if p_day is null or p_day > current_date + 1 then raise exception 'Choose today or an earlier date.'; end if;
+  for e in select * from jsonb_array_elements(coalesce(p_rows, '[]')) loop
+    if (e->>'cap')::int not in (10, 16, 25, 63, 100, 160, 250, 400, 630) then continue; end if;
+    if coalesce((e->>'opening')::int, 0) < 0 or coalesce((e->>'unrep')::int, 0) < 0 then raise exception 'Numbers must be 0 or more.'; end if;
+    insert into public.kitty_base(workshop, day, cap, opening, unrep, by_login, at)
+      values (p_ws, p_day, (e->>'cap')::int, coalesce((e->>'opening')::int, 0), coalesce((e->>'unrep')::int, 0), c.login_id, now())
+      on conflict (workshop, day, cap) do update set opening = excluded.opening, unrep = excluded.unrep, by_login = excluded.by_login, at = now();
+    n := n + 1;
+  end loop;
+  return 'saved ' || n;
+end $$;
+
+create or replace function public.rr_save(p_ws text, p_day date, p_rows jsonb) returns text
+language plpgsql security definer set search_path = public as $$
+declare e jsonb; c public.profiles := public.tf_caller(); n int := 0; f text;
+begin
+  if not public.mr_edit_ok(p_ws) then raise exception 'You cannot change the figures of this workshop.'; end if;
+  if p_day is null or p_day > current_date + 1 then raise exception 'Choose today or an earlier date.'; end if;
+  delete from public.rr_entry where workshop = p_ws and day = p_day;
+  for e in select * from jsonb_array_elements(coalesce(p_rows, '[]')) loop
+    f := btrim(coalesce(e->>'firm', ''));
+    if f = '' then continue; end if;
+    if length(f) > 60 then raise exception 'Firm name is too long.'; end if;
+    if coalesce((e->>'qty')::int, 0) < 0 or coalesce((e->>'qty')::int, 0) > 100000 then raise exception 'Numbers must be 0 or more.'; end if;
+    insert into public.rr_entry(workshop, day, block, firm, cap, qty, by_login, at)
+      values (p_ws, p_day, e->>'block', f, e->>'cap', coalesce((e->>'qty')::int, 0), c.login_id, now())
+      on conflict (workshop, day, block, firm, cap) do update set qty = excluded.qty, by_login = excluded.by_login, at = now();
+    n := n + 1;
+  end loop;
+  return 'saved ' || n;
+end $$;
+
+create or replace function public.ch_base_set(p_ws text, p_day date, p_rows jsonb) returns text
+language plpgsql security definer set search_path = public as $$
+declare e jsonb; c public.profiles := public.tf_caller(); n int := 0;
+begin
+  if not public.mr_admin_ok(p_ws) then raise exception 'Only the Admin of this workshop can set the start figures.'; end if;
+  if p_day is null or p_day > current_date + 1 then raise exception 'Choose today or an earlier date.'; end if;
+  delete from public.ch_base where workshop = p_ws and day = p_day;
+  for e in select * from jsonb_array_elements(coalesce(p_rows, '[]')) loop
+    if (e->>'cap')::int not in (10,16,25,63,100,160,250,400,630,1000) then continue; end if;
+    if coalesce((e->>'assembly')::int, 0) < 0 or coalesce((e->>'oven')::int, 0) < 0 or coalesce((e->>'assembly')::int, 0) > 100000 or coalesce((e->>'oven')::int, 0) > 100000 then raise exception 'Numbers must be 0 or more.'; end if;
+    insert into public.ch_base(workshop, day, cap, assembly, oven, by_login, at) values (p_ws, p_day, (e->>'cap')::int, coalesce((e->>'assembly')::int, 0), coalesce((e->>'oven')::int, 0), c.login_id, now());
+    n := n + 1;
+  end loop;
+  return 'saved ' || n;
+end $$;
+
 notify pgrst, 'reload schema';
