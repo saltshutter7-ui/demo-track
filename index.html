@@ -1041,6 +1041,7 @@ table.cmpt input.ci{width:70px;text-align:center;font:inherit;font-weight:800;bo
  .card{border-radius:10px}
  /* Summary toolbar */
  #t-sum>.card{padding:8px;border-color:#e8dccb;background:#fffdf8;margin-bottom:6px}
+ #t-mrsum>.card{padding:8px;border-color:#e8dccb;background:#fffdf8;margin-bottom:6px}
  .sbar{display:grid!important;grid-template-columns:repeat(12,1fr);gap:6px!important;align-items:end}
  .sbar>div{grid-column:span 4;flex:none!important}
  .sbar label{font-size:8.5px;margin:0;color:#7a6a58}
@@ -1050,22 +1051,37 @@ table.cmpt input.ci{width:70px;text-align:center;font:inherit;font-weight:800;bo
  #sxl,#spr{background:#f2e8d9!important;color:#9a3412!important}
  .sbar .dtx{font-size:12px!important;padding:6px 4px!important;border-radius:6px!important;min-width:0;width:100%;text-align:center}
  .sbar .dt{width:100%}.sbar .calw{display:none}
+ #mrbtn{grid-column:span 4;background:#c2410c!important;color:#fff!important}#mrxl,#mrpr{grid-column:span 4;background:#f2e8d9!important;color:#9a3412!important}
+ .chm,.chm th,.chm td{font-size:9.5px!important;padding:3px 1px!important}.chm .ttl{font-size:10px!important}.chm th.nm,.chm td.nm{width:58px;min-width:0}.chm tr.fin td{font-size:10px!important}
+ .sbar>div:has(>.tg){grid-column:span 8}.sbar>div>.tg{display:flex;flex-wrap:nowrap;align-items:center;gap:4px}.sbar>div>.tg .dt{flex:1;min-width:0}.sbar>div>.tg .ib{flex:none;padding:6px 8px!important}.sbar>div>.tg .btn{width:auto;flex:none;padding:8px 8px!important}
+ .sbar>.tg{grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap}.sbar>.tg .btn{width:auto;flex:1 1 30%;padding:8px 6px!important}
  #t-sum .dtl{display:none}
  /* Summary tables: dense, centred, bordered, no sideways scroll */
  #sout .card{padding:5px;margin-bottom:6px;border-radius:8px;border:1px solid #e8dccb;border-top:2px solid #c2410c;background:#fffdf8}
+ #mrout .card{padding:5px;margin-bottom:6px;border-radius:8px;border:1px solid #e8dccb;border-top:2px solid #c2410c;background:#fffdf8}
  #sout .card h3{font-size:9.5px!important;margin:0 0 3px!important;letter-spacing:1px;color:#9a3412!important}
+ #mrout .card h3{font-size:9.5px!important;margin:0 0 3px!important;letter-spacing:1px;color:#9a3412!important}
  #sout .card h3::before{display:none}
+ #mrout .card h3::before{display:none}
  #sout .card h3 .muted{display:inline!important;font-size:7px!important;margin-left:4px;color:#7a6a58!important}
+ #mrout .card h3 .muted{display:inline!important;font-size:7px!important;margin-left:4px;color:#7a6a58!important}
  #sout .wrap,#sout .tbl11d{overflow:visible!important}
+ #mrout .wrap,#mrout .tbl11d{overflow:visible!important}
  #sout table{width:100%!important;table-layout:fixed;border-collapse:collapse}
+ #mrout table{width:100%!important;table-layout:fixed;border-collapse:collapse}
  #sout th,#sout td,#sout td.l,#sout th.l{text-align:center!important;border:1px solid #e3d8c8!important;padding:2px 1px!important;font-size:8px!important;line-height:1.15;min-width:0!important;max-width:none!important;position:static!important;box-shadow:none!important;white-space:normal;word-break:break-word;overflow:hidden}
+ #mrout th,#mrout td,#mrout td.l,#mrout th.l{text-align:center!important;border:1px solid #e3d8c8!important;padding:2px 1px!important;font-size:8px!important;line-height:1.15;min-width:0!important;max-width:none!important;position:static!important;box-shadow:none!important;white-space:normal;word-break:break-word;overflow:hidden}
  #sout th{font-size:6px!important;font-weight:800}
+ #mrout th{font-size:6px!important;font-weight:800}
  #sout td.l,#sout th.l{width:15%;font-weight:800}
+ #mrout td.l,#mrout th.l{width:15%;font-weight:800}
  #sout a.n{min-width:0!important;padding:0!important;font-size:inherit!important}
+ #mrout a.n{min-width:0!important;padding:0!important;font-size:inherit!important}
  #sout .k-div>h3{padding:5px 2px}
  #sout .k-div>h3::after{font-size:8.5px!important}
  /* capacity: the long table is shown as two short ones */
  #sout .capfull{display:none!important}
+ #mrout .capfull{display:none!important}
  #sout .capsplit{display:block!important;margin-bottom:5px}
  #sout .capsplit table th,#sout .capsplit table td{font-size:7.5px!important}
  #sout .capsplit table th{font-size:5.8px!important}
@@ -1106,7 +1122,9 @@ table.cmpt input.ci{width:70px;text-align:center;font:inherit;font-weight:800;bo
  #gbody .gnote{font-size:8px!important;margin-top:4px!important;line-height:1.3}
  #sgr{font-size:0!important;display:flex;align-items:center;justify-content:center}#sgr svg{width:22px;height:22px}
  #sout th *{font-size:inherit!important;line-height:1.1}
+ #mrout th *{font-size:inherit!important;line-height:1.1}
  #sout th .muted{display:block;font-size:5.5px!important;font-weight:600}
+ #mrout th .muted{display:block;font-size:5.5px!important;font-weight:600}
  #sout .k-div>h3{margin:0!important}#sout .k-div.col{padding:0}
  header .u{flex:1 1 100%;order:9;text-align:left;font-size:10px}
 }
@@ -1127,7 +1145,9 @@ table.cmpt input.ci{width:70px;text-align:center;font:inherit;font-weight:800;bo
  #gbody .gwh{align-items:flex-start!important}#gbody .gwr{margin-left:0!important;gap:6px}#gbody .gwr .gring{width:40px!important;height:40px!important}#gbody .gwr .gring span{inset:5px!important}#gbody .gr-w em{font-size:7.5px!important}
  /* short table headings on phones (only what is shown; Excel and Print keep the full words) */
  #sout a[data-sh],#sout th[data-sh],#sout td.l[data-sh]{font-size:0!important}
+ #mrout a[data-sh],#mrout th[data-sh],#mrout td.l[data-sh]{font-size:0!important}
  #sout a[data-sh]::after,#sout th[data-sh]::after,#sout td.l[data-sh]::after{content:attr(data-sh);font-size:6.4px;font-weight:800;line-height:1.1;word-break:normal;overflow-wrap:normal;letter-spacing:-.1px}
+ #mrout a[data-sh]::after,#mrout th[data-sh]::after,#mrout td.l[data-sh]::after{content:attr(data-sh);font-size:6.4px;font-weight:800;line-height:1.1;word-break:normal;overflow-wrap:normal;letter-spacing:-.1px}
  #sout .k-div td.l[data-sh],#sout .k-div td.l a[data-sh]{font-size:0!important}
  #sout .k-div td.l[data-sh]::after,#sout .k-div td.l a[data-sh]::after{font-size:7.6px!important;font-weight:800;line-height:1.15;color:#2a2118}
  #sout .k-ws th span.muted,#sout .k-div th span.muted,#sout .k-ws th br,#sout .k-div th br{display:none!important}
@@ -1169,6 +1189,7 @@ table.cmpt input.ci{width:70px;text-align:center;font:inherit;font-weight:800;bo
  main{max-width:none!important;padding:22px 28px!important}
  /* toolbar */
  #t-sum>.card{background:transparent;border:0;box-shadow:none;padding:0;margin-bottom:12px}
+ #t-mrsum>.card{background:transparent;border:0;box-shadow:none;padding:0;margin-bottom:12px}
  .sbar{align-items:flex-end!important;gap:10px!important}
  .ptitle{display:block;margin-right:auto;min-width:240px}.ptitle b{display:block;font-size:24px;font-weight:800;color:#2a2118;letter-spacing:-.4px}.ptitle span{display:block;font-size:12.5px;font-weight:700;color:#4f4234}
  .sbar label{font-size:10px;font-weight:700;letter-spacing:.5px;color:#4f4234;text-transform:uppercase}
@@ -1181,9 +1202,13 @@ table.cmpt input.ci{width:70px;text-align:center;font:inherit;font-weight:800;bo
  /* the four tables on one page */
  #sout{display:grid;grid-template-columns:1.1fr .9fr;gap:14px;align-items:start}
  #sout .card{margin:0!important;background:#fffdf8;border:1px solid #e3d8c8!important;border-top:1px solid #e3d8c8!important;border-radius:12px!important;padding:14px 16px!important}
+ #mrout .card{margin:0!important;background:#fffdf8;border:1px solid #e3d8c8!important;border-top:1px solid #e3d8c8!important;border-radius:12px!important;padding:14px 16px!important}
  #sout .card h3{font-size:13px!important;letter-spacing:1.2px!important;color:#9a3412!important;margin:0 0 10px!important}
+ #mrout .card h3{font-size:13px!important;letter-spacing:1.2px!important;color:#9a3412!important;margin:0 0 10px!important}
  #sout .card h3::before{display:none}
+ #mrout .card h3::before{display:none}
  #sout .card h3 .muted{color:#4f4234!important;font-weight:700!important;font-size:12px!important}
+ #mrout .card h3 .muted{color:#4f4234!important;font-weight:700!important;font-size:12px!important}
  #sout .k-ws,#sout .k-cap{grid-column:1/-1}
  #sout .k-pd{grid-column:1;order:2}#sout .k-div{grid-column:2;order:3}#sout .k-div:not(.col){grid-column:1/-1}#sout .k-cap{order:4}
  #sout .k-div.col{padding:0!important}#sout .k-div>h3{margin:0!important;padding:14px 16px!important}
@@ -1195,7 +1220,9 @@ table.cmpt input.ci{width:70px;text-align:center;font:inherit;font-weight:800;bo
  :is(#sout .k-ws,#sout .k-pd,#sout .k-cap) td.l{text-align:left;background:#fffdf8}
  :is(#sout .k-ws,#sout .k-pd,#sout .k-cap) tr.t td{background:#f6ead8!important}
  #sout .z{color:#8a7c69!important;font-weight:700!important}
+ #mrout .z{color:#8a7c69!important;font-weight:700!important}
  #sout .tbl11d{overflow-x:auto}
+ #mrout .tbl11d{overflow-x:auto}
  #mrout .card{margin:0 0 14px!important;background:#fffdf8;border:1px solid #e3d8c8!important;border-top:1px solid #e3d8c8!important;border-radius:12px!important;padding:14px 16px!important}
  #mrout .card h3{font-size:13px!important;letter-spacing:1.2px!important;color:#9a3412!important;margin:0 0 10px!important}
  #mrout .card h3::before{display:none}
@@ -1252,6 +1279,7 @@ body.printing #sbtog{display:none!important}
 
 /* black grid lines only (everything else as before) */
 #sout .card table th,#sout .card table td{border:1.2px solid #1b1b1b!important}
+#mrout .card table th,#mrout .card table td{border:1.2px solid #1b1b1b!important}
 
 /* =====================  CHOOSE HOME SCREEN: window and the looks  ===================== */
 #hsm{display:none;position:fixed;inset:0;z-index:300;background:rgba(20,16,10,.5);align-items:center;justify-content:center;padding:14px}
@@ -1282,21 +1310,33 @@ html.hs-d img,html.hs-d video,html.hs-d canvas,html.hs-d .gring{filter:invert(1)
 /* ---- Excel Clean ---- */
 html.hs-x body{background:#f4f5f7!important;font-family:Calibri,Carlito,'Segoe UI',Arial,sans-serif}
 html.hs-x #sout .card table th,html.hs-x #sout .card table td,html.hs-x #sout .card table td.l,html.hs-x #sout .card table th.l{border:1.3px solid #1b1b1b!important;text-align:center!important;color:#000!important;background:#fff!important}
+html.hs-x #mrout .card table th,html.hs-x #mrout .card table td,html.hs-x #mrout .card table td.l,html.hs-x #mrout .card table th.l{border:1.3px solid #1b1b1b!important;text-align:center!important;color:#000!important;background:#fff!important}
 html.hs-x #sout .card table thead th,html.hs-x #sout .card table th.l,html.hs-x #sout .card table th.g1,html.hs-x #sout .card table th.g2,html.hs-x #sout .card table th.pe{background:#e4e9fb!important;color:#111!important}
+html.hs-x #mrout .card table thead th,html.hs-x #mrout .card table th.l,html.hs-x #mrout .card table th.g1,html.hs-x #mrout .card table th.g2,html.hs-x #mrout .card table th.pe{background:#e4e9fb!important;color:#111!important}
 html.hs-x #sout .card table th a{text-decoration:none!important;color:inherit!important}
+html.hs-x #mrout .card table th a{text-decoration:none!important;color:inherit!important}
 html.hs-x #sout .card table .z{color:#000!important;font-weight:500!important}
+html.hs-x #mrout .card table .z{color:#000!important;font-weight:500!important}
 html.hs-x #sout .card table td{font-weight:500!important}
+html.hs-x #mrout .card table td{font-weight:500!important}
 html.hs-x #sout .card table td.l,html.hs-x #sout .card table tr.t td,html.hs-x #sout .card table tr.w td{font-weight:800!important}
+html.hs-x #mrout .card table td.l,html.hs-x #mrout .card table tr.t td,html.hs-x #mrout .card table tr.w td{font-weight:800!important}
 html.hs-x #sout .card table td a.n{color:#000!important;text-decoration:none!important}
+html.hs-x #mrout .card table td a.n{color:#000!important;text-decoration:none!important}
 html.hs-x #sout .card table tr.t td{background:#f4f6fd!important}
+html.hs-x #mrout .card table tr.t td{background:#f4f6fd!important}
 html.hs-x #sout .card h3{color:#1d4ed8!important}
+html.hs-x #mrout .card h3{color:#1d4ed8!important}
 html.hs-x .skpi>div{background:#e4e9fb!important;color:#111!important}
 
 /* ---- Indigo (+ rings panel) ---- */
 html.hs-b body{background:#eef1fb!important}
 html.hs-b #sout .card h3{color:#1f2a7a!important}
+html.hs-b #mrout .card h3{color:#1f2a7a!important}
 html.hs-b #sout .card table thead th,html.hs-b #sout .card table th.l{background:#dbe4ff!important;color:#17224d!important}
+html.hs-b #mrout .card table thead th,html.hs-b #mrout .card table th.l{background:#dbe4ff!important;color:#17224d!important}
 html.hs-b #sout .card table th.g1{background:#ffe3c2!important}html.hs-b #sout .card table th.g2{background:#cdeedd!important}
+html.hs-b #mrout .card table th.g1{background:#ffe3c2!important}html.hs-b #mrout .card table th.g2{background:#cdeedd!important}
 html.hs-b .btn:not(.sec):not(.g){background:#3b5bdb!important}
 html.hs-b .k-ring .krr{display:flex;gap:18px;justify-content:center;padding:6px 0}
 html.hs-b .k-ring .grb>span{color:#17224d;font-size:11px}
@@ -1313,7 +1353,9 @@ html.hs-b .k-ring .krn{font-size:11px;text-align:center;color:#4a5578}
  html.hs-b .k-ring{display:block}
  html.hs-b #sout{grid-template-columns:minmax(0,1fr) 270px!important}
  html.hs-b #sout .wrap{overflow-x:auto!important}
+ html.hs-b #mrout .wrap{overflow-x:auto!important}
  html.hs-b #sout .card{min-width:0}
+ html.hs-b #mrout .card{min-width:0}
  html.hs-b #sout .k-ws,html.hs-b #sout .k-cap{grid-column:1!important}
  html.hs-b #sout .k-ring{grid-column:2;order:1}
  html.hs-b #sout .k-ws{order:0}
@@ -1333,8 +1375,11 @@ html.hs-b .k-ring .krn{font-size:11px;text-align:center;color:#4a5578}
 /* ---- Teal + top menu ---- */
 html.hs-c body{background:#eef6f4!important}
 html.hs-c #sout .card h3{color:#0f766e!important}
+html.hs-c #mrout .card h3{color:#0f766e!important}
 html.hs-c #sout .card table thead th,html.hs-c #sout .card table th.l{background:#d9f0ec!important;color:#0b3d38!important}
+html.hs-c #mrout .card table thead th,html.hs-c #mrout .card table th.l{background:#d9f0ec!important;color:#0b3d38!important}
 html.hs-c #sout .card table th.g1{background:#ffe3c2!important}html.hs-c #sout .card table th.g2{background:#cdeedd!important}
+html.hs-c #mrout .card table th.g1{background:#ffe3c2!important}html.hs-c #mrout .card table th.g2{background:#cdeedd!important}
 html.hs-c .btn:not(.sec):not(.g){background:#0f766e!important}
 @media(min-width:901px){
  html.hs-c body{padding-left:0!important;padding-top:72px}
@@ -1372,22 +1417,37 @@ html.hs-t body{background-color:var(--bg)!important;background-image:var(--bgimg
 html.hs-t .muted,html.hs-t label,html.hs-t small{color:var(--ink)!important;opacity:.78}
 html.hs-t .card{background:var(--cdbg)!important;border:var(--cdbw) solid var(--cdbd)!important;border-radius:var(--cdrad)!important;box-shadow:var(--cdsh)!important;-webkit-backdrop-filter:var(--cdblur);backdrop-filter:var(--cdblur);color:var(--cdink)!important}
 html.hs-t #t-sum>.card{background:transparent!important;border:0!important;box-shadow:none!important;backdrop-filter:none}
+html.hs-t #t-mrsum>.card{background:transparent!important;border:0!important;box-shadow:none!important;backdrop-filter:none}
 html.hs-t .card h3,html.hs-t #sout .card h3{color:var(--h3)!important}
+html.hs-t .card h3,html.hs-t #mrout .card h3{color:var(--h3)!important}
 html.hs-t .card table th,html.hs-t #sout .card table thead th,html.hs-t #sout .card table th.l,html.hs-t .gt th{background:var(--thbg)!important;color:var(--think)!important;border-color:var(--grid)!important}
+html.hs-t .card table th,html.hs-t #mrout .card table thead th,html.hs-t #mrout .card table th.l,html.hs-t .gt th{background:var(--thbg)!important;color:var(--think)!important;border-color:var(--grid)!important}
 html.hs-t #sout .card table th.g1{background:var(--g1)!important}html.hs-t #sout .card table th.g2{background:var(--g2)!important}
+html.hs-t #mrout .card table th.g1{background:var(--g1)!important}html.hs-t #mrout .card table th.g2{background:var(--g2)!important}
 html.hs-t .card table td,html.hs-t #sout .card table td.l,html.hs-t .gt td{background:transparent!important;color:var(--tdink)!important;border-color:var(--grid)!important}
+html.hs-t .card table td,html.hs-t #mrout .card table td.l,html.hs-t .gt td{background:transparent!important;color:var(--tdink)!important;border-color:var(--grid)!important}
 html.hs-t .card table,html.hs-t .card .wrap,html.hs-t #sout .wrap,html.hs-t #sout .tbl11d,html.hs-t #sout .card table tbody tr,html.hs-t #sout .card table tbody tr:nth-child(even){background:transparent!important}
+html.hs-t .card table,html.hs-t .card .wrap,html.hs-t #mrout .wrap,html.hs-t #mrout .tbl11d,html.hs-t #mrout .card table tbody tr,html.hs-t #mrout .card table tbody tr:nth-child(even){background:transparent!important}
 html.hs-t #sout .card table td,html.hs-t #sout .card table tbody tr td,html.hs-t #sout .card table tr.d td,html.hs-t #sout .card table tr.d.e td{background:transparent!important;color:var(--tdink)!important;border-color:var(--grid)!important}
+html.hs-t #mrout .card table td,html.hs-t #mrout .card table tbody tr td,html.hs-t #mrout .card table tr.d td,html.hs-t #mrout .card table tr.d.e td{background:transparent!important;color:var(--tdink)!important;border-color:var(--grid)!important}
 html.hs-t #sout .card table td.sub{background:var(--tot)!important}
+html.hs-t #mrout .card table td.sub{background:var(--tot)!important}
 html.hs-t .ptitle,html.hs-t .ptitle b,html.hs-t .ptitle span,html.hs-t #ptsub{color:var(--ink)!important}
 html.hs-t .dtl,html.hs-t .dtl summary{color:var(--ink)!important}
 html.hs-t #sout .card th,html.hs-t #sout .card thead th,html.hs-t #sout .card tr th{color:var(--think)!important}
+html.hs-t #mrout .card th,html.hs-t #mrout .card thead th,html.hs-t #mrout .card tr th{color:var(--think)!important}
 html.hs-t #sout .card th.g1,html.hs-t #sout .card th.g2{color:var(--ink)!important}
+html.hs-t #mrout .card th.g1,html.hs-t #mrout .card th.g2{color:var(--ink)!important}
 html.hs-an-snap #sout .card th.g1,html.hs-an-snap #sout .card th.g2{color:#fff!important}
+html.hs-an-snap #mrout .card th.g1,html.hs-an-snap #mrout .card th.g2{color:#fff!important}
 html.hs-t #sout .card h3 *,html.hs-t #sout .card h2 *,html.hs-t #sout .card .hd *,html.hs-t #sout .card summary *{color:var(--ink)!important;opacity:.8}
+html.hs-t #mrout .card h3 *,html.hs-t #mrout .card h2 *,html.hs-t #mrout .card .hd *,html.hs-t #mrout .card summary *{color:var(--ink)!important;opacity:.8}
 html.hs-t #sout .card table tr.t td,html.hs-t #sout .card table tr.w td{background:var(--tot)!important}
+html.hs-t #mrout .card table tr.t td,html.hs-t #mrout .card table tr.w td{background:var(--tot)!important}
 html.hs-t #sout .card table .z{color:var(--tdink)!important;opacity:.45}
+html.hs-t #mrout .card table .z{color:var(--tdink)!important;opacity:.45}
 html.hs-t #sout .card table td a.n{color:inherit!important}
+html.hs-t #mrout .card table td a.n{color:inherit!important}
 html.hs-t .skpi .a1{background-color:var(--k1bg)!important;background-image:var(--k1im)!important;color:var(--k1ink)!important;border:var(--k1bw) solid var(--k1bd)!important}
 html.hs-t .skpi .a2{background-color:var(--k2bg)!important;background-image:var(--k2im)!important;color:var(--k2ink)!important;border:var(--k2bw) solid var(--k2bd)!important}
 html.hs-t .skpi .a3{background-color:var(--k3bg)!important;background-image:var(--k3im)!important;color:var(--k3ink)!important;border:var(--k3bw) solid var(--k3bd)!important}
@@ -1445,9 +1505,12 @@ html.hs-t nav button.on{background:var(--nibg)!important;color:var(--niink)!impo
  html.hs-t #sout>.k-cap,html.hs-t #sout>.k-ws{grid-column:1/-1}
  html.hs-t #sout>.k-pd{grid-column:1}html.hs-t #sout>.k-div{grid-column:2}
  html.hs-t #sout>.card{margin:0!important}
+ html.hs-t #mrout>.card{margin:0!important}
  html.hs-t .card{padding:10px 14px!important}
  html.hs-t #sout .card h3{margin:0 0 6px!important}
+ html.hs-t #mrout .card h3{margin:0 0 6px!important}
  html.hs-t #sout .card table td,html.hs-t #sout .card table th{padding-top:3px!important;padding-bottom:3px!important}
+ html.hs-t #mrout .card table td,html.hs-t #mrout .card table th{padding-top:3px!important;padding-bottom:3px!important}
  html.hs-t .sbar{gap:8px}
 }
  @media screen and (min-width:901px){
@@ -1462,7 +1525,9 @@ html.hs-t nav button.on{background:var(--nibg)!important;color:var(--niink)!impo
  html.hs-t header .u{order:5;flex:1 0 100%;font-size:10.5px!important;padding:1px 8px!important;margin:0!important;text-align:left}
  html.hs-t .top #bhs,html.hs-t .top #bpw,html.hs-t .top #bout{width:auto!important;flex:none;padding:4px 8px!important;font-size:11px!important;margin:0!important}
  html.hs-t #sout{display:block}
+ html.hs-t #mrout{display:block}
  html.hs-t #sout>.card{margin-bottom:8px!important}
+ html.hs-t #mrout>.card{margin-bottom:8px!important}
 }
 @media screen and (min-width:901px){
  html.hs-rail body{padding-left:84px}
@@ -1485,7 +1550,9 @@ html.hs-t nav button.on{background:var(--nibg)!important;color:var(--niink)!impo
  @keyframes hsDrift{0%{background-position:0% 0%,100% 100%}50%{background-position:12% 8%,88% 92%}100%{background-position:0% 0%,100% 100%}}
  @keyframes hsShine{from{transform:translateX(-120%)}to{transform:translateX(120%)}}
  #sout>.card,.skpi>div{animation:hsUp .55s cubic-bezier(.2,.7,.2,1) both}
+ #mrout>.card,.skpi>div{animation:hsUp .55s cubic-bezier(.2,.7,.2,1) both}
  #sout.noanim>.card{animation:none}
+ #mrout.noanim>.card{animation:none}
  @keyframes hsTab{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
  body:not(.printing) main>section:not(.hide){animation:hsTab .38s cubic-bezier(.2,.7,.2,1) both}
  #app:not(.hide) .top{animation:hsTab .5s both}
@@ -1493,18 +1560,24 @@ html.hs-t nav button.on{background:var(--nibg)!important;color:var(--niink)!impo
  .btn{transition:transform .15s,filter .15s}.btn:hover{transform:translateY(-1px);filter:brightness(1.06)}
  .skpi>div{transition:transform .2s,box-shadow .2s}.skpi>div:hover{transform:translateY(-3px);box-shadow:0 8px 18px rgba(0,0,0,.12)}
  #sout .card table tbody tr{transition:background .15s}
+ #mrout .card table tbody tr{transition:background .15s}
  .gwrap tr{transition:background .12s}
  .skpi>div:nth-child(2){animation-delay:.05s}.skpi>div:nth-child(3){animation-delay:.1s}.skpi>div:nth-child(4){animation-delay:.15s}.skpi>div:nth-child(5){animation-delay:.2s}.skpi>div:nth-child(6){animation-delay:.25s}
  #sout>.card:nth-child(2){animation-delay:.12s}#sout>.card:nth-child(3){animation-delay:.2s}#sout>.card:nth-child(4){animation-delay:.28s}#sout>.card:nth-child(5){animation-delay:.36s}
+ #mrout>.card:nth-child(2){animation-delay:.12s}#mrout>.card:nth-child(3){animation-delay:.2s}#mrout>.card:nth-child(4){animation-delay:.28s}#mrout>.card:nth-child(5){animation-delay:.36s}
  html.hs-t #sout.noanim>.card{animation:none}
+ html.hs-t #mrout.noanim>.card{animation:none}
  html.hs-an-pop .skpi>div{animation-name:hsPop!important}
  html.hs-an-snap .skpi>div,html.hs-an-snap #sout>.card{animation-name:hsSnap!important;animation-duration:.35s!important}
+ html.hs-an-snap .skpi>div,html.hs-an-snap #mrout>.card{animation-name:hsSnap!important;animation-duration:.35s!important}
  html.hs-an-aurora body,html.hs-an-glow body{background-size:140% 140%!important;animation:hsDrift 18s ease-in-out infinite}
  html.hs-t .skpi>div{transition:transform .2s,box-shadow .2s;position:relative;overflow:hidden}
  html.hs-t .skpi>div:hover{transform:translateY(-3px)}
  html.hs-an-aurora .skpi>div::after,html.hs-an-glow .skpi>div::after{content:'';position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.14) 50%,transparent 70%);transform:translateX(-120%);animation:hsShine 5s ease-in-out 1s infinite;pointer-events:none}
  html.hs-t #sout .card table tbody tr{transition:background .15s}
+ html.hs-t #mrout .card table tbody tr{transition:background .15s}
  html.hs-t #sout .card table tbody tr:hover td{background:color-mix(in srgb,var(--ink) 9%,transparent)!important}
+ html.hs-t #mrout .card table tbody tr:hover td{background:color-mix(in srgb,var(--ink) 9%,transparent)!important}
  html.hs-t .btn{transition:transform .15s,filter .15s}html.hs-t .btn:hover{transform:translateY(-1px);filter:brightness(1.12)}
  html.hs-t nav button{transition:background .2s,transform .2s}html.hs-t nav button:hover{transform:translateX(2px)}
 }
@@ -1779,10 +1852,14 @@ a.pscall{background:#16a34a;color:#fff!important;text-decoration:none;font-weigh
  .emrange input{border:1.5px solid #94a3b8;border-radius:6px;padding:6px;font-size:13px;color:#000;background:#fff}
 @media screen and (min-width:701px){
  html.hs-t #sout .card table td,html.hs-t #sout .card table td.l{font-size:var(--tdfs,15px)!important;font-weight:800}
+ html.hs-t #mrout .card table td,html.hs-t #mrout .card table td.l{font-size:var(--tdfs,15px)!important;font-weight:800}
  html.hs-t #sout .card table thead th,html.hs-t #sout .card table th{font-size:var(--thfs,11.5px)!important}
+ html.hs-t #mrout .card table thead th,html.hs-t #mrout .card table th{font-size:var(--thfs,11.5px)!important}
  html.hs-t #skpi i{font-size:var(--kpifs,30px)!important}
  html.hs-x #sout .card table td,html.hs-x #sout .card table td.l{font-size:14px!important}
+ html.hs-x #mrout .card table td,html.hs-x #mrout .card table td.l{font-size:14px!important}
  html.hs-x #sout .card table thead th,html.hs-x #sout .card table th{font-size:11px!important}
+ html.hs-x #mrout .card table thead th,html.hs-x #mrout .card table th{font-size:11px!important}
  html.hs-x #skpi i{font-size:32px!important}
 }
  .stw{border:1.5px solid #f2b98a;background:#fffaf3;border-radius:12px;padding:10px 12px;margin:0 0 12px}.stw h4{margin:0 0 6px;color:#9a3412;font-size:15px}
@@ -1794,7 +1871,6 @@ a.pscall{background:#16a34a;color:#fff!important;text-decoration:none;font-weigh
 /* ---- M&R dashboard ---- */
 body.mr-on nav:not(#mrnav){display:none!important}
 body:not(.mr-on) #mrnav{display:none!important}
-body.mr-on #bhs{display:none!important}
 #mrtag{display:none;font-size:.5em;background:#3b4fd8;color:#fff;border-radius:8px;padding:3px 8px;margin-left:8px;vertical-align:middle;letter-spacing:.5px}
 body.mr-on #mrtag{display:inline-block}
 nav button#tmr::before{-webkit-mask-image:url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2024%2024%22%20fill=%22none%22%20stroke=%22black%22%20stroke-width=%222%22%20stroke-linecap=%22round%22%20stroke-linejoin=%22round%22%3E%3Cpath%20d=%22M14.7%206.3a4%204%200%200%200-5%205L3%2018l3%203%206.7-6.7a4%204%200%200%200%205-5l-2.5%202.5-2.2-.5-.5-2.2z%22/%3E%3C/svg%3E");mask-image:url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2024%2024%22%20fill=%22none%22%20stroke=%22black%22%20stroke-width=%222%22%20stroke-linecap=%22round%22%20stroke-linejoin=%22round%22%3E%3Cpath%20d=%22M14.7%206.3a4%204%200%200%200-5%205L3%2018l3%203%206.7-6.7a4%204%200%200%200%205-5l-2.5%202.5-2.2-.5-.5-2.2z%22/%3E%3C/svg%3E")}
@@ -4562,7 +4638,7 @@ function mrSumDraw() {
   r.cap.forEach(function (x) { (C[x[1]] = C[x[1]] || {})[x[0]] = x; });
   // one table like the R&R "Capacity wise summary": capacity rows; groups PR RECEIVED / DTC DONE / PENDING FOR DTC, each with the workshops and a TOTAL
   var G = [['PR RECEIVED', 2, 'g2', ''], ['DTC DONE', 3, 'g2', ''], ['PENDING FOR DTC', 4, 'g1', 'pe']], nw = ws.length, span = nw + (nw > 1 ? 1 : 0), GT = G.map(function () { return zero(nw); });
-  h += '<div class="card k-cap"><h3>Capacity wise summary <span class="muted" style="text-transform:none">(PR date ' + esc(S.f) + ' to ' + esc(S.t) + ')</span></h3><div class="wrap tbl11d capt capfull"><table><tbody><tr><th class="l" rowspan="2">CAPACITY IN KVA</th>' +
+  h += '<div class="card k-cap"><h3>Capacity wise summary <span class="muted" style="text-transform:none">(PR date ' + esc(S.f) + ' to ' + esc(S.t) + ')</span></h3><div class="wrap tbl11d capt"><table><tbody><tr><th class="l" rowspan="2">CAPACITY IN KVA</th>' +
     G.map(function (g) { return '<th class="' + g[2] + '" colspan="' + span + '">' + g[0] + '</th>'; }).join('') + '</tr><tr>' +
     G.map(function () { return ws.map(function (w) { return '<th>' + esc(w) + '</th>'; }).join('') + (nw > 1 ? '<th>TOTAL</th>' : ''); }).join('') + '</tr>';
   caps.forEach(function (c) {
