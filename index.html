@@ -2054,6 +2054,16 @@ nav button#tmr{margin-top:auto}
     <!-- ADMIN -->
     <section id="t-adm" class="hide">
       <div id="amsg"></div>
+      <div id="sirtop" class="hide" style="display:flex;justify-content:flex-end;margin-bottom:6px"><button class="btn" id="sirtg" title="SIR linked Google Sheet" style="padding:3px 10px;font-size:12px">&#128203; SIR <span class="tag" id="sirst"></span></button></div>
+      <div class="card acard hide" id="sircfg"><h3>SIR - Site Inspection Report (linked Google Sheet)</h3>
+        <div class="muted" style="font-size:12px;line-height:1.5;margin-bottom:8px">
+          <b>How to link:</b> 1) Open the Google Sheet where the SIR form saves its answers. 2) File &gt; Share &gt; <b>Publish to web</b> &gt; choose the sheet tab and <b>Comma-separated values (.csv)</b> &gt; Publish. 3) Paste that link below (or the normal sheet link, if the sheet is shared as "Anyone with the link - Viewer"). 4) Write the exact heading of the column that holds the INDENT NO (PR number). 5) Press Test, then Save.<br>
+          <b>Rule:</b> if a PR number of 100 KVA &amp; above is found in that column, its SIR is <b>done</b>, otherwise it is <b>pending</b>. The result is shown in the Summary screen under "SIR Summary". Only the PR number column is read.</div>
+        <div id="sirmsg"></div>
+        <div class="bar" style="align-items:flex-end"><div style="flex:1;min-width:220px"><label>Google Sheet link</label><input type="text" id="sirurl" placeholder="https://docs.google.com/spreadsheets/..." spellcheck="false" autocapitalize="off"></div>
+          <div><label>Column heading of INDENT NO</label><input type="text" id="sircol" value="INDENT NO"></div></div>
+        <div class="bar" style="margin-top:10px"><button class="btn" id="sirtest">Test</button><button class="btn" id="sirsave">Save</button><button class="btn" id="sirrm">Remove link</button></div>
+      </div>
       <div class="card acard"><h3>Workshops</h3>
         <div class="muted" style="font-size:12px;margin-bottom:6px">Write the names of your own workshops here. Then give each user the workshops he works for.</div>
         <div class="bar"><input type="text" id="wn" placeholder="New workshop name" style="max-width:240px"><span id="wdw" class="hide"><input type="text" id="wd" list="dvl" placeholder="Division name" style="max-width:240px"></span><button class="btn" id="wadd">Add workshop</button></div>
@@ -2672,6 +2682,7 @@ function renderSummary(s, quiet) {
   var o = $('sout'); o.classList.toggle('noanim', !!quiet); o.innerHTML = h; splitCap(); shortHeads(); renderKpi(s); if (typeof renderRingCard === 'function') renderRingCard(s);
   if (typeof hsFitSoon === 'function') { hsFitSoon(); hsCount(); }
   if (typeof emgSiren === 'function') emgSiren();
+  if (typeof sirAfter === 'function') sirAfter(s);
 }
 
 
@@ -3313,7 +3324,7 @@ function admLoad() {
   $('nrw').classList.toggle('hide', !cr); $('nvw').classList.toggle('hide', !cr); $('wdw').classList.toggle('hide', !cr);
   $('nrole').innerHTML = cr ? '<option value="admin">Admin (can create users)</option><option value="discom">DISCOM head (view only)</option><option value="je">User</option>' : '<option value="je">User</option>';
   $('dvl').innerHTML = uniq(Object.keys(WSDIV).map(function (w) { return WSDIV[w]; })).map(function (d) { return '<option value="' + esc(d) + '">'; }).join('');
-  newUserForm(); admWsDraw(); if (typeof stLoad === 'function') stLoad();
+  newUserForm(); admWsDraw(); if (typeof stLoad === 'function') stLoad(); if (typeof sirAdmInit === 'function') sirAdmInit();
   return SB.from('profiles').select('user_id,login_id,display,role,org_division,scope,can_edit,active,tabs').order('login_id').then(function (r) {
     if (r.error) return msg('amsg', esc(friendly(r.error)), 'err');
     ADM = r.data || []; admUsersDraw();
@@ -5186,6 +5197,129 @@ document.addEventListener('paste', function (e) {
   rows.forEach(function (rw, i) { rw.forEach(function (v, j) { var td = g[r0 + i] && g[r0 + i][c0 + j]; if (td) xgSet(td, v.trim()); }); });
   XG.a = [r0, c0]; XG.f = [Math.min(g.length - 1, r0 + rows.length - 1), Math.min((g[r0] || []).length - 1, c0 + Math.max.apply(null, rows.map(function (x) { return x.length; })) - 1)]; xgPaint();
 });
+
+/* ===== SIR (Site Inspection Report) : link the Google Sheet of the SIR form, count 100 KVA & above PRs with / without SIR ===== */
+var SIRC = null, SIRX = { key: '', t: 0, set: null }, SIRTILL = '', SIRTO = '';
+function csvRows(t) {          // small CSV parser (quotes, commas, line breaks)
+  var r = [], row = [], f = '', q = false, i, c;
+  for (i = 0; i < t.length; i++) {
+    c = t[i];
+    if (q) { if (c === '"') { if (t[i + 1] === '"') { f += '"'; i++; } else q = false; } else f += c; }
+    else if (c === '"') q = true;
+    else if (c === ',') { row.push(f); f = ''; }
+    else if (c === '\n' || c === '\r') { if (c === '\r' && t[i + 1] === '\n') i++; row.push(f); f = ''; r.push(row); row = []; }
+    else f += c;
+  }
+  if (f !== '' || row.length) { row.push(f); r.push(row); }
+  return r;
+}
+function sirCsvUrl(u) {        // any Google Sheet link -> a CSV link
+  u = String(u || '').trim();
+  if (/\/pub(\?|$)/.test(u)) { return /[?&]output=/.test(u) ? u.replace(/output=[a-z]+/, 'output=csv') : u + (u.indexOf('?') < 0 ? '?' : '&') + 'output=csv'; }
+  var m = /\/spreadsheets\/d\/([^\/?#]+)/.exec(u); if (!m) return u;
+  var g = /[#&?]gid=(\d+)/.exec(u);
+  return 'https://docs.google.com/spreadsheets/d/' + m[1] + '/gviz/tq?tqx=out:csv' + (g ? '&gid=' + g[1] : '');
+}
+function sirNorm(v) { v = String(v == null ? '' : v).toUpperCase().replace(/\s+/g, ''); return /^\d+$/.test(v) ? v.replace(/^0+(?=\d)/, '') : v; }
+function sirHd(v) { return String(v || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); }
+function sirLoadSheet(cfg, force) {   // -> Promise {set, n}
+  var key = cfg.url + '|' + cfg.col;
+  if (!force && SIRX.key === key && Date.now() - SIRX.t < 120000) return Promise.resolve(SIRX.set);
+  return fetch(sirCsvUrl(cfg.url), { cache: 'no-store' }).then(function (r) {
+    if (!r.ok) throw new Error('The Google Sheet could not be opened (code ' + r.status + '). Check that it is published / shared with "Anyone with the link".');
+    return r.text();
+  }, function () { throw new Error('The Google Sheet could not be reached. Check the internet and that the sheet is published / shared with "Anyone with the link".'); }).then(function (t) {
+    if (/^\s*<(!doctype|html)/i.test(t)) throw new Error('Google asked for a sign-in, so the sheet is not public. Publish it to the web (File > Share > Publish to web, CSV) and paste that link.');
+    var rows = csvRows(t), want = sirHd(cfg.col), hr = -1, ci = -1, i, j;
+    for (i = 0; i < Math.min(rows.length, 15) && ci < 0; i++) for (j = 0; j < rows[i].length; j++) if (sirHd(rows[i][j]) === want) { hr = i; ci = j; break; }
+    if (ci < 0) throw new Error('Column "' + cfg.col + '" was not found in the sheet heading. Check the column name in Admin > SIR.');
+    var set = {}, n = 0;
+    for (i = hr + 1; i < rows.length; i++) { var v = sirNorm(rows[i][ci]); if (v) { set[v] = 1; n++; } }
+    SIRX = { key: key, t: Date.now(), set: { set: set, n: n } };
+    return SIRX.set;
+  });
+}
+function sirCfgLoad() { return rpc('sir_cfg_get').then(function (a) { a = a || []; SIRC = a.length ? a[0] : null; return SIRC; }); }
+
+/* ---- Admin panel ---- */
+function sirAdmInit() {
+  var top = $('sirtop'); if (!top) return;
+  var on = ME.role === 'admin'; top.classList.toggle('hide', !on); if (!on) { $('sircfg').classList.add('hide'); return; }
+  sirCfgLoad().then(function (c) { $('sirurl').value = c ? c.url : ''; $('sircol').value = c ? c.col : 'INDENT NO'; $('sirst').textContent = c ? 'Linked' : 'Not linked'; $('sirst').className = 'tag ' + (c ? 'ok' : ''); }).catch(function () { });
+}
+function sirSave(clear) {
+  var u = clear ? '' : $('sirurl').value.trim(), c = $('sircol').value.trim() || 'INDENT NO';
+  rpc('sir_cfg_set', { p_url: u, p_col: c }).then(function () { SIRX.key = ''; if (clear) $('sirurl').value = ''; msg('sirmsg', clear ? 'SIR link removed.' : 'Saved. The SIR Summary on the Summary screen now uses this sheet.', 'info'); return sirCfgLoad(); }).then(function () { $('sirst').textContent = SIRC ? 'Linked' : 'Not linked'; }).catch(function (er) { msg('sirmsg', esc(er.message), 'err'); });
+}
+function sirTest() {
+  var u = $('sirurl').value.trim(), c = $('sircol').value.trim() || 'INDENT NO';
+  if (!u) { msg('sirmsg', 'Paste the sheet link first.', 'err'); return; }
+  msg('sirmsg', 'Checking the sheet...', 'info');
+  sirLoadSheet({ url: u, col: c }, true).then(function (r) { msg('sirmsg', 'Sheet opened. Column "' + esc(c) + '" found, ' + r.n + ' SIR entries read. Now press Save.', 'info'); }).catch(function (er) { msg('sirmsg', esc(er.message), 'err'); });
+}
+$('sirtg').onclick = function () { $('sircfg').classList.toggle('hide'); };
+$('sirsave').onclick = function () { sirSave(false); };
+$('sirrm').onclick = function () { if (confirm('Remove the SIR sheet link?')) sirSave(true); };
+$('sirtest').onclick = sirTest;
+
+/* ---- SIR Summary card (below the capacity table on the Summary screen) ---- */
+function sirCard(s) {
+  return '<div class="card k-cap k-sir" id="sircard"><h3>SIR Summary <span class="muted" style="text-transform:none">(100 KVA &amp; above &middot; PR raised ' + esc(s.from) + ' to the date below)</span></h3>' +
+    '<div class="bar sirbar" style="align-items:flex-end;margin-bottom:8px"><div><label>Pending till</label><div class="dt"><input type="text" class="dtx" id="sirtill" inputmode="numeric" placeholder="DD.MM.YYYY" value="' + esc(SIRTILL || s.to) + '"><span class="calw">&#128197;<input type="date" data-c="sirtill"></span></div></div><button class="btn" id="sirgo">Show</button><button class="btn" id="sirre" title="Read the Google Sheet again">Refresh</button></div>' +
+    '<div id="sirbody" class="muted" style="padding:6px 2px">Loading...</div></div>';
+}
+function sirAfter(s) {
+  var o = $('sout'); if (!o) return;
+  if (SIRTO !== s.to) { SIRTILL = ''; SIRTO = s.to; }      // a new Summary To date resets the pending-till date
+  o.insertAdjacentHTML('beforeend', sirCard(s));
+  SIRTILL = $('sirtill').value;
+  $('sirgo').onclick = function () { SIRTILL = $('sirtill').value.trim(); sirRun(s, false); };
+  $('sirre').onclick = function () { sirRun(s, true); };
+  sirRun(s, false);
+}
+function sirRun(s, force) {
+  var b = $('sirbody'); if (!b) return;
+  var till = ($('sirtill') || {}).value || s.to;
+  if (!validD(till)) { b.innerHTML = '<div class="msg err">Pending-till date must be DD.MM.YYYY.</div>'; return; }
+  var from = d2i(s.from), tI = d2i(till);
+  if (tI < from) { b.innerHTML = '<div class="msg err">Pending-till date is before the From date.</div>'; return; }
+  b.innerHTML = 'Loading...';
+  var tk = (sirRun.tk = (sirRun.tk || 0) + 1);
+  sirCfgLoad().then(function (cfg) {
+    if (!cfg) { b.innerHTML = '<div class="msg info">The SIR Google Sheet is not linked yet. ' + (ME.role === 'admin' ? 'Open the Admin tab and press the SIR button at the top.' : 'Ask your Admin to link it (Admin tab &gt; SIR).') + '</div>'; return; }
+    return Promise.all([rpc('sir_prs_json', { p_from: from, p_to: tI }), sirLoadSheet(cfg, force)]).then(function (r) {
+      if (tk !== sirRun.tk || !$('sirbody')) return;
+      sirDraw(s, r[0] || [], r[1].set, till);
+    });
+  }).catch(function (er) { if (tk === sirRun.tk && $('sirbody')) $('sirbody').innerHTML = '<div class="msg err">' + esc(er.message) + '</div>'; });
+}
+function sirDraw(s, prs, set, till) {
+  var W = s.ws.slice(), cs = [100, 160, 250, 400, 630, 1000];
+  prs.forEach(function (r) { if (cs.indexOf(+r[2]) < 0) cs.push(+r[2]); }); cs.sort(function (a, b) { return a - b; });
+  var A = {}, D = {};                // [cap][ws] counts
+  cs.forEach(function (c) { A[c] = {}; D[c] = {}; W.forEach(function (w) { A[c][w] = 0; D[c][w] = 0; }); });
+  prs.forEach(function (r) { var w = r[0], c = +r[2]; if (!A[c] || A[c][w] == null) return; A[c][w]++; if (set[sirNorm(r[3])]) D[c][w]++; });
+  var nW = W.length, multi = nW > 1;
+  function z(v) { return v ? v : '<span class="z">0</span>'; }
+  var h = '<div class="wrap tbl11d capt"><table><thead><tr><th class="l" rowspan="2">CAPACITY (KVA)</th><th class="g1" colspan="' + (nW + 1) + '">PR RAISED</th><th class="g2" colspan="' + (nW + 1) + '">SIR DONE</th><th class="g1" colspan="' + (nW + 1) + '">SIR PENDING</th></tr><tr>';
+  for (var g = 0; g < 3; g++) { W.forEach(function (w) { h += '<th>' + esc(w) + '</th>'; }); h += '<th>TOTAL</th>'; }
+  h += '</tr></thead><tbody>';
+  var T = [W.map(function () { return 0; }), W.map(function () { return 0; }), W.map(function () { return 0; })];
+  cs.forEach(function (c) {
+    var row = '<td class="l"><b>' + c + '</b></td>', tot = [0, 0, 0];
+    for (var g = 0; g < 3; g++) {
+      W.forEach(function (w, i) { var v = g === 0 ? A[c][w] : g === 1 ? D[c][w] : A[c][w] - D[c][w]; tot[g] += v; T[g][i] += v; row += '<td' + (i === 0 ? ' class="gs"' : '') + '>' + z(v) + '</td>'; });
+      row += '<td class="sub"><b>' + z(tot[g]) + '</b></td>';
+    }
+    if (tot[0]) h += '<tr>' + row + '</tr>';
+  });
+  var tr = '<td class="l">TOTAL</td>', all = [0, 0, 0];
+  for (var g2 = 0; g2 < 3; g2++) { T[g2].forEach(function (v) { all[g2] += v; tr += '<td>' + z(v) + '</td>'; }); tr += '<td>' + z(all[g2]) + '</td>'; }
+  h += '<tr class="t">' + tr + '</tr></tbody></table></div>';
+  var pct = all[0] ? Math.round(all[1] * 100 / all[0]) : 0;
+  h = '<div class="muted" style="margin-bottom:6px">PR raised ' + esc(s.from) + ' to ' + esc(till) + ': <b>' + all[0] + '</b> &middot; SIR done: <b>' + all[1] + '</b> (' + pct + '%) &middot; SIR pending: <b>' + all[2] + '</b></div>' + h;
+  $('sirbody').className = ''; $('sirbody').innerHTML = h;
+}
 
 </script>
 <script>if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(function () {});</script>

@@ -2706,3 +2706,54 @@ begin
 end $$;
 
 notify pgrst, 'reload schema';
+
+-- STEP 47 : SIR (Site Inspection Report) - link the Google Sheet where the SIR form saves its data.
+-- Run after the earlier steps.  The Admin of a division stores ONE link (a Google Sheet "Publish to web" CSV link) and the heading of the column
+-- that holds the Indent / PR number.  The app reads that sheet in the browser and counts a 100 KVA & above PR as "SIR done" when its number is found.
+-- Nothing existing is changed.
+create table if not exists public.sir_cfg (
+  org_division text primary key,
+  url text not null check (url ~ '^https://docs\.google\.com/spreadsheets/' and length(url) <= 700),
+  col text not null default 'INDENT NO' check (length(btrim(col)) between 1 and 60),
+  by_login text, at timestamptz not null default now()
+);
+alter table public.sir_cfg enable row level security;
+revoke all on public.sir_cfg from public, anon, authenticated;
+
+-- the link(s) of the divisions the caller works in: [{division, url, col}]
+create or replace function public.sir_cfg_get() returns jsonb
+language sql stable security definer set search_path = public as $$
+  select coalesce(jsonb_agg(jsonb_build_object('division', c.org_division, 'url', c.url, 'col', c.col)), '[]'::jsonb)
+    from public.sir_cfg c
+   where c.org_division in (select w.org_division from public.workshops w where w.name = any (coalesce(public.my_workshops(), '{}')))
+$$;
+
+-- the Admin saves / removes the link of his division (empty url = remove)
+create or replace function public.sir_cfg_set(p_url text, p_col text) returns text
+language plpgsql security definer set search_path = public as $$
+declare c public.profiles := public.tf_caller(); u text := btrim(coalesce(p_url, '')); k text := btrim(coalesce(p_col, ''));
+begin
+  if c.user_id is null or c.role <> 'admin' or not c.active or c.org_division is null then raise exception 'Only the Admin of the division can link the SIR sheet.'; end if;
+  if u = '' then delete from public.sir_cfg where org_division = c.org_division; return 'removed'; end if;
+  if u !~ '^https://docs\.google\.com/spreadsheets/' then raise exception 'This is not a Google Sheet link. Use the link you get from File > Share > Publish to web.'; end if;
+  if length(u) > 700 then raise exception 'The link is too long.'; end if;
+  if k = '' then k := 'INDENT NO'; end if;
+  if length(k) > 60 then raise exception 'The column heading is too long.'; end if;
+  insert into public.sir_cfg(org_division, url, col, by_login, at) values (c.org_division, u, k, c.login_id, now())
+    on conflict (org_division) do update set url = excluded.url, col = excluded.col, by_login = excluded.by_login, at = now();
+  return 'saved';
+end $$;
+
+-- the 100 KVA & above PRs of the caller's workshops raised between two dates: [workshop, division, capacity, pr_no, pr_date]
+-- (wrong / duplicate PRs and rows without a PR date are not counted, like the Summary)
+create or replace function public.sir_prs_json(p_from date, p_to date) returns jsonb
+language sql stable security definer set search_path = public as $$
+  select coalesce(jsonb_agg(jsonb_build_array(d.workshop, w.org_division, d.capacity, d.pr_no, to_char(d.pr_date, 'YYYY-MM-DD')) order by d.pr_date, d.pr_no), '[]'::jsonb)
+    from (select * from public.data
+           where workshop = any (coalesce(public.my_workshops(), '{}')) and capacity >= 100 and pr_date between p_from and p_to
+             and not public.is_dup(firm) limit 20000) d
+    join public.workshops w on w.name = d.workshop
+$$;
+revoke all on function public.sir_cfg_get(), public.sir_cfg_set(text, text), public.sir_prs_json(date, date) from public, anon;
+grant execute on function public.sir_cfg_get(), public.sir_cfg_set(text, text), public.sir_prs_json(date, date) to authenticated;
+notify pgrst, 'reload schema';
