@@ -2757,3 +2757,61 @@ $$;
 revoke all on function public.sir_cfg_get(), public.sir_cfg_set(text, text), public.sir_prs_json(date, date) from public, anon;
 grant execute on function public.sir_cfg_get(), public.sir_cfg_set(text, text), public.sir_prs_json(date, date) to authenticated;
 notify pgrst, 'reload schema';
+
+-- STEP 48 : (a) a division name with two spaces inside ("EWD  AZAMGARH") is the SAME division as "EWD AZAMGARH" - everywhere
+--           (b) the Pending SIR numbers open the list of those PRs
+-- Run after step 47.  Safe to run again.
+
+-- (a) one spelling of every division name: spaces trimmed and a run of spaces / tabs becomes a single space
+create or replace function public.tf_sp(t text) returns text language sql immutable as
+  $$ select nullif(btrim(regexp_replace(coalesce(t, ''), '\s+', ' ', 'g')), '') $$;
+
+create or replace function public.tf_trg_div_org() returns trigger language plpgsql as
+$$ begin new.org_division := public.tf_sp(new.org_division); return new; end $$;
+create or replace function public.tf_trg_div_data() returns trigger language plpgsql as
+$$ begin if new.division is not null then new.division := coalesce(public.tf_sp(new.division), ''); end if; return new; end $$;
+create or replace function public.tf_trg_div_map() returns trigger language plpgsql as
+$$ begin new.division := coalesce(public.tf_sp(new.division), new.division); new.circle := coalesce(public.tf_sp(new.circle), new.circle); return new; end $$;
+
+drop trigger if exists tf_div_ws on public.workshops;
+create trigger tf_div_ws before insert or update of org_division on public.workshops for each row execute function public.tf_trg_div_org();
+drop trigger if exists tf_div_pr on public.profiles;
+create trigger tf_div_pr before insert or update of org_division on public.profiles for each row execute function public.tf_trg_div_org();
+drop trigger if exists tf_div_data on public.data;
+create trigger tf_div_data before insert or update of division on public.data for each row execute function public.tf_trg_div_data();
+drop trigger if exists tf_div_map on public.divmap;
+create trigger tf_div_map before insert or update of division, circle on public.divmap for each row execute function public.tf_trg_div_map();
+
+-- clean what is already there (only rows that really change)
+update public.workshops set org_division = public.tf_sp(org_division) where org_division is distinct from public.tf_sp(org_division);
+update public.profiles  set org_division = public.tf_sp(org_division) where org_division is distinct from public.tf_sp(org_division);
+update public.divmap    set division = public.tf_sp(division), circle = public.tf_sp(circle)
+ where division is distinct from public.tf_sp(division) or circle is distinct from public.tf_sp(circle);
+update public.data      set division = coalesce(public.tf_sp(division), '')
+ where division is not null and division is distinct from coalesce(public.tf_sp(division), '');
+-- (the SIR link and the installed-count tables use the division name as a key: merge the ones that were written with extra spaces)
+update public.installed i set org_division = public.tf_sp(i.org_division)
+ where i.org_division is distinct from public.tf_sp(i.org_division)
+   and not exists (select 1 from public.installed j where j.org_division = public.tf_sp(i.org_division) and j.div_key = i.div_key and j.yr = i.yr);
+delete from public.installed where org_division is distinct from public.tf_sp(org_division);
+update public.sir_cfg s set org_division = public.tf_sp(s.org_division)
+ where s.org_division is distinct from public.tf_sp(s.org_division) and not exists (select 1 from public.sir_cfg x where x.org_division = public.tf_sp(s.org_division));
+delete from public.sir_cfg where org_division is distinct from public.tf_sp(org_division);
+
+-- (b) the PRs behind a SIR PENDING number: same row shape as the other lists
+create or replace function public.sir_rows_json(p_ws text, p_caps int[], p_prs text[], p_limit int default 300, p_offset int default 0)
+returns jsonb language sql stable security invoker set search_path = public as
+$$
+  with h as (
+    select d.* from public.data d
+     where (p_ws is null or d.workshop = p_ws) and (p_caps is null or coalesce(d.capacity, 0) = any (p_caps))
+       and d.pr_no = any (coalesce(p_prs, '{}')) and not public.is_dup(d.firm)
+  ), top as (
+    select * from h order by coalesce(pr_date, date '1900-01-01'), pr_no collate "C" limit least(greatest(p_limit, 1), 2000) offset greatest(p_offset, 0)
+  )
+  select jsonb_build_object('total', (select count(*) from h),
+    'rows', coalesce((select jsonb_agg(public.row20(t) || to_jsonb((select case when public.can_edit_rows() then 1 else 0 end)) order by coalesce(t.pr_date, date '1900-01-01'), t.pr_no collate "C") from top t), '[]'::jsonb))
+$$;
+revoke all on function public.sir_rows_json(text, int[], text[], int, int) from public, anon;
+grant execute on function public.sir_rows_json(text, int[], text[], int, int) to authenticated;
+notify pgrst, 'reload schema';

@@ -1919,6 +1919,7 @@ nav button#tmr{margin-top:auto}
  #mrdt td.ed input{max-width:62%}
  .mkt th,.mkt td{padding:4px 3px;font-size:11px}.mkt input{min-width:46px;padding:4px 2px}
 }
+.gc.sirD input{color:#0f7a4e!important;font-weight:700}.gc.sirP input{color:#b45309!important;font-weight:700}
 </style>
 </head>
 <body class="on-home">
@@ -2412,10 +2413,10 @@ function enter(user) {
       return SB.rpc('first_admin_open').then(function (o) { if (o && o.data === true) { ttFirstAdmin(user); return; } return SB.auth.signOut().then(function () { showLogin('This ID is not active. Please contact your Admin.'); }); });
     }
     if (r.error || !p || !p.active) { return SB.auth.signOut().then(function () { showLogin(r.error ? friendly(r.error) : 'This ID is not active. Please contact your Admin.'); }); }
-    ME = { id: user.id, login: p.login_id, name: p.display || p.login_id, role: p.role, div: p.org_division, scope: p.scope || [], edit: !!p.can_edit, must: !!p.must_change, tabs: p.tabs || null };
+    ME = { id: user.id, login: p.login_id, name: p.display || p.login_id, role: p.role, div: sp(p.org_division), scope: p.scope || [], edit: !!p.can_edit, must: !!p.must_change, tabs: p.tabs || null };
     return SB.from('workshops').select('name,org_division').order('name').then(function (w) {
       return structLoad().then(function () {
-      WSDIV = {}; (w.data || []).forEach(function (x) { WSDIV[x.name] = x.org_division; });
+      WSDIV = {}; (w.data || []).forEach(function (x) { WSDIV[x.name] = sp(x.org_division); });
       WSL = (w.data || []).map(function (x) { return x.name; });
       if (ME.role === 'je' && ME.scope.length) WSL = WSL.filter(function (x) { return ME.scope.indexOf(x) >= 0; });
       $('who').textContent = ME.name + ' · ' + (ROLE[ME.role] || ME.role) + (ME.div ? ' · ' + ME.div : '');
@@ -2524,6 +2525,7 @@ var DIVORD = {
   MAU: [['E.E. E.D.D.-I Mau'], ['E.E. E.D.D.-II Mau'], ['E.E. E.D.D.-III Ghosi Mau']],
   BALLIA: [['E.E. E.D.D.-I Ballia'], ['E.E. E.D.D.-II Ballia'], ['E.E. E.D.D. Banshdih Ballia'], ['E.E. E.D.D-IV Bairiya Ballia']]
 };
+function sp(t) { return String(t == null ? '' : t).replace(/\s+/g, ' ').trim(); }      // one space between words, none at the ends (a division written with 2 spaces is the same division)
 function nk(t) { return String(t || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); }
 function buildSummary(raw, p) {
   var WS = WSL, nW = WS.length, agg = raw.agg || [], pend = raw.pending || [];
@@ -2762,7 +2764,7 @@ $('spr').onclick = function () {
 };
 
 /* =====================  LIST (opened by a click on a number)  ===================== */
-var LSEQ = 0;
+var LSEQ = 0, SIRPEND = {};
 function td(lbl, val, cls) { return '<td' + (cls ? ' class="' + cls + '"' : '') + ' data-l="' + lbl + '">' + val + '</td>'; }
 function person(n, m) { return esc(n || '') + (m ? '<br><a href="tel:' + esc(m) + '" class="tel">' + esc(m) + '</a>' : ''); }
 function openList(spec) {
@@ -2772,10 +2774,10 @@ function openList(spec) {
 function fetchList(more) {
   var spec = LSPEC, sq = ++LSEQ, b = $('lmore');
   msg('lmsg2', '<span class="sp" style="border-color:#3b5bdb55;border-top-color:#3b5bdb"></span>Loading...', 'info');
-  rpc('list_json', {
+  (spec.sirk ? rpc('sir_rows_json', { p_ws: spec.ws || null, p_caps: spec.caps || null, p_prs: (SIRPEND[spec.sirk] || []).slice(), p_limit: 300, p_offset: more ? LROWS.length : 0 }) : rpc('list_json', {
     p_metric: spec.metric, p_date: d2i(spec.date), p_from: d2i(spec.from), p_to: d2i(spec.to), p_ws: spec.ws || null, p_divs: spec.divs || null, p_subs: spec.subs || null,
     p_caps: spec.caps || null, p_prd: d2i(spec.prd), p_limit: 300, p_offset: more ? LROWS.length : 0, p_prd_from: d2i(spec.prdFrom), p_prd_to: d2i(spec.prdTo)
-  }).then(function (r) {
+  })).then(function (r) {
     if (sq !== LSEQ) return;
     LROWS = more ? LROWS.concat(r.rows) : r.rows; LIST = r; msg('lmsg2', '');
     b.classList.toggle('hide', LROWS.length >= r.total); b.textContent = 'Load ' + Math.min(300, r.total - LROWS.length) + ' more (' + LROWS.length + ' of ' + r.total + ' loaded)';
@@ -2871,7 +2873,7 @@ function mlabel(t) {            // headings -> data-l of every cell (phones show
 function newRow() { var c = blank20(); c[0] = oneWs(); c[9] = $('dd').value.trim(); return { o: null, k: null, c: c, dirty: false, bad: false, ver: 0, isNew: true, keep: true }; }
 var DUP_AFTER = [13, 14, 15, 16, 18];       // issue date, driver name, driver mobile, replacement date, return date
 function dupFix(c) { if (isDupFirm(c[12])) { c[13] = ''; c[14] = 'JE(D)'; c[15] = ''; c[16] = ''; c[18] = ''; } return c; }
-function rowLocked(r, i) { return !canWrite() || (!r.isNew && i < EDIT_FROM) || (DUP_AFTER.indexOf(i) >= 0 && isDupFirm(r.c[12])); }
+function rowLocked(r, i) { return i === 20 || !canWrite() || (!r.isNew && i < EDIT_FROM) || (DUP_AFTER.indexOf(i) >= 0 && isDupFirm(r.c[12])); }
 var BLANKS = 20;
 function isBlankNew(r) { return r.isNew && !r.dirty && !r.k; }
 function padBlank() {      // empty rows to type or paste into, like an Excel sheet
@@ -2881,6 +2883,7 @@ function padBlank() {      // empty rows to type or paste into, like an Excel sh
   DROWS = DROWS.concat(add);          // the empty rows are BELOW the data (like the empty part of an Excel sheet)
 }
 function drawData() {
+  if (typeof sirDataFill === 'function') sirDataFill();
   padBlank();
   var ws = $('dws').value, q = $('dq').value.trim().toLowerCase(), vis = [];
   DROWS.forEach(function (r, ri) { if (ws && r.c[0] !== ws && !r.isNew) return; if (q && r.c.join(' ').toLowerCase().indexOf(q) < 0 && !r.isNew) return; vis.push(ri); });
@@ -2890,7 +2893,7 @@ function drawData() {
     var r = DROWS[ri];
     h += '<tr data-r="' + ri + '" class="' + (r.dirty ? 'dirty ' : '') + (r.bad ? 'bad ' : '') + (r.sel ? 'sel' : '') + '"><td class="ix rn" title="Click to select this row (Shift = range)">' + (n + 1) + '</td>' + DCOL.map(function (c) {
       var i = c[0], lk = rowLocked(r, i), kind = c[2] || '';
-      return '<td class="gc' + (lk ? ' lk' : '') + '"><input type="text" data-i="' + i + '" value="' + esc(r.c[i]) + '"' + (lk ? ' readonly tabindex="-1"' : '') + (kind === 'date' ? ' inputmode="numeric" maxlength="10" placeholder="DD.MM.YYYY"' : kind === 'mob' ? ' inputmode="numeric"' : kind === 'ws' ? ' list="wsdl"' : i === 12 ? ' list="frdl"' : i === 14 ? ' list="drdl"' : '') + (i === 8 || i === 9 ? ' class="b"' : '') + '></td>';
+      return '<td class="gc' + (lk ? ' lk' : '') + (i === 20 ? (r.c[20] === 'DONE' ? ' sirD' : r.c[20] ? ' sirP' : '') : '') + '"><input type="text" data-i="' + i + '" value="' + esc(r.c[i]) + '"' + (lk ? ' readonly tabindex="-1"' : '') + (kind === 'date' ? ' inputmode="numeric" maxlength="10" placeholder="DD.MM.YYYY"' : kind === 'mob' ? ' inputmode="numeric"' : kind === 'ws' ? ' list="wsdl"' : i === 12 ? ' list="frdl"' : i === 14 ? ' list="drdl"' : '') + (i === 8 || i === 9 ? ' class="b"' : '') + '></td>';
     }).join('') + '<td class="ix">' + (canWrite() ? '<button class="rx" title="Delete this row">&#10005;</button>' : '') + '</td></tr>';
   });
   $('dt').innerHTML = h + '</tbody>';
@@ -2934,11 +2937,12 @@ function loadData(force) {
     if (seq !== DSEQ) return;
     DCAN = !!r.canEdit; DTOTAL = r.total; DLOADED = all ? 'ALL' : d;
     DROWS = r.rows.map(function (a) { return { o: a.slice(0, 20), k: [a[0], a[8]], c: a.slice(0, 20), dirty: false, bad: false, ver: 0, isNew: false }; });
-    DSHOW = 400; dstat(''); drawData();
+    DSHOW = 400; dstat('');
+    return (typeof sirDataPrep === 'function' ? sirDataPrep(force) : Promise.resolve()).then(function () { if (seq === DSEQ) drawData(); });
   }).catch(function (e) { if (seq !== DSEQ) return; dstat(''); msg('dmsg', esc(e.message), 'err'); });
 }
 function fixRow(c) {     // the values the way they are sent: dates as DD.MM.YYYY, PR no without ".0"
-  var r = c.slice(); DATE_IDX.forEach(function (i) { r[i] = normDate(r[i]); }); return r;
+  var r = c.slice(0, 20); DATE_IDX.forEach(function (i) { r[i] = normDate(r[i]); }); return r;
 }
 function newReady(c) { return !!(c[0] && c[1] && c[5] && c[8] && c[9]); }      // a NEW row is saved by itself only when these are filled (Save button: any time)
 function flushData(force) {
@@ -3309,11 +3313,11 @@ var ADM = [], ADM_EDIT = null;
 function roleName(r) { return { creator: 'App Creator', discom: 'DISCOM head', admin: 'Admin', je: 'User' }[r] || r; }
 function reloadWs() {
   return SB.from('workshops').select('name,org_division').order('name').then(function (w) {
-    WSDIV = {}; (w.data || []).forEach(function (x) { WSDIV[x.name] = x.org_division; }); WSL = (w.data || []).map(function (x) { return x.name; });
+    WSDIV = {}; (w.data || []).forEach(function (x) { WSDIV[x.name] = sp(x.org_division); }); WSL = (w.data || []).map(function (x) { return x.name; });
     fillWs(); cclear();
   });
 }
-function divOf() { return ME.role === 'admin' ? ME.div : ($('nv').value || '').trim(); }
+function divOf() { return ME.role === 'admin' ? ME.div : sp($('nv').value); }
 function wsOfDiv(d) { return Object.keys(WSDIV).filter(function (w) { return WSDIV[w] === d; }); }
 function chkHtml(items, checked, cls) {
   return items.map(function (x) { var v = x[0], t = x[1]; return '<label class="wck"><input type="checkbox" value="' + esc(v) + '"' + (checked.indexOf(v) >= 0 ? ' checked' : '') + '> ' + esc(t) + '</label>'; }).join('');
@@ -3351,7 +3355,7 @@ $('wlt').addEventListener('click', function (e) {
 $('wadd').onclick = function () {
   var n = $('wn').value.trim(); if (!n) return msg('amsg', 'Type the workshop name.', 'err');
   var b = $('wadd'); busy(b, true, 'Adding...');
-  rpc('ws_add', { p_name: n, p_div: ME.role === 'admin' ? null : $('wd').value.trim() }).then(function () { $('wn').value = ''; return reloadWs(); }).then(admLoad)
+  rpc('ws_add', { p_name: n, p_div: ME.role === 'admin' ? null : sp($('wd').value) }).then(function () { $('wn').value = ''; return reloadWs(); }).then(admLoad)
     .then(function () { busy(b, false); msg('amsg', 'Workshop added.', 'info'); }).catch(function (er) { busy(b, false); msg('amsg', esc(er.message), 'err'); });
 };
 function newUserForm() {
@@ -3402,7 +3406,7 @@ function admUsersDraw() {
     if (q && (u.login_id + ' ' + (u.display || '') + ' ' + (u.scope || []).join(' ')).toLowerCase().indexOf(q) < 0) return;
     var me = u.user_id === ME.id, mine = !me && u.role !== 'creator';
     var tabs = u.role === 'discom' ? 'Summary' : (u.tabs ? u.tabs.map(function (t) { return t === 'mr' ? 'M&R' : (DRV_ALL_TABS.filter(function (x) { return x[0] === t; })[0] || [0, t])[1]; }).join(', ') : 'All');
-    h += '<tr><td><b>' + esc(u.login_id) + '</b></td><td>' + esc(u.display || '') + '</td><td>' + roleName(u.role) + '</td><td>' + esc(u.org_division || '') + '</td><td>' + esc(u.role === 'je' ? (u.scope || []).join(', ') : (u.role === 'admin' ? 'All of division' : 'All')) + '</td><td>' + (u.role === 'discom' || u.role === 'creator' ? 'View only' : u.can_edit ? 'Can edit' : 'View only') + '</td><td>' + esc(tabs) + '</td><td>' + (u.active ? '<span class="ok">Active</span>' : '<span class="bad">Inactive</span>') + '</td><td style="white-space:nowrap">' +
+    h += '<tr><td><b>' + esc(u.login_id) + '</b></td><td>' + esc(u.display || '') + '</td><td>' + roleName(u.role) + '</td><td>' + esc(sp(u.org_division)) + '</td><td>' + esc(u.role === 'je' ? (u.scope || []).join(', ') : (u.role === 'admin' ? 'All of division' : 'All')) + '</td><td>' + (u.role === 'discom' || u.role === 'creator' ? 'View only' : u.can_edit ? 'Can edit' : 'View only') + '</td><td>' + esc(tabs) + '</td><td>' + (u.active ? '<span class="ok">Active</span>' : '<span class="bad">Inactive</span>') + '</td><td style="white-space:nowrap">' +
       (mine ? (u.role !== 'discom' ? '<button class="btn sec sm" data-e="' + i + '">Edit</button> ' : '') + '<button class="btn sec sm" data-r="' + i + '">Reset password</button> <button class="btn sec sm" data-a="' + i + '">' + (u.active ? 'Deactivate' : 'Activate') + '</button> <button class="btn sec sm" data-x="' + i + '">Delete</button>' : '') + '</td></tr>';
   });
   $('aut').innerHTML = h + '</tbody>'; mlabel($('aut'));
@@ -3429,7 +3433,7 @@ $('aut').addEventListener('click', function (e) {
 function openUe(u) {
   ADM_EDIT = u; $('uetitle').textContent = 'Edit ' + u.login_id; $('uen').value = u.display || '';
   $('uesw').classList.toggle('hide', u.role !== 'je');
-  var d = u.org_division || ME.div; $('ues').innerHTML = chkHtml(wsOfDiv(d).map(function (w) { return [w, w]; }), u.scope || []);
+  var d = sp(u.org_division) || ME.div; $('ues').innerHTML = chkHtml(wsOfDiv(d).map(function (w) { return [w, w]; }), u.scope || []);
   $('uee').value = u.can_edit ? '1' : '0';
   $('uet').innerHTML = chkHtml(DRV_ALL_TABS, u.tabs || DRV_ALL_TABS.map(function (t) { return t[0]; }));
   $('uemr').checked = !!(u.tabs && u.tabs.indexOf('mr') >= 0); $('uemrw').classList.toggle('hide', u.role !== 'je');
@@ -4531,7 +4535,7 @@ document.addEventListener('click', function (e) {
       w.circles.forEach(function (c, ci) {
         var ds = w.divs.filter(function (d) { return d.cid === c.id && d.name.trim(); });
         if (ds.length && !c.name.trim()) bad = 'Give a name to every circle that has divisions (' + wn + ').';
-        ds.forEach(function (d, k) { rows.push({ ws: wn, circle: c.name.trim(), cs: c.cs.trim(), csort: ci + 1, div: d.name.trim(), short: d.short.trim(), sort: k + 1, old: d.old || '' }); });
+        ds.forEach(function (d, k) { rows.push({ ws: wn, circle: sp(c.name), cs: c.cs.trim(), csort: ci + 1, div: sp(d.name), short: d.short.trim(), sort: k + 1, old: d.old || '' }); });
       });
     });
     if (bad) return stMsg(bad, 'err');
@@ -5199,7 +5203,7 @@ document.addEventListener('paste', function (e) {
 });
 
 /* ===== SIR (Site Inspection Report) : link the Google Sheet of the SIR form, count 100 KVA & above PRs with / without SIR ===== */
-var SIRC = null, SIRX = { key: '', t: 0, set: null }, SIRTILL = '', SIRTO = '';
+var SIRC = null, SIRX = { key: '', t: 0, set: null }, SIRTILL = '', SIRFROM = '', SIRTO = '';
 function csvRows(t) {          // small CSV parser (quotes, commas, line breaks)
   var r = [], row = [], f = '', q = false, i, c;
   for (i = 0; i < t.length; i++) {
@@ -5221,6 +5225,11 @@ function sirCsvUrl(u) {        // any Google Sheet link -> a CSV link
   return 'https://docs.google.com/spreadsheets/d/' + m[1] + '/gviz/tq?tqx=out:csv' + (g ? '&gid=' + g[1] : '');
 }
 function sirNorm(v) { v = String(v == null ? '' : v).toUpperCase().replace(/\s+/g, ''); return /^\d+$/.test(v) ? v.replace(/^0+(?=\d)/, '') : v; }
+function sirKeys(cell) {        // the PR number(s) written in one sheet cell: "8101654095", "8,101,654,095", "PR-8101654095", "8101654095.0", "8101654095 / 8101654100"
+  var s = String(cell == null ? '' : cell).replace(/(\d),(?=\d{3}(\D|$))/g, '$1'), m = s.match(/\d{7,}/g);
+  if (m) return m.map(function (x) { return x.replace(/^0+(?=\d)/, ''); });
+  var v = sirNorm(cell); return v ? [v] : [];
+}
 function sirHd(v) { return String(v || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); }
 function sirLoadSheet(cfg, force) {   // -> Promise {set, n}
   var key = cfg.url + '|' + cfg.col;
@@ -5233,9 +5242,9 @@ function sirLoadSheet(cfg, force) {   // -> Promise {set, n}
     var rows = csvRows(t), want = sirHd(cfg.col), hr = -1, ci = -1, i, j;
     for (i = 0; i < Math.min(rows.length, 15) && ci < 0; i++) for (j = 0; j < rows[i].length; j++) if (sirHd(rows[i][j]) === want) { hr = i; ci = j; break; }
     if (ci < 0) throw new Error('Column "' + cfg.col + '" was not found in the sheet heading. Check the column name in Admin > SIR.');
-    var set = {}, n = 0;
-    for (i = hr + 1; i < rows.length; i++) { var v = sirNorm(rows[i][ci]); if (v) { set[v] = 1; n++; } }
-    SIRX = { key: key, t: Date.now(), set: { set: set, n: n } };
+    var set = {}, n = 0, blank = 0, tot = 0;
+    for (i = hr + 1; i < rows.length; i++) { if (!rows[i].join('').trim()) continue; tot++; var ks = sirKeys(rows[i][ci]); if (ks.length) ks.forEach(function (v) { if (!set[v]) n++; set[v] = 1; }); else blank++; }
+    SIRX = { key: key, t: Date.now(), set: { set: set, n: n, rows: tot, blank: blank } };
     return SIRX.set;
   });
 }
@@ -5264,16 +5273,16 @@ $('sirtest').onclick = sirTest;
 
 /* ---- SIR Summary card (below the capacity table on the Summary screen) ---- */
 function sirCard(s) {
-  return '<div class="card k-cap k-sir" id="sircard"><h3>SIR Summary <span class="muted" style="text-transform:none">(100 KVA &amp; above &middot; PR raised ' + esc(s.from) + ' to the date below)</span></h3>' +
-    '<div class="bar sirbar" style="align-items:flex-end;margin-bottom:8px"><div><label>Pending till</label><div class="dt"><input type="text" class="dtx" id="sirtill" inputmode="numeric" placeholder="DD.MM.YYYY" value="' + esc(SIRTILL || s.to) + '"><span class="calw">&#128197;<input type="date" data-c="sirtill"></span></div></div><button class="btn" id="sirgo">Show</button><button class="btn" id="sirre" title="Read the Google Sheet again">Refresh</button></div>' +
+  return '<div class="card k-cap k-sir" id="sircard"><h3>SIR Summary <span class="muted" style="text-transform:none">(100 KVA &amp; above &middot; PRs raised between the two dates below)</span></h3>' +
+    '<div class="bar sirbar" style="align-items:flex-end;margin-bottom:8px"><div><label>PR from</label><div class="dt"><input type="text" class="dtx" id="sirfrom" inputmode="numeric" placeholder="DD.MM.YYYY" value="' + esc(SIRFROM || s.from) + '"><span class="calw">&#128197;<input type="date" data-c="sirfrom"></span></div></div><div><label>Pending till</label><div class="dt"><input type="text" class="dtx" id="sirtill" inputmode="numeric" placeholder="DD.MM.YYYY" value="' + esc(SIRTILL || s.to) + '"><span class="calw">&#128197;<input type="date" data-c="sirtill"></span></div></div><button class="btn" id="sirgo">Show</button><button class="btn" id="sirre" title="Read the Google Sheet again">Refresh</button></div>' +
     '<div id="sirbody" class="muted" style="padding:6px 2px">Loading...</div></div>';
 }
 function sirAfter(s) {
   var o = $('sout'); if (!o) return;
-  if (SIRTO !== s.to) { SIRTILL = ''; SIRTO = s.to; }      // a new Summary To date resets the pending-till date
+  if (SIRTO !== s.from + '|' + s.to) { SIRTILL = ''; SIRFROM = ''; SIRTO = s.from + '|' + s.to; }      // a new Summary To date resets the pending-till date
   o.insertAdjacentHTML('beforeend', sirCard(s));
-  SIRTILL = $('sirtill').value;
-  $('sirgo').onclick = function () { SIRTILL = $('sirtill').value.trim(); sirRun(s, false); };
+  SIRTILL = $('sirtill').value; SIRFROM = $('sirfrom').value;
+  $('sirgo').onclick = function () { SIRTILL = $('sirtill').value.trim(); SIRFROM = $('sirfrom').value.trim(); sirRun(s, false); };
   $('sirre').onclick = function () { sirRun(s, true); };
   sirRun(s, false);
 }
@@ -5281,25 +5290,31 @@ function sirRun(s, force) {
   var b = $('sirbody'); if (!b) return;
   var till = ($('sirtill') || {}).value || s.to;
   if (!validD(till)) { b.innerHTML = '<div class="msg err">Pending-till date must be DD.MM.YYYY.</div>'; return; }
-  var from = d2i(s.from), tI = d2i(till);
-  if (tI < from) { b.innerHTML = '<div class="msg err">Pending-till date is before the From date.</div>'; return; }
+  var fromS = ($('sirfrom') || {}).value || s.from;
+  if (!validD(fromS)) { b.innerHTML = '<div class="msg err">PR-from date must be DD.MM.YYYY.</div>'; return; }
+  var from = d2i(fromS), tI = d2i(till);
+  if (tI < from) { b.innerHTML = '<div class="msg err">Pending-till date is before the PR-from date.</div>'; return; }
   b.innerHTML = 'Loading...';
   var tk = (sirRun.tk = (sirRun.tk || 0) + 1);
   sirCfgLoad().then(function (cfg) {
     if (!cfg) { b.innerHTML = '<div class="msg info">The SIR Google Sheet is not linked yet. ' + (ME.role === 'admin' ? 'Open the Admin tab and press the SIR button at the top.' : 'Ask your Admin to link it (Admin tab &gt; SIR).') + '</div>'; return; }
-    return Promise.all([rpc('sir_prs_json', { p_from: from, p_to: tI }), sirLoadSheet(cfg, force)]).then(function (r) {
+    return Promise.all([rpc('sir_prs_json', { p_from: '2000-01-01', p_to: '2099-12-31' }), sirLoadSheet(cfg, force)]).then(function (r) {
       if (tk !== sirRun.tk || !$('sirbody')) return;
-      sirDraw(s, r[0] || [], r[1].set, till);
+      sirDraw(s, r[0] || [], r[1], fromS, till);
     });
   }).catch(function (er) { if (tk === sirRun.tk && $('sirbody')) $('sirbody').innerHTML = '<div class="msg err">' + esc(er.message) + '</div>'; });
 }
-function sirDraw(s, prs, set, till) {
+function sirDraw(s, allPrs, sh, fromS, till) {
+  var set = sh.set, from = d2i(fromS), tI = d2i(till), prs = allPrs.filter(function (r) { return r[4] >= from && r[4] <= tI; });
   var W = s.ws.slice(), cs = [100, 160, 250, 400, 630, 1000];
   prs.forEach(function (r) { if (cs.indexOf(+r[2]) < 0) cs.push(+r[2]); }); cs.sort(function (a, b) { return a - b; });
   var A = {}, D = {};                // [cap][ws] counts
   cs.forEach(function (c) { A[c] = {}; D[c] = {}; W.forEach(function (w) { A[c][w] = 0; D[c][w] = 0; }); });
   prs.forEach(function (r) { var w = r[0], c = +r[2]; if (!A[c] || A[c][w] == null) return; A[c][w]++; if (set[sirNorm(r[3])]) D[c][w]++; });
-  var nW = W.length, multi = nW > 1;
+  var nW = W.length, multi = nW > 1, PL = {};      // PL: pending PR numbers by 'workshop|capacity'
+  prs.forEach(function (r) { if (!set[sirNorm(r[3])]) { var c = +r[2]; [r[0] + '|' + c, r[0] + '|*', '*|' + c, '*|*'].forEach(function (k) { (PL[k] = PL[k] || []).push(r[3]); }); } });
+  SIRPEND = PL;
+  function pk(v, w, c) { var k = (w || '*') + '|' + (c || '*'); if (!v) return z(0); var sp0 = { sirk: k, t: 'SIR pending - ' + (w || 'all workshops') + (c ? ' - ' + c + ' kVA' : ' - 100 kVA & above') + ' (PR ' + fromS + ' to ' + till + ')' }; if (w) sp0.ws = w; if (c) sp0.caps = [c]; return LK(v, sp0, sp0.t); }
   function z(v) { return v ? v : '<span class="z">0</span>'; }
   var h = '<div class="wrap tbl11d capt"><table><thead><tr><th class="l" rowspan="2">CAPACITY (KVA)</th><th class="g1" colspan="' + (nW + 1) + '">PR RAISED</th><th class="g2" colspan="' + (nW + 1) + '">SIR DONE</th><th class="g1" colspan="' + (nW + 1) + '">SIR PENDING</th></tr><tr>';
   for (var g = 0; g < 3; g++) { W.forEach(function (w) { h += '<th>' + esc(w) + '</th>'; }); h += '<th>TOTAL</th>'; }
@@ -5308,17 +5323,45 @@ function sirDraw(s, prs, set, till) {
   cs.forEach(function (c) {
     var row = '<td class="l"><b>' + c + '</b></td>', tot = [0, 0, 0];
     for (var g = 0; g < 3; g++) {
-      W.forEach(function (w, i) { var v = g === 0 ? A[c][w] : g === 1 ? D[c][w] : A[c][w] - D[c][w]; tot[g] += v; T[g][i] += v; row += '<td' + (i === 0 ? ' class="gs"' : '') + '>' + z(v) + '</td>'; });
-      row += '<td class="sub"><b>' + z(tot[g]) + '</b></td>';
+      W.forEach(function (w, i) { var v = g === 0 ? A[c][w] : g === 1 ? D[c][w] : A[c][w] - D[c][w]; tot[g] += v; T[g][i] += v; row += '<td' + (i === 0 ? ' class="gs"' : '') + '>' + (g === 2 ? pk(v, w, c) : z(v)) + '</td>'; });
+      row += '<td class="sub"><b>' + (g === 2 ? pk(tot[g], '', c) : z(tot[g])) + '</b></td>';
     }
     if (tot[0]) h += '<tr>' + row + '</tr>';
   });
   var tr = '<td class="l">TOTAL</td>', all = [0, 0, 0];
-  for (var g2 = 0; g2 < 3; g2++) { T[g2].forEach(function (v) { all[g2] += v; tr += '<td>' + z(v) + '</td>'; }); tr += '<td>' + z(all[g2]) + '</td>'; }
+  for (var g2 = 0; g2 < 3; g2++) { T[g2].forEach(function (v, i) { all[g2] += v; tr += '<td>' + (g2 === 2 ? pk(v, W[i], 0) : z(v)) + '</td>'; }); tr += '<td>' + (g2 === 2 ? pk(all[g2], '', 0) : z(all[g2])) + '</td>'; }
   h += '<tr class="t">' + tr + '</tr></tbody></table></div>';
   var pct = all[0] ? Math.round(all[1] * 100 / all[0]) : 0;
-  h = '<div class="muted" style="margin-bottom:6px">PR raised ' + esc(s.from) + ' to ' + esc(till) + ': <b>' + all[0] + '</b> &middot; SIR done: <b>' + all[1] + '</b> (' + pct + '%) &middot; SIR pending: <b>' + all[2] + '</b></div>' + h;
+  h = '<div class="muted" style="margin-bottom:6px">PR raised ' + esc(fromS) + ' to ' + esc(till) + ': <b>' + all[0] + '</b> &middot; SIR done: <b>' + all[1] + '</b> (' + pct + '%) &middot; SIR pending: <b>' + (all[2] ? pk(all[2], '', 0) : 0) + '</b> <span class="muted">(click a pending number to see the PRs)</span></div>' + h;
+  // why the numbers differ from a lookup done by hand: where do the sheet's PR numbers fall?
+  var idx = {}; allPrs.forEach(function (r) { var k = sirNorm(r[3]); (idx[k] = idx[k] || []).push(r); });
+  var inR = 0, outR = 0, none = [];
+  Object.keys(set).forEach(function (k) { var m = idx[k]; if (!m) { none.push(k); return; } if (m.some(function (r) { return r[4] >= from && r[4] <= tI; })) inR++; else outR++; });
+  h += '<details class="muted" style="margin-top:8px;font-size:12px"><summary>How the sheet matched (check)</summary><div style="line-height:1.6;padding-top:4px">' +
+    'Sheet: ' + sh.rows + ' rows read, ' + sh.n + ' different PR numbers' + (sh.blank ? ', <b>' + sh.blank + ' rows with the column empty</b>' : '') + '.<br>' +
+    'Found among your 100 KVA &amp; above PRs: <b>' + (inR + outR) + '</b> &mdash; inside the dates above: <b>' + inR + '</b>' + (outR ? ', raised on other dates (change PR from / Pending till to see them): <b>' + outR + '</b>' : '') + '.<br>' +
+    'Not found among 100 KVA &amp; above PRs: <b>' + none.length + '</b> (smaller than 100 KVA, a workshop you cannot see, or the number is not in the Data Sheet)' + (none.length ? ': ' + none.slice(0, 12).map(esc).join(', ') + (none.length > 12 ? ' ...' : '') : '') + '.</div></details>';
   $('sirbody').className = ''; $('sirbody').innerHTML = h;
+}
+
+/* ---- Data Sheet: SIR column (DONE / PENDING) before REMARK, for 100 KVA & above, read from the linked Google Sheet ---- */
+var DCOL_BASE = null, SIRSET = null;
+function sirDataPrep(force) {
+  return sirCfgLoad().then(function (cfg) {
+    if (!cfg) { SIRSET = null; return; }
+    return sirLoadSheet(cfg, !!force).then(function (r) { SIRSET = r.set; });
+  }).catch(function (e) { SIRSET = null; try { msg('dmsg', 'SIR column not shown: ' + esc(e.message), 'info'); } catch (x) { } });
+}
+function sirDataFill() {
+  if (!DCOL_BASE) DCOL_BASE = DCOL.slice();
+  var on = !!SIRSET, has = DCOL.some(function (c) { return c[0] === 20; });
+  if (on && !has) { DCOL = DCOL_BASE.slice(); DCOL.splice(DCOL.length - 1, 0, [20, 'SIR', 'sir']); }
+  else if (!on && has) DCOL = DCOL_BASE.slice();
+  if (!on) { DROWS.forEach(function (r) { if (r.c.length > 20) r.c.length = 20; }); return; }
+  DROWS.forEach(function (r) {
+    var cap = parseInt(r.c[5], 10), pr = String(r.c[8] || '').trim();
+    r.c[20] = (cap >= 100 && pr && !(typeof isDupFirm === 'function' && isDupFirm(r.c[12]))) ? (SIRSET[sirNorm(pr)] ? 'DONE' : 'PENDING') : '';
+  });
 }
 
 </script>
