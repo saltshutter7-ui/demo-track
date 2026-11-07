@@ -2815,3 +2815,181 @@ $$;
 revoke all on function public.sir_rows_json(text, int[], text[], int, int) from public, anon;
 grant execute on function public.sir_rows_json(text, int[], text[], int, int) to authenticated;
 notify pgrst, 'reload schema';
+
+-- STEP 49 : (a) the Kitty REPAIR column comes from the Repair tab, day by day   (b) M&R "SCRAP" tab
+-- Run after steps 40..48.  Safe to run again.
+
+-- (a) KITTY REPAIR = the REPAIR block of the Repair tab (all firms added), per capacity; 250(AL) + 250(CU) = 250 ----------
+create or replace function public.rr_cap_n(p_ws text, p_day date, p_cap int) returns int
+language sql stable security definer set search_path = public as $$
+  select coalesce(sum(qty), 0)::int from public.rr_entry
+   where workshop = p_ws and day = p_day and block = 'REPAIR' and (cap = p_cap::text or (p_cap = 250 and cap in ('250AL', '250CU')))
+$$;
+revoke all on function public.rr_cap_n(text, date, int) from public, anon, authenticated;
+
+create or replace function public.kitty_sync_repair(p_ws text, p_day date) returns void
+language sql security definer set search_path = public as $$
+  insert into public.kitty_day(workshop, day, cap, repair, by_login, at)
+  select p_ws, p_day, c, public.rr_cap_n(p_ws, p_day, c), 'repair-tab', now() from unnest(array[10, 16, 25, 63, 100, 160, 250, 400, 630]) c
+  on conflict (workshop, day, cap) do update set repair = excluded.repair
+$$;
+revoke all on function public.kitty_sync_repair(text, date) from public, anon, authenticated;
+
+-- the kitty save no longer takes the repair figure (it is read from the Repair tab)
+create or replace function public.kitty_save(p_ws text, p_day date, p_rows jsonb) returns text
+language plpgsql security definer set search_path = public as $$
+declare e jsonb; c public.profiles := public.tf_caller(); bd date; n int := 0;
+begin
+  if not public.mr_edit_ok(p_ws) then raise exception 'You cannot change the kitty of this workshop.'; end if;
+  if p_day is null or p_day > current_date + 1 then raise exception 'Choose today or an earlier date.'; end if;
+  select max(day) into bd from public.kitty_base where workshop = p_ws and day <= p_day;
+  if bd is null then raise exception 'The Admin must first set the opening kitty and the unrepaired T/F (start date).'; end if;
+  for e in select * from jsonb_array_elements(coalesce(p_rows, '[]')) loop
+    if (e->>'cap')::int not in (10, 16, 25, 63, 100, 160, 250, 400, 630) then continue; end if;
+    if coalesce((e->>'to_other')::int, 0) < 0 or coalesce((e->>'from_other')::int, 0) < 0
+       or coalesce((e->>'to_other')::int, 0) > 100000 or coalesce((e->>'from_other')::int, 0) > 100000 then raise exception 'Numbers must be 0 or more.'; end if;
+    insert into public.kitty_day(workshop, day, cap, repair, to_other, from_other, by_login, at)
+      values (p_ws, p_day, (e->>'cap')::int, public.rr_cap_n(p_ws, p_day, (e->>'cap')::int), coalesce((e->>'to_other')::int, 0), coalesce((e->>'from_other')::int, 0), c.login_id, now())
+      on conflict (workshop, day, cap) do update set to_other = excluded.to_other, from_other = excluded.from_other, by_login = excluded.by_login, at = now();
+    n := n + 1;
+  end loop;
+  return 'saved ' || n;
+end $$;
+
+-- the Repair tab save also writes the kitty repair of that day
+create or replace function public.rr_save(p_ws text, p_day date, p_rows jsonb) returns text
+language plpgsql security definer set search_path = public as $$
+declare e jsonb; c public.profiles := public.tf_caller(); n int := 0; f text;
+begin
+  if not public.mr_edit_ok(p_ws) then raise exception 'You cannot change the figures of this workshop.'; end if;
+  if p_day is null or p_day > current_date + 1 then raise exception 'Choose today or an earlier date.'; end if;
+  delete from public.rr_entry where workshop = p_ws and day = p_day;
+  for e in select * from jsonb_array_elements(coalesce(p_rows, '[]')) loop
+    f := btrim(coalesce(e->>'firm', ''));
+    if f = '' then continue; end if;
+    if length(f) > 60 then raise exception 'Firm name is too long.'; end if;
+    if coalesce((e->>'qty')::int, 0) < 0 or coalesce((e->>'qty')::int, 0) > 100000 then raise exception 'Numbers must be 0 or more.'; end if;
+    insert into public.rr_entry(workshop, day, block, firm, cap, qty, by_login, at)
+      values (p_ws, p_day, e->>'block', f, e->>'cap', coalesce((e->>'qty')::int, 0), c.login_id, now())
+      on conflict (workshop, day, block, firm, cap) do update set qty = excluded.qty, by_login = excluded.by_login, at = now();
+    n := n + 1;
+  end loop;
+  perform public.kitty_sync_repair(p_ws, p_day);
+  return 'saved ' || n;
+end $$;
+
+-- days already typed in the Repair tab: copy their repair to the kitty now
+do $$ declare r record; begin
+  for r in select distinct workshop, day from public.rr_entry where block = 'REPAIR' loop perform public.kitty_sync_repair(r.workshop, r.day); end loop;
+end $$;
+
+-- (b) SCRAP ----------------------------------------------------------------------------------------------------------
+-- scrap received (kg) of a day = Repair-tab REPAIR quantity (10..250 aluminium only) x standard qty x recovery %.
+-- opening scrap = the Admin types it once (a start date); after that: opening of a day = remaining of the day before.
+-- remaining = opening + receive - issue for reconditioning - auctioned.
+create table if not exists public.scrap_cfg (id int primary key default 1 check (id = 1), pct numeric not null default 97 check (pct > 0 and pct <= 100));
+insert into public.scrap_cfg(id) values (1) on conflict do nothing;
+create table if not exists public.scrap_std (cap text primary key, qty numeric not null check (qty >= 0 and qty < 100000), ord int not null);
+insert into public.scrap_std(cap, qty, ord) values ('10', 11, 1), ('16', 20, 2), ('25', 25, 3), ('63', 50, 4), ('100', 69, 5), ('160', 90, 6), ('250AL', 115, 7) on conflict do nothing;
+create table if not exists public.scrap_base (workshop text not null, day date not null, opening numeric not null default 0 check (opening >= 0), by_login text, at timestamptz not null default now(), primary key (workshop, day));
+create table if not exists public.scrap_day (workshop text not null, day date not null, issue numeric not null default 0 check (issue >= 0), auction numeric not null default 0 check (auction >= 0), by_login text, at timestamptz not null default now(), primary key (workshop, day));
+alter table public.scrap_cfg enable row level security; alter table public.scrap_std enable row level security;
+alter table public.scrap_base enable row level security; alter table public.scrap_day enable row level security;
+revoke all on public.scrap_cfg, public.scrap_std, public.scrap_base, public.scrap_day from public, anon, authenticated;
+
+create or replace function public.scrap_rcv(p_ws text, p_d1 date, p_d2 date) returns numeric
+language sql stable security definer set search_path = public as $$
+  select coalesce(sum(e.qty * s.qty * (select pct from public.scrap_cfg) / 100), 0)
+    from public.rr_entry e join public.scrap_std s on s.cap = e.cap
+   where e.workshop = p_ws and e.block = 'REPAIR' and e.day between p_d1 and p_d2
+$$;
+revoke all on function public.scrap_rcv(text, date, date) from public, anon, authenticated;
+
+-- one workshop, one day -> {nobase, opening, receive, issue, auction, remaining}
+create or replace function public.scrap_calc(p_ws text, p_day date) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare bd date; op numeric := 0; o numeric; rc numeric; i numeric := 0; a numeric := 0;
+begin
+  select max(day) into bd from public.scrap_base where workshop = p_ws and day <= p_day;
+  if bd is not null then select opening into op from public.scrap_base where workshop = p_ws and day = bd; else bd := date '2000-01-01'; end if;
+  o := op + public.scrap_rcv(p_ws, bd, p_day - 1) - coalesce((select sum(issue + auction) from public.scrap_day where workshop = p_ws and day between bd and p_day - 1), 0);
+  rc := public.scrap_rcv(p_ws, p_day, p_day);
+  select coalesce(issue, 0), coalesce(auction, 0) into i, a from public.scrap_day where workshop = p_ws and day = p_day;
+  i := coalesce(i, 0); a := coalesce(a, 0);
+  return jsonb_build_object('nobase', not exists (select 1 from public.scrap_base where workshop = p_ws and day <= p_day),
+    'opening', round(o, 2), 'receive', round(rc, 2), 'issue', round(i, 2), 'auction', round(a, 2), 'remaining', round(o + rc - i - a, 2));
+end $$;
+revoke all on function public.scrap_calc(text, date) from public, anon, authenticated;
+
+-- the SCRAP SUMMARY of a date: rows [workshop, opening, receive, issue, auction, remaining, can_edit, is_admin]
+create or replace function public.scrap_json(p_day date) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare w text; k jsonb; rows jsonb := '[]'; nob text[] := '{}';
+begin
+  if not public.mr_ok() then raise exception 'No access to the M&R dashboard.'; end if;
+  for w in select unnest(public.my_workshops()) order by 1 loop
+    k := public.scrap_calc(w, p_day);
+    if (k->>'nobase')::boolean then nob := nob || w; end if;
+    rows := rows || jsonb_build_array(jsonb_build_array(w, k->'opening', k->'receive', k->'issue', k->'auction', k->'remaining', public.mr_edit_ok(w), public.mr_admin_ok(w)));
+  end loop;
+  return jsonb_build_object('rows', rows, 'nobase', to_jsonb(nob), 'pct', (select pct from public.scrap_cfg));
+end $$;
+
+-- capacity-wise scrap receive of one workshop and day: rows [cap, repaired qty, std qty, kg per T/F, scrap kg]  +  the standard list
+create or replace function public.scrap_cap_json(p_ws text, p_day date) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare pct numeric;
+begin
+  if not public.mr_ok() or not (p_ws = any (public.my_workshops())) then raise exception 'You cannot see this workshop.'; end if;
+  select c.pct into pct from public.scrap_cfg c;
+  return jsonb_build_object('pct', pct, 'admin', public.mr_admin_ok(p_ws),
+    'rows', coalesce((select jsonb_agg(jsonb_build_array(s.cap, q.n, s.qty, round(s.qty * pct / 100, 2), round(q.n * s.qty * pct / 100, 2)) order by s.ord)
+      from public.scrap_std s, lateral (select coalesce(sum(e.qty), 0)::int n from public.rr_entry e where e.workshop = p_ws and e.day = p_day and e.block = 'REPAIR' and e.cap = s.cap) q), '[]'::jsonb),
+    'base', (select jsonb_build_object('day', day, 'opening', opening) from public.scrap_base where workshop = p_ws and day <= p_day order by day desc limit 1));
+end $$;
+
+-- the M&R user types the day's "issue for reconditioning" and "scrap auctioned" (kg)
+create or replace function public.scrap_save(p_ws text, p_day date, p_issue numeric, p_auction numeric) returns text
+language plpgsql security definer set search_path = public as $$
+declare c public.profiles := public.tf_caller(); k jsonb;
+begin
+  if not public.mr_edit_ok(p_ws) then raise exception 'You cannot change the scrap of this workshop.'; end if;
+  if p_day is null or p_day > current_date + 1 then raise exception 'Choose today or an earlier date.'; end if;
+  if coalesce(p_issue, 0) < 0 or coalesce(p_auction, 0) < 0 or coalesce(p_issue, 0) > 100000000 or coalesce(p_auction, 0) > 100000000 then raise exception 'Numbers must be 0 or more.'; end if;
+  insert into public.scrap_day(workshop, day, issue, auction, by_login, at) values (p_ws, p_day, round(coalesce(p_issue, 0), 2), round(coalesce(p_auction, 0), 2), c.login_id, now())
+    on conflict (workshop, day) do update set issue = excluded.issue, auction = excluded.auction, by_login = excluded.by_login, at = now();
+  k := public.scrap_calc(p_ws, p_day);
+  if (k->>'remaining')::numeric < 0 then raise exception 'Issue + auctioned is more than the scrap available (% kg).', round((k->>'opening')::numeric + (k->>'receive')::numeric, 2); end if;
+  return 'saved';
+end $$;
+
+-- Admin: opening scrap on a start date, standard qty per capacity, recovery %
+create or replace function public.scrap_base_set(p_ws text, p_day date, p_opening numeric) returns text
+language plpgsql security definer set search_path = public as $$
+declare c public.profiles := public.tf_caller();
+begin
+  if not public.mr_admin_ok(p_ws) then raise exception 'Only the Admin of this workshop can set the opening scrap.'; end if;
+  if p_day is null or p_day > current_date + 1 then raise exception 'Choose today or an earlier date.'; end if;
+  if coalesce(p_opening, 0) < 0 or coalesce(p_opening, 0) > 100000000 then raise exception 'Numbers must be 0 or more.'; end if;
+  insert into public.scrap_base(workshop, day, opening, by_login, at) values (p_ws, p_day, round(coalesce(p_opening, 0), 2), c.login_id, now())
+    on conflict (workshop, day) do update set opening = excluded.opening, by_login = excluded.by_login, at = now();
+  return 'saved';
+end $$;
+
+create or replace function public.scrap_std_set(p_pct numeric, p_rows jsonb) returns text
+language plpgsql security definer set search_path = public as $$
+declare e jsonb; c public.profiles := public.tf_caller();
+begin
+  if c.user_id is null or c.role <> 'admin' or not c.active then raise exception 'Only an Admin can change the standard.'; end if;
+  if p_pct is null or p_pct <= 0 or p_pct > 100 then raise exception 'Recovery %% must be between 1 and 100.'; end if;
+  update public.scrap_cfg set pct = p_pct;
+  for e in select * from jsonb_array_elements(coalesce(p_rows, '[]')) loop
+    if coalesce((e->>'qty')::numeric, -1) < 0 or (e->>'qty')::numeric >= 100000 then raise exception 'Standard qty must be 0 or more.'; end if;
+    update public.scrap_std set qty = (e->>'qty')::numeric where cap = e->>'cap';
+  end loop;
+  return 'saved';
+end $$;
+
+revoke all on function public.scrap_json(date), public.scrap_cap_json(text, date), public.scrap_save(text, date, numeric, numeric), public.scrap_base_set(text, date, numeric), public.scrap_std_set(numeric, jsonb) from public, anon;
+grant execute on function public.scrap_json(date), public.scrap_cap_json(text, date), public.scrap_save(text, date, numeric, numeric), public.scrap_base_set(text, date, numeric), public.scrap_std_set(numeric, jsonb) to authenticated;
+notify pgrst, 'reload schema';
