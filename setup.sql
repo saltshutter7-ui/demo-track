@@ -2993,3 +2993,59 @@ end $$;
 revoke all on function public.scrap_json(date), public.scrap_cap_json(text, date), public.scrap_save(text, date, numeric, numeric), public.scrap_base_set(text, date, numeric), public.scrap_std_set(numeric, jsonb) from public, anon;
 grant execute on function public.scrap_json(date), public.scrap_cap_json(text, date), public.scrap_save(text, date, numeric, numeric), public.scrap_base_set(text, date, numeric), public.scrap_std_set(numeric, jsonb) to authenticated;
 notify pgrst, 'reload schema';
+
+-- ================================================================================================================
+-- STEP 80 : (1) Data Sheet shows DTC NO + DTC DATE   (2) Scrap summary from date to date   (3) Kitty gets 1000 KVA
+-- Safe to run again. No data is deleted.
+-- ================================================================================================================
+
+-- (1) DTC no / date of the rows shown in the Data Sheet.  p_keys = [[workshop, pr_no], ...]  ->  rows [workshop, pr_no, id, dtc_no, dtc_date DD.MM.YYYY, can_edit]
+create or replace function public.dtc_map_json(p_keys jsonb) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare mine text[] := public.my_workshops(); ed text[];
+begin
+  if not public.mr_ok() then return jsonb_build_object('ok', false, 'rows', '[]'::jsonb); end if;
+  select coalesce(array_agg(w), '{}') into ed from unnest(mine) w where public.mr_edit_ok(w);
+  return jsonb_build_object('ok', true, 'rows', coalesce((
+    select jsonb_agg(jsonb_build_array(x.workshop, x.pr_no, x.id, coalesce(t.dtc_no, ''), coalesce(to_char(t.dtc_date, 'DD.MM.YYYY'), ''), x.workshop = any (ed)))
+      from jsonb_array_elements(coalesce(p_keys, '[]'::jsonb)) k
+      join public.data x on x.workshop = k->>0 and x.pr_no = k->>1 and x.workshop = any (mine)
+      left join public.dtc t on t.data_id = x.id), '[]'::jsonb));
+end $$;
+
+-- (2) Scrap summary of a period: totals + the dates on which scrap was issued for reconditioning / auctioned
+create or replace function public.scrap_range_json(p_from date, p_to date, p_ws text default null) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare ws text[]; rc numeric := 0; w text;
+begin
+  if not public.mr_ok() then raise exception 'No access to the M&R dashboard.'; end if;
+  if p_from is null or p_to is null or p_from > p_to then raise exception 'Choose the From and To dates (From must not be after To).'; end if;
+  if p_to - p_from > 1100 then raise exception 'Choose a period of up to 3 years.'; end if;
+  if coalesce(p_ws, '') <> '' then
+    if not (p_ws = any (public.my_workshops())) then raise exception 'This workshop is not yours.'; end if;
+    ws := array[p_ws];
+  else ws := public.my_workshops(); end if;
+  foreach w in array ws loop rc := rc + public.scrap_rcv(w, p_from, p_to); end loop;
+  return jsonb_build_object('receive', round(rc, 2),
+    'issue', round(coalesce((select sum(issue) from public.scrap_day where workshop = any (ws) and day between p_from and p_to), 0), 2),
+    'auction', round(coalesce((select sum(auction) from public.scrap_day where workshop = any (ws) and day between p_from and p_to), 0), 2),
+    'rows', coalesce((select jsonb_agg(jsonb_build_array(day, workshop, issue, auction) order by day desc, workshop)
+                        from public.scrap_day where workshop = any (ws) and day between p_from and p_to and (issue > 0 or auction > 0)), '[]'::jsonb));
+end $$;
+
+revoke all on function public.dtc_map_json(jsonb), public.scrap_range_json(date, date, text) from public, anon;
+grant execute on function public.dtc_map_json(jsonb), public.scrap_range_json(date, date, text) to authenticated;
+
+-- (3) Kitty: add 1000 KVA to every kitty function (the capacity lists inside the function texts are rewritten)
+do $$
+declare f record; d text; n text;
+begin
+  for f in select p.oid from pg_proc p join pg_namespace s on s.oid = p.pronamespace
+            where s.nspname = 'public' and p.proname in ('kitty_json', 'kitty_save', 'kitty_base_set', 'kitty_ly_json', 'kitty_ly_set', 'kitty_need_json', 'kitty_cmp_json', 'rr_save') loop
+    d := pg_get_functiondef(f.oid);
+    n := replace(replace(d, 'array[10, 16, 25, 63, 100, 160, 250, 400, 630]', 'array[10, 16, 25, 63, 100, 160, 250, 400, 630, 1000]'),
+                            '(10, 16, 25, 63, 100, 160, 250, 400, 630)', '(10, 16, 25, 63, 100, 160, 250, 400, 630, 1000)');
+    if n <> d then execute n; end if;
+  end loop;
+end $$;
+notify pgrst, 'reload schema';

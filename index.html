@@ -1946,6 +1946,7 @@ body.mr-on .msg{animation:mrUp .35s both}
 .rrt.xg td.x button{width:26px;height:26px;border-radius:50%;line-height:1;transition:background .15s,transform .15s}.rrt.xg td.x button:hover{background:#fee2e2;transform:rotate(90deg)}
 .rrt.xg tr.empty td{color:#94a3b8!important}
 @media(max-width:640px){.rrk{gap:6px}.rrkc{padding:8px 9px}.rrkc b{font-size:20px}.rrh{padding:8px 10px 2px}}
+td.gc.dtc input{background:#f2f7ff}td.gc.dtc.lk input{background:#f4f4f4}
 nav button#tmr{margin-top:auto}
 #mrnav button#mrr{margin-top:auto;border:2px solid #c2410c!important;color:#c2410c!important}
 @media (max-width:700px){nav button#tmr{margin-top:0}#mrnav button#mrr{margin-top:0;border:0!important;background:linear-gradient(135deg,#7a3bd8,#3b4fd8)!important;color:#fff!important}}
@@ -2021,7 +2022,6 @@ nav button#tmr{margin-top:auto}
   </nav>
   <nav id="mrnav">
     <button data-t="msum" id="msum" class="on" type="button">M&amp;R Summary</button>
-    <button data-t="mdtc" id="mdtc" type="button">DTC Sheet</button>
     <button data-t="mkit" id="mkit" type="button">Kitty</button>
     <button data-t="mrep" id="mrep" type="button">Repair</button>
     <button data-t="msc" id="msc" type="button">Scrap</button>
@@ -2928,7 +2928,7 @@ function dotFmt(v) { var d = String(v).replace(/\D/g, '').slice(0, 8), o = d.sli
 var DCOL = [[0, 'WORKSHOP', 'ws'], [1, 'DIVISION'], [2, 'SUBSTATION'], [3, 'FEEDER'], [4, 'PLACE OF DAMAGE'], [5, 'CAPACITY'], [7, 'COMPLAIN NUMBER'], [8, 'PR NO'], [9, 'PR DATE', 'date'], [10, 'JE NAME'], [11, 'JE MOBILE', 'mob'],
   [12, 'ISSUED TO FIRM'], [13, 'ISSUE DATE', 'date'], [14, 'DRIVER NAME'], [15, 'DRIVER MOBILE', 'mob'], [16, 'REPLACEMENT DATE', 'date'], [18, 'RETURN DATE', 'date'], [19, 'REMARK']];
 var ALLCOLS = ['Workshop', 'DIVISION', 'SUBSTATION', 'FEEDER', 'PLACE OF DAMAGE', 'CAPACITY', 'Category of Transformer', 'COMPLAIN NUMBER', 'PR NO', 'PR DATE', 'JE Name', 'JE Mobile', 'ISSUED TO FIRM', 'ISSUE DATE', 'DRIVER NAME', 'DRIVER MOBILE', 'REPLACEMENT DATE', 'TIME', 'RETURN DATE', 'REMARK'];
-var DATE_IDX = [9, 13, 16, 18], EDIT_FROM = 10, DSHOW = 400;
+var DATE_IDX = [9, 13, 16, 18], DATE_UI = [9, 13, 16, 18, 22], EDIT_FROM = 10, DSHOW = 400;
 var DROWS = [], DCAN = false, DTOTAL = 0, DSEQ = 0, DTM = null, DSAVING = false, DNEED = false, DLOADED = '';
 function blank20() { var a = []; for (var i = 0; i < 20; i++) a.push(''); return a; }
 function oneWs() { return WSL.length === 1 ? WSL[0] : ''; }
@@ -2942,7 +2942,7 @@ function mlabel(t) {            // headings -> data-l of every cell (phones show
 function newRow() { var c = blank20(); c[0] = oneWs(); c[9] = $('dd').value.trim(); return { o: null, k: null, c: c, dirty: false, bad: false, ver: 0, isNew: true, keep: true }; }
 var DUP_AFTER = [13, 14, 15, 16, 18];       // issue date, driver name, driver mobile, replacement date, return date
 function dupFix(c) { if (isDupFirm(c[12])) { c[13] = ''; c[14] = 'JE(D)'; c[15] = ''; c[16] = ''; c[18] = ''; } return c; }
-function rowLocked(r, i) { return i === 20 || !canWrite() || (!r.isNew && i < EDIT_FROM) || (DUP_AFTER.indexOf(i) >= 0 && isDupFirm(r.c[12])); }
+function rowLocked(r, i) { if (i === 21 || i === 22) return !(r.did && r.ded); return i === 20 || !canWrite() || (!r.isNew && i < EDIT_FROM) || (DUP_AFTER.indexOf(i) >= 0 && isDupFirm(r.c[12])); }
 var BLANKS = 20;
 function isBlankNew(r) { return r.isNew && !r.dirty && !r.k; }
 function padBlank() {      // empty rows to type or paste into, like an Excel sheet
@@ -2962,7 +2962,7 @@ function drawData() {
     var r = DROWS[ri];
     h += '<tr data-r="' + ri + '" class="' + (r.dirty ? 'dirty ' : '') + (r.bad ? 'bad ' : '') + (r.sel ? 'sel' : '') + '"><td class="ix rn" title="Click to select this row (Shift = range)">' + (n + 1) + '</td>' + DCOL.map(function (c) {
       var i = c[0], lk = rowLocked(r, i), kind = c[2] || '';
-      return '<td class="gc' + (lk ? ' lk' : '') + (i === 20 ? (r.c[20] === 'DONE' ? ' sirD' : r.c[20] ? ' sirP' : '') : '') + '"><input type="text" data-i="' + i + '" value="' + esc(r.c[i]) + '"' + (lk ? ' readonly tabindex="-1"' : '') + (kind === 'date' ? ' inputmode="numeric" maxlength="10" placeholder="DD.MM.YYYY"' : kind === 'mob' ? ' inputmode="numeric"' : kind === 'ws' ? ' list="wsdl"' : i === 12 ? ' list="frdl"' : i === 14 ? ' list="drdl"' : '') + (i === 8 || i === 9 ? ' class="b"' : '') + '></td>';
+      return '<td class="gc' + (lk ? ' lk' : '') + (i === 20 ? (r.c[20] === 'DONE' ? ' sirD' : r.c[20] ? ' sirP' : '') : (i === 21 || i === 22 ? ' dtc' : '')) + '"><input type="text" data-i="' + i + '" value="' + esc(r.c[i]) + '"' + (lk ? ' readonly tabindex="-1"' : '') + (kind === 'date' ? ' inputmode="numeric" maxlength="10" placeholder="DD.MM.YYYY"' : kind === 'mob' ? ' inputmode="numeric"' : kind === 'ws' ? ' list="wsdl"' : i === 12 ? ' list="frdl"' : i === 14 ? ' list="drdl"' : '') + (i === 8 || i === 9 ? ' class="b"' : '') + '></td>';
     }).join('') + '<td class="ix">' + (canWrite() ? '<button class="rx" title="Delete this row">&#10005;</button>' : '') + '</td></tr>';
   });
   $('dt').innerHTML = h + '</tbody>';
@@ -3007,7 +3007,7 @@ function loadData(force) {
     DCAN = !!r.canEdit; DTOTAL = r.total; DLOADED = all ? 'ALL' : d;
     DROWS = r.rows.map(function (a) { return { o: a.slice(0, 20), k: [a[0], a[8]], c: a.slice(0, 20), dirty: false, bad: false, ver: 0, isNew: false }; });
     DSHOW = 400; dstat('');
-    return (typeof sirDataPrep === 'function' ? sirDataPrep(force) : Promise.resolve()).then(function () { if (seq === DSEQ) drawData(); });
+    return (typeof sirDataPrep === 'function' ? sirDataPrep(force) : Promise.resolve()).then(function () { return dtcDataPrep(); }).then(function () { if (seq === DSEQ) drawData(); });
   }).catch(function (e) { if (seq !== DSEQ) return; dstat(''); msg('dmsg', esc(e.message), 'err'); });
 }
 function fixRow(c) {     // the values the way they are sent: dates as DD.MM.YYYY, PR no without ".0"
@@ -3015,7 +3015,7 @@ function fixRow(c) {     // the values the way they are sent: dates as DD.MM.YYY
 }
 function newReady(c) { return !!(c[0] && c[1] && c[5] && c[8] && c[9]); }      // a NEW row is saved by itself only when these are filled (Save button: any time)
 function flushData(force) {
-  clearTimeout(DTM);
+  clearTimeout(DTM); dtcFlush();
   if (DSAVING) { DNEED = true; return DWAIT; }
   var items = [], map = [];
   DROWS.forEach(function (r, ri) { if (!r.dirty) return; if (r.isNew && !force && !newReady(r.c)) return; var rr = fixRow(r.c); if (!String(rr[8]).trim()) return; items.push(r.k ? { k: r.k, o: r.o, r: rr } : { r: rr }); map.push(ri); });
@@ -3025,10 +3025,11 @@ function flushData(force) {
   DWAIT = rpc('save_rows', { p_items: items }).then(function (res) {
     DSAVING = false;
     map.forEach(function (ri, j) {
-      var r = DROWS[ri]; if (!r) return;
+      var r = DROWS[ri]; if (!r) return; var k21 = r.c[21], k22 = r.c[22];
       if (res.bad.indexOf(j) >= 0) { r.bad = true; return; }
       var sv = res.rows[String(j)] ? res.rows[String(j)].slice(0, 20) : fixRow(r.c); r.bad = false; r.o = sv; r.k = [sv[0], sv[8]]; r.isNew = false;
       if (r.ver === vers[j]) { r.c = sv.slice(); r.dirty = false; } else r.dirty = true;
+      r.c[21] = k21; r.c[22] = k22;
     });
     var parts = []; if (res.added) parts.push(res.added + ' added'); if (res.updated) parts.push(res.updated + ' updated'); if (res.skipped) parts.push(res.skipped + ' NOT saved');
     dstat(res.skipped ? '' : 'Saved' + (parts.length ? ' (' + parts.join(', ') + ')' : ''), res.skipped ? 'bad' : 'ok');
@@ -3043,14 +3044,16 @@ function queueSave() { clearTimeout(DTM); DTM = setTimeout(flushData, 1600); }
 $('dt').addEventListener('input', function (e) {
   var inp = e.target; if (!inp.dataset || inp.dataset.i === undefined) return;
   var tr = inp.closest('tr'), r = DROWS[+tr.dataset.r], i = +inp.dataset.i;
-  if (DATE_IDX.indexOf(i) >= 0 && /^[\d.]*$/.test(inp.value)) { var f = dotFmt(inp.value); if (f !== inp.value) inp.value = f; }
+  if (DATE_UI.indexOf(i) >= 0 && /^[\d.]*$/.test(inp.value)) { var f = dotFmt(inp.value); if (f !== inp.value) inp.value = f; }
+  if (i === 21 || i === 22) { r.c[i] = inp.value; dstat('Unsaved DTC...'); queueSave(); return; }
   r.c[i] = inp.value; r.ver++; r.dirty = true; r.bad = false; tr.classList.add('dirty'); tr.classList.remove('bad');
   dstat('Unsaved changes...'); queueSave();
 });
 $('dt').addEventListener('change', function (e) {          // when a cell is left: dates / mobiles are tidied, then saved
   var inp = e.target; if (!inp.dataset || inp.dataset.i === undefined) return;
   var tr = inp.closest('tr'), r = DROWS[+tr.dataset.r], i = +inp.dataset.i;
-  if (DATE_IDX.indexOf(i) >= 0 && inp.value) { var v = normDate(inp.value); if (v !== inp.value) { inp.value = v; r.c[i] = v; } }
+  if (DATE_UI.indexOf(i) >= 0 && inp.value) { var v = normDate(inp.value); if (v !== inp.value) { inp.value = v; r.c[i] = v; } }
+  if (i === 21 || i === 22) { r.c[i] = inp.value; dtcFlush(); return; }
   if ((i === 11 || i === 15) && inp.value) { var m = cleanMob(inp.value); if (m && m !== inp.value) { inp.value = m; r.c[i] = m; } }
   if (i === 12 || i === 14) drvAuto(inp, r, i, tr);
   if (r.isNew) queueSave(); else flushData();
@@ -4681,7 +4684,8 @@ function mrAfterLogin() {
   $('mrd').value = td; $('mrf').value = '01.' + p2(t.getMonth() + 1) + '.' + t.getFullYear(); $('mrt').value = td; $('mkd').value = td; $('mpd').value = td; MR.hd = null; $('chmov').classList.add('hide'); $('chmbw').classList.add('hide'); $('chmbase').classList.toggle('hide', !(ME && ME.role === 'admin'));
   MR.month = t.getFullYear() + '-' + p2(t.getMonth() + 1) + '-01';
   var ws = mrWs(), o = ws.map(function (w) { return '<option>' + esc(w) + '</option>'; }).join('');
-  $('mrw').innerHTML = '<option value="">All workshops</option>' + o; $('mkw').innerHTML = o; $('mpw').innerHTML = o; MR.kws = ws[0] || ''; MR.pws = ws[0] || ''; MR.pd = null; $('mpout').innerHTML = '';
+  $('mrw').innerHTML = '<option value="">All workshops</option>' + o; var oa = (ME && ME.role === 'admin' && ws.length > 1) ? '<option value="__ALL__">All workshops</option>' : '';
+  $('mkw').innerHTML = oa + o; $('mpw').innerHTML = oa + o; if (ws[0]) { $('mkw').value = ws[0]; $('mpw').value = ws[0]; } MR.kws = ws[0] || ''; MR.pws = ws[0] || ''; MR.pd = null; $('mpout').innerHTML = '';
   $('mrm').value = MR.month.slice(0, 7); $('mrq').value = '';
   $('mrout').innerHTML = ''; $('mrdt').innerHTML = ''; $('mkout').innerHTML = '';
   $('msd').value = td; $('msw').innerHTML = o; MR.sd = null; $('msout').innerHTML = ''; $('msbw').classList.add('hide'); 
@@ -4824,33 +4828,57 @@ $('mrdxl').onclick = function () {
 };
 
 /* ---- KITTY ---- */
+var KCAPS = STD_CAPS.concat([1000]);
 function mrKitLoad(force) {
   MR.kws = $('mkw').value || MR.kws; var d = $('mkd').value.trim();
   if (force !== true && MR.kd && MR.kd.d === d && MR.kd.ws === MR.kws && !MR.kloading) return;
   if (!MR.kws) return msg('mkmsg', 'No workshop is given to you.', 'err');
   if (!validD(d)) return msg('mkmsg', 'Enter the date in DD.MM.YYYY format.', 'err');
   msg('mkmsg', ''); $('mkout').innerHTML = '<div class="msg info">Loading...</div>'; var seq = MR.kseq = (MR.kseq || 0) + 1; MR.kloading = true;
-  rpc('kitty_json', { p_ws: MR.kws, p_day: mrIso(d) }).then(function (r) { if (seq !== MR.kseq) return; MR.kloading = false; MR.kd = { r: r, d: d, ws: MR.kws }; mrKitDraw(); })
+  mrKitFetch(MR.kws, mrIso(d)).then(function (r) { if (seq !== MR.kseq) return; MR.kloading = false; MR.kd = { r: r, d: d, ws: MR.kws }; mrKitDraw(); })
     .catch(function (er) { if (seq !== MR.kseq) return; MR.kloading = false; MR.kd = null; $('mkout').innerHTML = ''; msg('mkmsg', esc(er.message), 'err'); });
+}
+// the kitty of a workshop (or of all), with UNREPAIRED T/F taken from the Chamber Assembly report so both always show the same figure
+function mrKitFetch(ws, day) {
+  var all = ws === '__ALL__', list = all ? mrWs() : [ws];
+  return Promise.all([Promise.all(list.map(function (w) { return rpc('kitty_json', { p_ws: w, p_day: day }).catch(function (e) { if (!all) throw e; return null; }); })), rpc('ch_report_json', { p_day: day }).catch(function () { return null; })]).then(function (a) {
+    var ks = a[0], ch = a[1], U = {};
+    if (ch) (ch.rows || []).forEach(function (x) { U[x[0] + '|' + x[1]] = x[2]; });
+    var out = { base: null, first: null, rows: [], edit: false, admin: false };
+    if (!all) { out = ks[0]; }
+    var okc = 0, T = {}; KCAPS.forEach(function (c) { T[c] = [c, 0, 0, 0, 0, 0, 0, 0]; });
+    list.forEach(function (w, wi) {
+      var r = ks[wi]; if (!r || !r.base) return; okc++;
+      var R = {}; (r.rows || []).forEach(function (x) { R[x[0]] = x; });
+      KCAPS.forEach(function (c) {
+        var x = R[c] || [c, 0, 0, 0, 0, 0, 0, 0], raw = x[2], u = (U[w + '|' + c] !== undefined) ? U[w + '|' + c] : raw;
+        if (!all) { x[8] = raw; x[2] = u; if (!R[c]) r.rows.push(x); }
+        else { for (var i = 1; i <= 7; i++) T[c][i] += (i === 2 ? u : x[i]); }
+      });
+    });
+    if (all) { if (okc) { out.base = 'all'; out.rows = KCAPS.map(function (c) { return T[c]; }); } }
+    else if (out.base) out.rows.sort(function (x, y) { return x[0] - y[0]; });
+    return out;
+  });
 }
 function mrKitInp(c, k, v, can) { return can ? '<input type="text" inputmode="numeric" autocomplete="off" class="mkn" data-c="' + c + '" data-k="' + k + '" value="' + (v || 0) + '">' : String(v || 0); }
 function mrKitDraw() {
-  var K = MR.kd, r = K.r, h = '', adm = !!r.admin, can = !!r.edit;
+  var K = MR.kd, r = K.r, h = '', adm = !!r.admin, can = !!r.edit, isAll = K.ws === '__ALL__';
   mrKitTop(K, r);
   if (!r.base) {
-    h = '<div class="card"><div class="msg info">' + (r.first ? 'The kitty starts on <b>' + mrDmy(r.first) + '</b>. Choose that date or a later one.' : 'The kitty is not started for <b>' + esc(K.ws) + '</b> yet.') + (adm ? '' : ' Ask your Admin to set the start figures.') + '</div></div>';
+    h = '<div class="card"><div class="msg info">' + (r.first ? 'The kitty starts on <b>' + mrDmy(r.first) + '</b>. Choose that date or a later one.' : 'The kitty is not started for <b>' + esc(K.ws === '__ALL__' ? 'any workshop' : K.ws) + '</b> yet.') + (adm ? '' : ' Ask your Admin to set the start figures.') + '</div></div>';
     $('mkout').innerHTML = h + (adm ? mrBaseHtml(null) : ''); return;
   }
   var R = {}; r.rows.forEach(function (x) { R[x[0]] = x; });
   h += '<div class="card"><div class="wrap"><table class="mkt xg"><thead><tr><th class="l">CAPACITY IN KVA</th><th>OPENING KITTY</th><th>UNREPAIRED T/F</th><th>ISSUE</th><th>REPAIR</th><th class="ed">ISSUE TO OTHER WORKSHOP</th><th class="ed">RECEIVE FROM OTHER W/S</th><th>NET KITTY</th></tr></thead><tbody>';
-  STD_CAPS.forEach(function (c) {
+  KCAPS.forEach(function (c) {
     var x = R[c] || [c, 0, 0, 0, 0, 0, 0, 0];
-    h += '<tr data-c="' + c + '"><td class="l">' + c + '</td><td class="o">' + x[1] + '</td><td class="u">' + x[2] + '</td><td class="i">' + x[3] + '</td><td class="repair"><b>' + x[4] + '</b></td><td class="ed">' + mrKitInp(c, 'to_other', x[5], can) + '</td><td class="ed">' + mrKitInp(c, 'from_other', x[6], can) + '</td><td class="n"><b>' + x[7] + '</b></td></tr>';
+    h += '<tr data-c="' + c + '"><td class="l">' + c + '</td><td class="o">' + x[1] + '</td><td class="u">' + x[2] + '</td><td class="i">' + x[3] + '</td><td class="repair"><b>' + x[4] + '</b></td><td class="ed to_other">' + mrKitInp(c, 'to_other', x[5], can) + '</td><td class="ed from_other">' + mrKitInp(c, 'from_other', x[6], can) + '</td><td class="n"><b>' + x[7] + '</b></td></tr>';
   });
   h += '<tr class="t" id="mktot"><td class="l">TOTAL</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table></div>';
-  h += '<div class="bar" style="margin-top:10px"><span class="muted" style="font-size:12px;flex:1">Issue comes from the Data Sheet. <b>Repair comes from the Repair tab</b> (all firms, every day); here type only the issue to / receive from other workshop. Unrepaired grows with the return date and falls the next day by the repair. Net kitty = opening + repair + receive &minus; issue &minus; issue to other workshop.</span>' +
+  h += '<div class="bar" style="margin-top:10px"><span class="muted" style="font-size:12px;flex:1">Issue comes from the Data Sheet. <b>Repair comes from the Repair tab</b> (all firms, every day); here type only the issue to / receive from other workshop. <b>Unrepaired T/F is the same figure as in the Chamber Assembly report.</b> Net kitty = opening + repair + receive &minus; issue &minus; issue to other workshop.</span>' +
     (can ? '<button class="btn" id="mksave" type="button" disabled>Save kitty</button>' : '') + (adm ? '<button class="btn sec" id="mkbase" type="button">Start figures (Admin)</button>' : '') + '<button class="btn sec" id="mkxl" type="button">&#11015; Excel</button></div></div>';
-  h += mrNeedHtml();
+  h += (isAll ? '<div class="muted" style="font-size:12.5px">All workshops together (view only). Choose one workshop to type, save or check the need.</div>' : mrNeedHtml());
   $('mkout').innerHTML = h + (adm ? '<div id="mkbw" class="hide"></div>' : ''); mrKitTotal();
 }
 function mrKitTotal() {
@@ -4867,28 +4895,28 @@ document.addEventListener('input', function (e) { var t = e.target; if (t.classL
 function mrBaseHtml(cur) {
   var day = MR.kd ? MR.kd.d : fmt(new Date()), h = '<div class="card" id="mkbc"><h3>Start figures <span class="muted" style="text-transform:none">(Admin) - ' + esc(MR.kd ? MR.kd.ws : '') + '</span></h3><div class="muted" style="font-size:12.5px;margin-bottom:8px">Type the opening kitty and the unrepaired T/F as they are on the start date. From that day the app counts forward by itself.</div>' +
     '<div class="bar"><div><label>Start date</label>' + mrDt('mkbd', day) + '</div></div><div class="wrap"><table class="mkt xg"><thead><tr><th class="l">CAPACITY IN KVA</th><th class="ed">OPENING KITTY</th><th class="ed">UNREPAIRED T/F</th></tr></thead><tbody>';
-  STD_CAPS.forEach(function (c) { var x = cur && cur[c] ? cur[c] : [c, 0, 0]; h += '<tr><td class="l">' + c + '</td><td class="ed"><input type="text" inputmode="numeric" autocomplete="off" class="mkb" data-c="' + c + '" data-k="opening" value="' + (x[1] || 0) + '"></td><td class="ed"><input type="text" inputmode="numeric" autocomplete="off" class="mkb" data-c="' + c + '" data-k="unrep" value="' + (x[2] || 0) + '"></td></tr>'; });
+  KCAPS.forEach(function (c) { var x = cur && cur[c] ? cur[c] : [c, 0, 0]; h += '<tr><td class="l">' + c + '</td><td class="ed"><input type="text" inputmode="numeric" autocomplete="off" class="mkb" data-c="' + c + '" data-k="opening" value="' + (x[1] || 0) + '"></td><td class="ed"><input type="text" inputmode="numeric" autocomplete="off" class="mkb" data-c="' + c + '" data-k="unrep" value="' + (x[2] || 0) + '"></td></tr>'; });
   return h + '</tbody></table></div><div class="bar" style="margin-top:10px"><button class="btn" id="mkbsave" type="button">Save start figures</button></div><div id="mkbmsg"></div></div>';
 }
 document.addEventListener('click', function (e) {
   var t = e.target; if (!t.closest) return; var b;
   if ((b = t.closest('#mkbase'))) {
-    var K = MR.kd, cur = {}; (K.r.rows || []).forEach(function (x) { cur[x[0]] = [x[0], x[1], x[2]]; });
+    var K = MR.kd, cur = {}; (K.r.rows || []).forEach(function (x) { cur[x[0]] = [x[0], x[1], x[8] !== undefined ? x[8] : x[2]]; });
     var w = $('mkbw'); w.classList.toggle('hide'); if (!w.classList.contains('hide')) { w.innerHTML = mrBaseHtml(K.r.base === mrIso(K.d) ? cur : null); w.scrollIntoView({ block: 'nearest' }); } return;
   }
   if ((b = t.closest('#mkbsave'))) {
     var d = $('mkbd').value.trim(); if (!validD(d)) return msg('mkbmsg', 'Enter the start date in DD.MM.YYYY format.', 'err');
-    var rows = STD_CAPS.map(function (c) { var g = function (k) { return Math.max(0, parseInt(document.querySelector('.mkb[data-c="' + c + '"][data-k="' + k + '"]').value, 10) || 0); }; return { cap: c, opening: g('opening'), unrep: g('unrep') }; });
+    var rows = KCAPS.map(function (c) { var g = function (k) { return Math.max(0, parseInt(document.querySelector('.mkb[data-c="' + c + '"][data-k="' + k + '"]').value, 10) || 0); }; return { cap: c, opening: g('opening'), unrep: g('unrep') }; });
     busy(b, true, 'Saving...'); rpc('kitty_base_set', { p_ws: MR.kd.ws, p_day: mrIso(d), p_rows: rows }).then(function () { busy(b, false); $('mkd').value = d; mrKitLoad(true); }).catch(function (er) { busy(b, false); msg('mkbmsg', esc(er.message), 'err'); }); return;
   }
   if ((b = t.closest('#mksave'))) {
-    var rr = STD_CAPS.map(function (c) { var g = function (k) { var i = document.querySelector('#mkout .mkn[data-c="' + c + '"][data-k="' + k + '"]'); return Math.max(0, parseInt(i.value, 10) || 0); }; return { cap: c, to_other: g('to_other'), from_other: g('from_other') }; });
+    var rr = KCAPS.map(function (c) { var g = function (k) { var i = document.querySelector('#mkout .mkn[data-c="' + c + '"][data-k="' + k + '"]'); return Math.max(0, parseInt(i.value, 10) || 0); }; return { cap: c, to_other: g('to_other'), from_other: g('from_other') }; });
     busy(b, true, 'Saving...'); rpc('kitty_save', { p_ws: MR.kd.ws, p_day: mrIso(MR.kd.d), p_rows: rr }).then(function () { busy(b, false); mrKitLoad(true); setTimeout(function () { msg('mkmsg', 'Saved.', 'ok'); }, 0); }).catch(function (er) { busy(b, false); msg('mkmsg', esc(er.message), 'err'); }); return;
   }
   if ((b = t.closest('#mkxl'))) {
     var rows2 = [['CAPACITY IN KVA', 'OPENING KITTY', 'UNREPAIRED T/F', 'ISSUE', 'REPAIR', 'ISSUE TO OTHER WORKSHOP', 'RECEIVE FROM OTHER W/S', 'NET KITTY']];
     document.querySelectorAll('#mkout .mkt tbody tr').forEach(function (tr) { rows2.push([].map.call(tr.children, function (td, i) { var inp = td.querySelector('input'), v = (inp ? inp.value : td.textContent).trim(); return i === 0 && v === 'TOTAL' ? v : (v === '' ? '' : +v); })); });
-    xlsxDownload('Kitty_' + mrFile(MR.kd.ws) + '_' + mrFile(MR.kd.d) + '.xlsx', [{ name: 'Kitty', rows: rows2, hdr: 1 }]);
+    xlsxDownload('Kitty_' + mrFile(MR.kd.ws === '__ALL__' ? 'All' : MR.kd.ws) + '_' + mrFile(MR.kd.d) + '.xlsx', [{ name: 'Kitty', rows: rows2, hdr: 1 }]);
   }
 });
 function mrKitDay(n) { var v = $('mkd').value.trim(); if (!validD(v)) return; var d = parseD(v); d.setDate(d.getDate() + n); $('mkd').value = fmt(d); mrKitLoad(); }
@@ -5008,7 +5036,11 @@ function mrRepLoad(force) {
   if (!MR.pws) return msg('mpmsg', 'No workshop is given to you.', 'err');
   if (!validD(d)) return msg('mpmsg', 'Enter the date in DD.MM.YYYY format.', 'err');
   msg('mpmsg', ''); $('mpout').innerHTML = '<div class="msg info">Loading...</div>'; var seq = MR.pseq = (MR.pseq || 0) + 1;
-  rpc('rr_json', { p_ws: MR.pws, p_day: mrIso(d) }).then(function (r) { if (seq !== MR.pseq) return; MR.pd = { r: r, d: d }; MR.pd.ws = MR.pws; mrRepDraw(); })
+  var rrq = MR.pws === '__ALL__' ? Promise.all(mrWs().map(function (w) { return rpc('rr_json', { p_ws: w, p_day: mrIso(d) }); })).then(function (a) {
+    var m = {}, rows = []; a.forEach(function (x) { (x.rows || []).forEach(function (y) { var k = y[0] + '\u0001' + y[1] + '\u0001' + y[2]; if (!(k in m)) { m[k] = [y[0], y[1], y[2], 0]; rows.push(m[k]); } m[k][3] += y[3]; }); });
+    return { rows: rows, firms: [], edit: false, all: true };
+  }) : rpc('rr_json', { p_ws: MR.pws, p_day: mrIso(d) });
+  rrq.then(function (r) { if (seq !== MR.pseq) return; MR.pd = { r: r, d: d }; MR.pd.ws = MR.pws; mrRepDraw(); if (r.all) msg('mpmsg', 'All workshops together (view only). Choose one workshop to type data.', 'info'); })
     .catch(function (er) { if (seq !== MR.pseq) return; MR.pd = null; $('mpout').innerHTML = ''; msg('mpmsg', esc(er.message), 'err'); });
 }
 function mrRepBlock(b, F, can) {
@@ -5085,7 +5117,9 @@ document.addEventListener('click', function (e) {
   var t = e.target; if (!t.closest) return; var b;
   if (t.closest('#rradd')) { mrRepGrow(1); var ns = document.querySelectorAll('#mpout table.rrt[data-b="REPAIR"] .rf'); if (ns.length) ns[ns.length - 1].focus(); return; }
   if ((b = t.closest('.rrdel'))) {
-    var tr2 = b.closest('tr'), p = [].indexOf.call(tr2.parentNode.querySelectorAll('tr[data-b]'), tr2), F = mrRepRead(); F.splice(p, 1); mrRepRender(F, true); mrRepSaveOn(); return;
+    var tr2 = b.closest('tr'), p = [].indexOf.call(tr2.parentNode.querySelectorAll('tr[data-b]'), tr2), F = mrRepRead(), fn = (F[p] && F[p].firm || '').trim();
+    if (!confirm('Remove the firm' + (fn ? ' \"' + fn + '\"' : '') + ' from REPAIR, ASSEMBLY and OVEN?\n\nThe numbers of this firm are removed when you press Save.')) return;
+    F.splice(p, 1); mrRepRender(F, true); mrRepSaveOn(); return;
   }
   if ((b = t.closest('#mpsave'))) {
     busy(b, true, 'Saving...'); rpc('rr_save', { p_ws: MR.pd.ws, p_day: mrIso(MR.pd.d), p_rows: mrRepCollect() }).then(function () { busy(b, false); mrRepLoad(true); setTimeout(function () { msg('mpmsg', 'Saved.', 'ok'); }, 0); }).catch(function (er) { busy(b, false); msg('mpmsg', esc(er.message), 'err'); }); return;
@@ -5375,6 +5409,47 @@ function mrScDraw() {
   $('msout').innerHTML = h; $('msbw').classList.add('hide'); $('msbw').innerHTML = '';
   mrScTotal();
 }
+/* ---- Scrap: summary from date to date + date-wise list ---- */
+function mrScRangeCard() {
+  var out = $('msout'); if (!out || out.querySelector('#msr')) return;
+  var td = fmt(new Date()), ws = mrWs();
+  if (!MR.srf) { MR.srf = '01.' + td.slice(3); MR.srt = td; MR.srw = ''; }
+  var h = '<div class="card" id="msr"><h3>Scrap summary - from date to date <span class="muted" style="text-transform:none">kg</span></h3><div class="bar" style="align-items:flex-end;margin-bottom:8px">' +
+    '<div><label>From date</label>' + mrDt('msrf', MR.srf) + '</div><div><label>To date</label>' + mrDt('msrt', MR.srt) + '</div>' +
+    '<div><label>Workshop</label><select id="msrw"><option value="">All workshops</option>' + ws.map(function (w) { return '<option' + (w === MR.srw ? ' selected' : '') + '>' + esc(w) + '</option>'; }).join('') + '</select></div>' +
+    '<button class="btn" id="msrgo" type="button">Show</button><button class="btn sec" id="msrxl" type="button">&#11015; Excel</button></div><div id="msrmsg"></div><div id="msrout"></div></div>';
+  out.insertAdjacentHTML('beforeend', h); mrScRangeLoad();
+}
+function mrScRangeLoad() {
+  var f = $('msrf').value.trim(), t = $('msrt').value.trim(), w = $('msrw').value;
+  if (!validD(f) || !validD(t)) return msg('msrmsg', 'Enter both dates in DD.MM.YYYY format.', 'err');
+  MR.srf = f; MR.srt = t; MR.srw = w; msg('msrmsg', ''); var b = $('msrgo'); busy(b, true, 'Loading...'); var seq = MR.srseq = (MR.srseq || 0) + 1;
+  rpc('scrap_range_json', { p_from: mrIso(f), p_to: mrIso(t), p_ws: w || null }).then(function (r) { busy(b, false); if (seq !== MR.srseq) return; MR.sr = r; MR.sr.f = f; MR.sr.t = t; MR.sr.w = w; mrScRangeDraw(); })
+    .catch(function (e) { busy(b, false); if (seq !== MR.srseq) return; $('msrout').innerHTML = ''; msg('msrmsg', esc(e.message), 'err'); });
+}
+function mrScRangeDraw() {
+  var r = MR.sr, o = $('msrout'); if (!o) return;
+  var h = '<div class="rrk"><div class="rrkc rrk-REPAIR"><i>SCRAP RECEIVED</i><b>' + scF(r.receive) + '</b><small>kg, repaired T/F x standard</small></div><div class="rrkc rrk-ASSEMBLY"><i>ISSUE FOR RECONDITIONING</i><b>' + scF(r.issue) + '</b><small>kg</small></div><div class="rrkc rrk-OVEN"><i>SCRAP AUCTIONED</i><b>' + scF(r.auction) + '</b><small>kg</small></div></div>';
+  h += '<div class="muted" style="font-size:12.5px;margin:4px 0 6px">' + esc(r.f) + ' to ' + esc(r.t) + ' &middot; ' + esc(r.w || 'All workshops') + ' &middot; dates on which scrap was issued or auctioned:</div>';
+  if (!r.rows.length) h += '<div class="msg info">No scrap was issued for reconditioning or auctioned in this period.</div>';
+  else {
+    h += '<div class="wrap"><table class="mkt" id="msrtb"><thead><tr><th>DATE</th><th class="l">WORKSHOP</th><th>ISSUE FOR RECONDITIONING</th><th>SCRAP AUCTIONED</th></tr></thead><tbody>';
+    r.rows.forEach(function (x) { h += '<tr><td>' + mrDmy(x[0]) + '</td><td class="l">' + esc(x[1]) + '</td><td>' + (x[2] ? scF(x[2]) : '') + '</td><td>' + (x[3] ? scF(x[3]) : '') + '</td></tr>'; });
+    h += '<tr class="t"><td colspan="2" class="l">TOTAL</td><td><b>' + scF(r.issue) + '</b></td><td><b>' + scF(r.auction) + '</b></td></tr></tbody></table></div>';
+  }
+  o.innerHTML = h;
+}
+document.addEventListener('click', function (e) {
+  var t = e.target; if (!t.closest) return;
+  if (t.closest('#msrgo')) { mrScRangeLoad(); return; }
+  if (t.closest('#msrxl')) {
+    var r = MR.sr; if (!r) return;
+    var rows = [['Period', r.f + ' to ' + r.t, 'Workshop', r.w || 'All workshops'], [], ['SCRAP RECEIVED (kg)', 'ISSUE FOR RECONDITIONING (kg)', 'SCRAP AUCTIONED (kg)'], [+r.receive, +r.issue, +r.auction], [], ['DATE', 'WORKSHOP', 'ISSUE FOR RECONDITIONING', 'SCRAP AUCTIONED']];
+    r.rows.forEach(function (x) { rows.push([mrDmy(x[0]), x[1], +x[2] || '', +x[3] || '']); }); rows.push(['TOTAL', '', +r.issue, +r.auction]);
+    xlsxDownload('Scrap_' + mrFile(r.f) + '_to_' + mrFile(r.t) + '.xlsx', [{ name: 'Scrap', rows: rows }]);
+  }
+});
+(function () { var o = mrScDraw; mrScDraw = function () { o(); mrScRangeCard(); }; })();
 function mrScTotal() {
   var tot = [0, 0, 0, 0, 0];
   document.querySelectorAll('#mstb tbody tr[data-w]').forEach(function (tr) {
@@ -5584,14 +5659,50 @@ function sirDataPrep(force) {
 }
 function sirDataFill() {
   if (!DCOL_BASE) DCOL_BASE = DCOL.slice();
-  var on = !!SIRSET, has = DCOL.some(function (c) { return c[0] === 20; });
-  if (on && !has) { DCOL = DCOL_BASE.slice(); DCOL.splice(DCOL.length - 1, 0, [20, 'SIR', 'sir']); }
-  else if (!on && has) DCOL = DCOL_BASE.slice();
-  if (!on) { DROWS.forEach(function (r) { if (r.c.length > 20) r.c.length = 20; }); return; }
+  var on = !!SIRSET, has = DCOL.some(function (c) { return c[0] === 20; }), hasD = DCOL.some(function (c) { return c[0] === 21; });
+  if (on !== has || DTCON !== hasD) {
+    DCOL = DCOL_BASE.slice(); var ins = [];
+    if (DTCON) ins.push([21, 'DTC NO', 'dtc'], [22, 'DTC DATE', 'date']);
+    if (on) ins.push([20, 'SIR', 'sir']);
+    DCOL.splice.apply(DCOL, [DCOL.length - 1, 0].concat(ins));
+  }
   DROWS.forEach(function (r) {
+    if (!on) { r.c[20] = ''; return; }
     var cap = parseInt(r.c[5], 10), pr = String(r.c[8] || '').trim();
     r.c[20] = (cap >= 100 && pr && !(typeof isDupFirm === 'function' && isDupFirm(r.c[12]))) ? (SIRSET[sirNorm(pr)] ? 'DONE' : 'PENDING') : '';
   });
+}
+/* ---- Data Sheet: DTC NO + DTC DATE (before SIR). Typed here, saved with mr_dtc_set; M&R Summary still counts them ---- */
+var DTCON = false, DTCBUSY = false;
+function dtcDataPrep() {
+  DTCON = false; DROWS.forEach(function (r) { r.did = 0; r.ded = false; r.dS = null; });
+  if (!(typeof mrAccess === 'function' && mrAccess())) return Promise.resolve();
+  var keys = DROWS.filter(function (r) { return r.k; }).map(function (r) { return r.k; }), parts = [];
+  for (var i = 0; i < keys.length; i += 1500) parts.push(keys.slice(i, i + 1500));
+  if (!parts.length) { DTCON = true; return Promise.resolve(); }
+  return Promise.all(parts.map(function (ks) { return rpc('dtc_map_json', { p_keys: ks }); })).then(function (a) {
+    var m = {}; a.forEach(function (x) { if (x && x.ok) { DTCON = true; (x.rows || []).forEach(function (y) { m[y[0] + '\u0001' + y[1]] = y; }); } });
+    if (!DTCON) return;
+    DROWS.forEach(function (r) { var y = r.k && m[r.k[0] + '\u0001' + r.k[1]]; r.c[21] = y ? y[3] : ''; r.c[22] = y ? y[4] : ''; if (y) { r.did = y[2]; r.ded = !!y[5]; r.dS = [y[3], y[4]]; } });
+  }).catch(function (e) { DTCON = false; try { msg('dmsg', 'DTC columns not shown: ' + esc(e.message), 'info'); } catch (x) { } });
+}
+function dtcFlush() {
+  if (!DTCON || DTCBUSY) return Promise.resolve();
+  var jobs = DROWS.filter(function (r) {
+    if (!r.did || !r.ded) return false;
+    var n = String(r.c[21] == null ? '' : r.c[21]).trim(), d = normDate(r.c[22]);
+    return !r.dS || n !== r.dS[0] || d !== r.dS[1];
+  });
+  if (!jobs.length) return Promise.resolve();
+  DTCBUSY = true; dstat('Saving DTC...'); var n = 0, bad = 0;
+  return jobs.reduce(function (p, r) {
+    return p.then(function () {
+      var no = String(r.c[21] == null ? '' : r.c[21]).trim(), nd = normDate(r.c[22]);
+      if (nd && !d2i(nd)) { bad++; msg('dmsg', 'DTC date must be DD.MM.YYYY (PR ' + esc(r.k[1]) + ').', 'err'); return; }
+      return rpc('mr_dtc_set', { p_id: r.did, p_no: no, p_date: nd ? d2i(nd) : null }).then(function () { r.dS = [no, nd]; r.c[21] = no; r.c[22] = nd; n++; })
+        .catch(function (e) { bad++; msg('dmsg', 'DTC not saved: ' + esc(e.message), 'err'); });
+    });
+  }, Promise.resolve()).then(function () { DTCBUSY = false; dstat(bad ? 'DTC: ' + bad + ' not saved' : (n ? 'DTC saved (' + n + ')' : ''), bad ? 'bad' : 'ok'); });
 }
 
 </script>
