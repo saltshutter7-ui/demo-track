@@ -873,7 +873,7 @@ header .u{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowr
 :is(#sout,.soutp) .k-div thead th:not(.l){background:#f9b572;color:#000;border-color:#e8a15c}
 :is(#sout,.soutp) .k-div tr.d td{background:#fff;color:#000}
 :is(#sout,.soutp) .k-div tr.d td.l{font-weight:700;font-size:12px}
-:is(#sout,.soutp) .k-div tr.d.e td,:is(#sout,.soutp) .k-div tr.d.e td.l{background:#ffe599}
+:is(#sout,.soutp) .k-div tr.d.e td,:is(#sout,.soutp) .k-div tr.d.e td.l{background:#c9daf8;color:#1c3d7a;font-weight:800}:is(#sout,.soutp) .k-div tr.d.e td.l a.n,:is(#sout,.soutp) .k-div tr.d.e td a.n{color:#1c3d7a}
 :is(#sout,.soutp) .k-div tr.w td,:is(#sout,.soutp) .k-div tr.w td.l{background:#ffe599;color:#000;font-weight:800;font-size:15px;text-align:center}
 :is(#sout,.soutp) .k-div tr.w.wgrey td,:is(#sout,.soutp) .k-div tr.w.wgrey td.l{background:#efefef}
 :is(#sout,.soutp) .k-div tr.t td,:is(#sout,.soutp) .k-div tr.t td.l{background:#ffff00;color:#000;font-weight:800;font-size:15px;text-align:center;border-top:1px solid #000}
@@ -1157,7 +1157,7 @@ table.cmpt input.ci{width:70px;text-align:center;font:inherit;font-weight:800;bo
  #sout .k-div th.l{font-size:7px!important}
  #sout .k-div th.l,#sout .k-ws th.l{background:#f2e8d9!important;color:#2a2118!important}
  #sout .k-div thead th:not(.l){background:#f2e8d9!important;color:#2a2118!important;border-color:#e3d8c8!important}
- #sout .k-div tr.d.e td{background:#fff1d6!important}
+ #sout .k-div tr.d.e td{background:#c9daf8!important;color:#1c3d7a!important}#sout .k-div tr.d.e td.l[data-sh]::after,#sout .k-div tr.d.e td.l a[data-sh]::after{color:#1c3d7a!important}
  #sout .k-div tr.w td{background:#f6e6cf!important}#sout .k-div tr.t td{background:#efdcc0!important;border-top:1px solid #c9b79d!important}
 }
 .skpi{display:flex;gap:12px;margin-bottom:14px}
@@ -1947,6 +1947,23 @@ body.mr-on .msg{animation:mrUp .35s both}
 .rrt.xg tr.empty td{color:#94a3b8!important}
 @media(max-width:640px){.rrk{gap:6px}.rrkc{padding:8px 9px}.rrkc b{font-size:20px}.rrh{padding:8px 10px 2px}}
 td.gc.dtc input{background:#f2f7ff}td.gc.dtc.lk input{background:#f4f4f4}
+#login.scr.home{transform-origin:top center}
+
+/* Comparison: day-wise PR & Repair */
+#dwov{position:fixed;inset:0;z-index:300;background:rgba(20,16,10,.55);display:flex;align-items:flex-start;justify-content:center;padding:3vh 10px;overflow:auto;animation:mrFade .25s both}
+#dwov.hide{display:none}
+#dwov .box{background:#fff;border-radius:14px;max-width:1700px;width:100%;padding:12px 14px 16px;box-shadow:0 20px 60px rgba(0,0,0,.35);animation:mrPop .4s cubic-bezier(.2,.8,.2,1) both}
+#dwov .hd{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;font-size:16px}
+.dwrow{display:flex;gap:26px;align-items:flex-start;overflow:auto;padding-bottom:6px}
+.dwcol h4{margin:0 0 6px;font-size:13px;letter-spacing:.6px;color:#1c3d7a}
+table.dwt{border-collapse:collapse;font-size:13px;background:#fff;color:#000}
+table.dwt th,table.dwt td{border:1px solid #c9cfdb;padding:3px 9px;text-align:center;white-space:nowrap}
+table.dwt th.dwy{background:#ffff00;font-size:17px;font-weight:800;padding:4px 10px}
+table.dwt thead tr+tr th{background:#e8eef9;font-weight:700}
+table.dwt td.dwd{font-weight:700;text-align:left}
+table.dwt td.dwtt{font-weight:800;font-size:15px}
+table.dwt td.dwdf{font-weight:800}table.dwt td.dwdf.neg{color:#c00}
+table.dwt tr.dwT td{background:#ffff00;font-weight:800;font-size:14px}
 nav button#tmr{margin-top:auto}
 #mrnav button#mrr{margin-top:auto;border:2px solid #c2410c!important;color:#c2410c!important}
 @media (max-width:700px){nav button#tmr{margin-top:0}#mrnav button#mrr{margin-top:0;border:0!important;background:linear-gradient(135deg,#7a3bd8,#3b4fd8)!important;color:#fff!important}}
@@ -2100,7 +2117,7 @@ nav button#tmr{margin-top:auto}
           <div><label>From</label><div class="dt"><input type="text" class="dtx" id="cf" inputmode="numeric" placeholder="DD.MM.YYYY"><span class="calw">&#128197;<input type="date" data-c="cf"></span></div></div>
           <div><label>To</label><div class="dt"><input type="text" class="dtx" id="cto" inputmode="numeric" placeholder="DD.MM.YYYY"><span class="calw">&#128197;<input type="date" data-c="cto"></span></div></div>
           <div><label>Workshop</label><select id="cws"><option value="">All workshops</option></select></div>
-          <button class="btn" id="cbtn">Show Comparison</button><button class="btn sec" id="cxl">&#11015; Excel</button><button class="btn sec" id="cpr">Print</button>
+          <button class="btn" id="cbtn">Show Comparison</button><button class="btn sec" id="cxl">&#11015; Excel</button><button class="btn sec" id="cpr">Print</button><button class="btn sec" id="cdw" type="button" title="Day-wise PR &amp; Repair comparison"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:5px"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 10h18M8 2v4M16 2v4M8 14h2M12 14h2M16 14h.01M8 18h2M12 18h2"/></svg>Day-wise PR &amp; Repair</button>
         </div>
       </div>
       <div id="cmsg"></div>
@@ -2186,6 +2203,7 @@ nav button#tmr{margin-top:auto}
 
     <!-- CHAMBER ASSEMBLY -->
 
+    <div id="dwov" class="hide"><div class="box"><div class="hd"><b>Day-wise PR &amp; Repair comparison</b><span class="muted" id="dwsub" style="flex:1"></span><button class="btn sec sm" id="dwxl" type="button">&#11015; Excel</button><button class="btn sec sm" id="dwx" type="button">Close &#10005;</button></div><div id="dwmsg"></div><div id="dwb"></div></div></div>
     <div id="chmov" class="hide"><div class="box"><div class="hd"><b id="chmt">Chamber Assembly Report</b><button class="btn sec sm" id="chmpr" type="button">&#128424; Print</button><button class="btn sec sm" id="chmxl" type="button">&#11015; Excel</button><button class="btn sec sm hide" id="chmbase" type="button">Start figures (Admin)</button><button class="btn sec sm" id="chmx" type="button">Close &#10005;</button></div><div class="muted" style="font-size:12px;margin:-2px 0 6px">Select cells like in Excel (drag with the mouse, Shift+click, or Ctrl+A), press Ctrl+C and paste in Excel.</div><div id="chmmsg"></div><div id="chmbw" class="hide"></div><div id="chmb"></div></div></div>
     <!-- SCRAP -->
     <section id="t-mrsc" class="hide">
@@ -3881,6 +3899,89 @@ function cmpLoad() {
 }
 $('cws').onchange = function () { CSEL = $('cws').value; if (CMP) { CMP.rows = cmpBuild(CMP.raw, CMP.yc, CMP.yp); cmpDraw(); } };
 $('cbtn').onclick = function () { cmpLoad(); };
+
+/* ---- Comparison: day-wise PR & Repair (selected dates against the same dates of last year) ---- */
+var DW = null;
+function dwIso(d) { return d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate()); }
+function dwLy(d) { return (d.getMonth() === 1 && d.getDate() === 29) ? new Date(d.getFullYear() - 1, 1, 28) : new Date(d.getFullYear() - 1, d.getMonth(), d.getDate()); }
+function dwTitle(d) { return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][d.getMonth()] + '-' + String(d.getFullYear()).slice(2); }
+function dwWs() { var l = CWS.length ? CMPW() : WSL_SORTED(); return l.length ? l : WSL_SORTED(); }
+function dwNm(w) { return w.charAt(0) + w.slice(1).toLowerCase(); }
+function dwBuild() {
+  var D = DW, f = parseD(D.f), t = parseD(D.t), ws = dwWs(), days = [];
+  for (var d = new Date(f.getFullYear(), f.getMonth(), f.getDate()); d <= t; d.setDate(d.getDate() + 1)) days.push(new Date(d.getTime()));
+  var same = f.getMonth() === t.getMonth() && f.getFullYear() === t.getFullYear();
+  var lyT = same ? dwTitle(dwLy(f)) : D.f.slice(0, 6) + (f.getFullYear() - 1) + ' to ...', cyT = same ? dwTitle(f) : D.f + ' to ' + D.t;
+  if (!same) lyT = fmt(dwLy(f)) + ' to ' + fmt(dwLy(t));
+  var out = {};
+  ['pr', 'rp'].forEach(function (k) {
+    var M = { c: {}, p: {} }; (D.r[k] || []).forEach(function (x) { M[x[0]][x[1] + '|' + x[2]] = (M[x[0]][x[1] + '|' + x[2]] || 0) + x[3]; });
+    var rows = [], tc = ws.map(function () { return 0; }), tp = ws.map(function () { return 0; });
+    days.forEach(function (d) {
+      var ly = dwLy(d), c = ws.map(function (w) { return M.c[w + '|' + dwIso(d)] || 0; }), p = ws.map(function (w) { return M.p[w + '|' + dwIso(ly)] || 0; });
+      c.forEach(function (v, i) { tc[i] += v; }); p.forEach(function (v, i) { tp[i] += v; });
+      rows.push({ ld: fmt(ly), cd: fmt(d), p: p, c: c });
+    });
+    out[k] = { rows: rows, tp: tp, tc: tc };
+  });
+  return { ws: ws, lyT: lyT, cyT: cyT, k: out };
+}
+function dwSum(a) { return a.reduce(function (x, y) { return x + y; }, 0); }
+function dwTable(B, k, title) {
+  var n = B.ws.length, K = B.k[k], h = '<div class="dwcol"><h4>' + title + '</h4><table class="dwt"><thead><tr><th class="dwy" colspan="' + (n + 2) + '">' + esc(B.lyT) + '</th><th class="dwy" colspan="' + (n + 3) + '">' + esc(B.cyT) + '</th></tr><tr><th></th>' +
+    B.ws.map(function (w) { return '<th>' + esc(dwNm(w)) + '</th>'; }).join('') + '<th>TOTAL</th><th></th>' + B.ws.map(function (w) { return '<th>' + esc(dwNm(w)) + '</th>'; }).join('') + '<th>TOTAL</th><th>DIFF.</th></tr></thead><tbody>';
+  K.rows.forEach(function (r) {
+    var a = dwSum(r.p), b = dwSum(r.c), df = b - a;
+    h += '<tr><td class="dwd">' + r.ld + '</td>' + r.p.map(function (v) { return '<td>' + v + '</td>'; }).join('') + '<td class="dwtt">' + a + '</td><td class="dwd">' + r.cd + '</td>' + r.c.map(function (v) { return '<td>' + v + '</td>'; }).join('') + '<td class="dwtt">' + b + '</td><td class="dwdf' + (df < 0 ? ' neg' : '') + '">' + df + '</td></tr>';
+  });
+  var A = dwSum(K.tp), Bt = dwSum(K.tc);
+  h += '<tr class="dwT"><td>TOTAL</td>' + K.tp.map(function (v) { return '<td>' + v + '</td>'; }).join('') + '<td>' + A + '</td><td>TOTAL</td>' + K.tc.map(function (v) { return '<td>' + v + '</td>'; }).join('') + '<td>' + Bt + '</td><td>' + (Bt - A) + '</td></tr></tbody></table></div>';
+  return h;
+}
+function dwDraw() {
+  var B = dwBuild(); DW.B = B;
+  $('dwb').innerHTML = '<div class="dwrow">' + dwTable(B, 'pr', 'PR (by PR date)') + dwTable(B, 'rp', 'REPAIR (as typed in the Repair tab)') + '</div><div class="muted" style="font-size:12px;margin-top:8px">Left block = the same dates of last year, right block = the selected dates. DIFF. = this year &minus; last year. Repair = T/F repaired as filled by the users in the Repair tab.</div>';
+}
+function dwOpen() {
+  var f = $('cf').value.trim(), t = $('cto').value.trim();
+  if (!validD(f) || !validD(t)) { msg('cmsg', 'Enter both dates in DD.MM.YYYY format.', 'err'); return; }
+  if (parseD(f) > parseD(t)) { msg('cmsg', 'The "From" date cannot be later than the "To" date.', 'err'); return; }
+  $('dwov').classList.remove('hide'); $('dwsub').textContent = f + ' to ' + t; msg('dwmsg', '<span class="sp" style="border-color:#3b5bdb55;border-top-color:#3b5bdb"></span>Loading...', 'info'); $('dwb').innerHTML = '';
+  var seq = DW = { f: f, t: t, seq: Date.now() }, mine = seq;
+  rpc('daywise_json', { p_from: d2i(f), p_to: d2i(t) }).then(function (r) { if (DW !== mine) return; DW.r = r || {}; msg('dwmsg', ''); dwDraw(); })
+    .catch(function (e) { if (DW === mine) { $('dwb').innerHTML = ''; msg('dwmsg', esc(e.message), 'err'); } });
+}
+$('cdw').onclick = dwOpen;
+$('dwx').onclick = function () { $('dwov').classList.add('hide'); };
+$('dwov').addEventListener('mousedown', function (e) { if (e.target === this) this.classList.add('hide'); });
+$('dwxl').onclick = function () {
+  if (!DW || !DW.B) return; var B = DW.B, n = B.ws.length, W = 2 * n + 5, rows = [], mg = [], cw = [];
+  var blank = function () { var a = []; for (var i = 0; i < 2 * W + 1; i++) a.push(''); return a; };
+  var r0 = blank(), r1 = blank();
+  ['pr', 'rp'].forEach(function (k, ti) {
+    var o = ti * (W + 1), K = B.k[k];
+    r0[o] = { v: B.lyT, s: 8 }; for (var i = 1; i < n + 2; i++) r0[o + i] = { v: '', s: 8 }; mg.push([0, o, 0, o + n + 1]);
+    r0[o + n + 2] = { v: B.cyT, s: 8 }; for (i = 1; i < n + 3; i++) r0[o + n + 2 + i] = { v: '', s: 8 }; mg.push([0, o + n + 2, 0, o + W - 1]);
+    r1[o] = { v: '', s: 5 }; B.ws.forEach(function (w, i) { r1[o + 1 + i] = { v: dwNm(w), s: 5 }; r1[o + n + 3 + i] = { v: dwNm(w), s: 5 }; });
+    r1[o + n + 1] = { v: 'TOTAL', s: 5 }; r1[o + n + 2] = { v: '', s: 5 }; r1[o + W - 2] = { v: 'TOTAL', s: 5 }; r1[o + W - 1] = { v: 'DIFF.', s: 5 };
+  });
+  rows.push(r0); rows.push(r1);
+  var N = B.k.pr.rows.length;
+  for (var j = 0; j <= N; j++) {
+    var line = blank();
+    ['pr', 'rp'].forEach(function (k, ti) {
+      var o = ti * (W + 1), K = B.k[k], tot = j === N, r = tot ? null : K.rows[j];
+      var P = tot ? K.tp : r.p, C = tot ? K.tc : r.c, a = dwSum(P), b = dwSum(C), st = tot ? 8 : 4;
+      line[o] = { v: tot ? 'TOTAL' : r.ld, s: tot ? 8 : 11 }; P.forEach(function (v, i) { line[o + 1 + i] = { v: v, s: st }; }); line[o + n + 1] = { v: a, s: tot ? 8 : 5 };
+      line[o + n + 2] = { v: tot ? 'TOTAL' : r.cd, s: tot ? 8 : 11 }; C.forEach(function (v, i) { line[o + n + 3 + i] = { v: v, s: st }; }); line[o + W - 2] = { v: b, s: tot ? 8 : 5 };
+      line[o + W - 1] = { v: b - a, s: tot ? 8 : (b - a < 0 ? 9 : 5) };
+    });
+    rows.push(line);
+  }
+  for (var c = 0; c < 2 * W + 1; c++) { var m = c % (W + 1); cw.push(m === W ? 3 : (m === 0 || m === n + 2) ? 13 : (m === n + 1 || m === W - 2) ? 9 : m === W - 1 ? 8 : 11); }
+  xlsxDownload('Daywise_PR_Repair_' + mrFile(DW.f) + '_to_' + mrFile(DW.t) + '.xlsx', [{ name: 'Day-wise', rows: rows, merges: mg, cw: cw }]);
+};
+
 ['cf', 'cto'].forEach(function (id) { $(id).addEventListener('keydown', function (e) { if (e.key === 'Enter') cmpLoad(); }); });
 $('cmpout').addEventListener('change', function (e) {
   var el = e.target; if (!el.matches || !el.matches('input.ci')) return;
@@ -5813,6 +5914,15 @@ function dtcFlush() {
   }, Promise.resolve()).then(function () { DTCBUSY = false; dstat(bad ? 'DTC: ' + bad + ' not saved' : (n ? 'DTC saved (' + n + ')' : ''), bad ? 'bad' : 'ok'); });
 }
 
+/* Home screen: grows with the screen (big monitors) - phones keep the normal size */
+function homeFit() {
+  var el = document.getElementById('login'); if (!el) return;
+  el.style.zoom = ''; if (!document.body.classList.contains('on-home') || el.classList.contains('hide') || window.innerWidth < 900) return;
+  var h = el.offsetHeight || 700, z = Math.min(1.9, Math.max(1, window.innerHeight / (h * 0.8)), window.innerWidth / 640);
+  if (z > 1.02) el.style.zoom = z.toFixed(2);
+}
+window.addEventListener('resize', homeFit); window.addEventListener('load', function () { setTimeout(homeFit, 50); });
+new MutationObserver(function () { setTimeout(homeFit, 30); }).observe(document.body, { attributes: true, attributeFilter: ['class'] });
 </script>
 <script>if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(function () {});</script>
 </body>

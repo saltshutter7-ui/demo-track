@@ -3104,3 +3104,31 @@ end $$;
 revoke all on function public.kitty_lyk_json(date), public.kitty_lyk_set(text, date, jsonb) from public, anon;
 grant execute on function public.kitty_lyk_json(date), public.kitty_lyk_set(text, date, jsonb) to authenticated;
 notify pgrst, 'reload schema';
+
+-- ================================================================================================================
+-- STEP 83 : Comparison - day-wise PR and Repair (selected dates against the same dates of last year)
+-- PR = PRs of the Data Sheet by PR date (duplicates not counted, like the Comparison). Repair = the REPAIR block of the Repair tab.
+-- Safe to run again.
+-- ================================================================================================================
+create or replace function public.daywise_json(p_from date, p_to date) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare c public.profiles := public.tf_caller(); pf date := (p_from - interval '1 year')::date; pt date := (p_to - interval '1 year')::date; ws text[]; a jsonb; b jsonb;
+begin
+  if c.user_id is null or not c.active or c.role not in ('admin', 'je', 'discom', 'creator') then raise exception 'Not allowed.'; end if;
+  if p_from is null or p_to is null or p_from > p_to then raise exception 'Choose the From and To dates.'; end if;
+  if p_to - p_from > 400 then raise exception 'Choose a period of up to 13 months.'; end if;
+  select coalesce(array_agg(name), '{}') into ws from public.workshops
+   where c.role in ('discom', 'creator') or c.org_division is null or org_division = c.org_division;
+  select coalesce(jsonb_agg(jsonb_build_array(per, workshop, day, n)), '[]'::jsonb) into a from (
+    select 'c'::text per, d.workshop, d.pr_date day, count(*) n from public.data d where not d.dup and d.workshop = any (ws) and d.pr_date between p_from and p_to group by 2, 3
+    union all
+    select 'p', d.workshop, d.pr_date, count(*) from public.data d where not d.dup and d.workshop = any (ws) and d.pr_date between pf and pt group by 2, 3) q;
+  select coalesce(jsonb_agg(jsonb_build_array(per, workshop, day, n)), '[]'::jsonb) into b from (
+    select 'c'::text per, e.workshop, e.day, sum(e.qty)::int n from public.rr_entry e where e.block = 'REPAIR' and e.workshop = any (ws) and e.day between p_from and p_to group by 2, 3
+    union all
+    select 'p', e.workshop, e.day, sum(e.qty)::int from public.rr_entry e where e.block = 'REPAIR' and e.workshop = any (ws) and e.day between pf and pt group by 2, 3) q;
+  return jsonb_build_object('pr', a, 'rp', b);
+end $$;
+revoke all on function public.daywise_json(date, date) from public, anon;
+grant execute on function public.daywise_json(date, date) to authenticated;
+notify pgrst, 'reload schema';
