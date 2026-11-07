@@ -4841,7 +4841,7 @@ function mrKitLoad(force) {
 // the kitty of a workshop (or of all), with UNREPAIRED T/F taken from the Chamber Assembly report so both always show the same figure
 function mrKitFetch(ws, day) {
   var all = ws === '__ALL__', list = all ? mrWs() : [ws];
-  return Promise.all([Promise.all(list.map(function (w) { return rpc('kitty_json', { p_ws: w, p_day: day }).catch(function (e) { if (!all) throw e; return null; }); })), rpc('ch_report_json', { p_day: day }).catch(function () { return null; })]).then(function (a) {
+  return Promise.all([Promise.all(list.map(function (w) { return rpc('kitty_json', { p_ws: w, p_day: day }).catch(function (e) { if (!all) throw e; return null; }); })), Promise.resolve(null)]).then(function (a) {
     var ks = a[0], ch = a[1], U = {};
     if (ch) (ch.rows || []).forEach(function (x) { U[x[0] + '|' + x[1]] = x[2]; });
     var out = { base: null, first: null, rows: [], edit: false, admin: false };
@@ -4870,24 +4870,25 @@ function mrKitDraw() {
     $('mkout').innerHTML = h + (adm ? mrBaseHtml(null) : ''); return;
   }
   var R = {}; r.rows.forEach(function (x) { R[x[0]] = x; });
-  h += '<div class="card"><div class="wrap"><table class="mkt xg"><thead><tr><th class="l">CAPACITY IN KVA</th><th>OPENING KITTY</th><th>UNREPAIRED T/F</th><th>ISSUE</th><th>REPAIR</th><th class="ed">ISSUE TO OTHER WORKSHOP</th><th class="ed">RECEIVE FROM OTHER W/S</th><th>NET KITTY</th></tr></thead><tbody>';
+  h += '<div class="card"><div class="wrap"><table class="mkt xg"><thead><tr><th class="l">CAPACITY IN KVA</th><th>OPENING KITTY</th><th>ISSUE</th><th>REPAIR</th><th class="ed">ISSUE TO OTHER WORKSHOP</th><th class="ed">RECEIVE FROM OTHER W/S</th><th>NET KITTY</th></tr></thead><tbody>';
   KCAPS.forEach(function (c) {
     var x = R[c] || [c, 0, 0, 0, 0, 0, 0, 0];
-    h += '<tr data-c="' + c + '"><td class="l">' + c + '</td><td class="o">' + x[1] + '</td><td class="u">' + x[2] + '</td><td class="i">' + x[3] + '</td><td class="repair"><b>' + x[4] + '</b></td><td class="ed to_other">' + mrKitInp(c, 'to_other', x[5], can) + '</td><td class="ed from_other">' + mrKitInp(c, 'from_other', x[6], can) + '</td><td class="n"><b>' + x[7] + '</b></td></tr>';
+    h += '<tr data-c="' + c + '"><td class="l">' + c + '</td><td class="o">' + x[1] + '</td><td class="i">' + x[3] + '</td><td class="repair"><b>' + x[4] + '</b></td><td class="ed to_other">' + mrKitInp(c, 'to_other', x[5], can) + '</td><td class="ed from_other">' + mrKitInp(c, 'from_other', x[6], can) + '</td><td class="n"><b>' + x[7] + '</b></td></tr>';
   });
-  h += '<tr class="t" id="mktot"><td class="l">TOTAL</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table></div>';
-  h += '<div class="bar" style="margin-top:10px"><span class="muted" style="font-size:12px;flex:1">Issue comes from the Data Sheet. <b>Repair comes from the Repair tab</b> (all firms, every day); here type only the issue to / receive from other workshop. <b>Unrepaired T/F is the same figure as in the Chamber Assembly report.</b> Net kitty = opening + repair + receive &minus; issue &minus; issue to other workshop.</span>' +
+  h += '<tr class="t" id="mktot"><td class="l">TOTAL</td><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table></div>';
+  h += '<div class="bar" style="margin-top:10px"><span class="muted" style="font-size:12px;flex:1">Issue comes from the Data Sheet. <b>Repair comes from the Repair tab</b> (all firms, every day); here type only the issue to / receive from other workshop. Unrepaired T/F is shown only in the Chamber Assembly report. Typing is saved by itself. Net kitty = opening + repair + receive &minus; issue &minus; issue to other workshop.</span>' +
     (can ? '<button class="btn" id="mksave" type="button" disabled>Save kitty</button>' : '') + (adm ? '<button class="btn sec" id="mkbase" type="button">Start figures (Admin)</button>' : '') + '<button class="btn sec" id="mkxl" type="button">&#11015; Excel</button></div></div>';
+  h += mrLykHtml();
   h += (isAll ? '<div class="muted" style="font-size:12.5px">All workshops together (view only). Choose one workshop to type, save or check the need.</div>' : mrNeedHtml());
-  $('mkout').innerHTML = h + (adm ? '<div id="mkbw" class="hide"></div>' : ''); mrKitTotal();
+  $('mkout').innerHTML = h + (adm ? '<div id="mkbw" class="hide"></div>' : ''); mrKitTotal(); if (MR.lkOn) mrLykLoad();
 }
 function mrKitTotal() {
-  var tot = [0, 0, 0, 0, 0, 0, 0];
+  var tot = [0, 0, 0, 0, 0, 0];
   document.querySelectorAll('#mkout .mkt tbody tr[data-c]').forEach(function (tr) {
     var g = function (k) { var i = tr.querySelector('[data-k="' + k + '"]'); return i ? Math.max(0, parseInt(i.value, 10) || 0) : (+tr.querySelector('td.' + k).textContent || 0); };
-    var o = +tr.querySelector('.o').textContent, u = +tr.querySelector('.u').textContent, is = +tr.querySelector('.i').textContent, rp = g('repair'), to = g('to_other'), fo = g('from_other');
+    var o = +tr.querySelector('.o').textContent, is = +tr.querySelector('.i').textContent, rp = g('repair'), to = g('to_other'), fo = g('from_other');
     var net = o + rp + fo - is - to, n = tr.querySelector('.n'); n.innerHTML = '<b>' + net + '</b>'; n.classList.toggle('neg', net < 0);
-    [o, u, is, rp, to, fo, net].forEach(function (v, i) { tot[i] += v; });
+    [o, is, rp, to, fo, net].forEach(function (v, i) { tot[i] += v; });
   });
   var t = $('mktot'); if (t) [].forEach.call(t.children, function (td, i) { if (i) td.innerHTML = '<b>' + tot[i - 1] + '</b>'; });
 }
@@ -4914,7 +4915,7 @@ document.addEventListener('click', function (e) {
     busy(b, true, 'Saving...'); rpc('kitty_save', { p_ws: MR.kd.ws, p_day: mrIso(MR.kd.d), p_rows: rr }).then(function () { busy(b, false); mrKitLoad(true); setTimeout(function () { msg('mkmsg', 'Saved.', 'ok'); }, 0); }).catch(function (er) { busy(b, false); msg('mkmsg', esc(er.message), 'err'); }); return;
   }
   if ((b = t.closest('#mkxl'))) {
-    var rows2 = [['CAPACITY IN KVA', 'OPENING KITTY', 'UNREPAIRED T/F', 'ISSUE', 'REPAIR', 'ISSUE TO OTHER WORKSHOP', 'RECEIVE FROM OTHER W/S', 'NET KITTY']];
+    var rows2 = [['CAPACITY IN KVA', 'OPENING KITTY', 'ISSUE', 'REPAIR', 'ISSUE TO OTHER WORKSHOP', 'RECEIVE FROM OTHER W/S', 'NET KITTY']];
     document.querySelectorAll('#mkout .mkt tbody tr').forEach(function (tr) { rows2.push([].map.call(tr.children, function (td, i) { var inp = td.querySelector('input'), v = (inp ? inp.value : td.textContent).trim(); return i === 0 && v === 'TOTAL' ? v : (v === '' ? '' : +v); })); });
     xlsxDownload('Kitty_' + mrFile(MR.kd.ws === '__ALL__' ? 'All' : MR.kd.ws) + '_' + mrFile(MR.kd.d) + '.xlsx', [{ name: 'Kitty', rows: rows2, hdr: 1 }]);
   }
@@ -4988,6 +4989,113 @@ $('mklys').onclick = function () {
 };
 document.addEventListener('click', function (e) { var t = e.target; if (t.closest && t.closest('#mkneedb')) mrNeedLoad(); });
 document.addEventListener('keydown', function (e) { if (e.key === 'Enter' && e.target && e.target.id === 'mkdays') mrNeedLoad(); });
+
+
+/* ---- AUTOSAVE: typing is saved by itself (about 1 second after the last key) ---- */
+var AS = {}, AS_FN = {};
+function asRun(key, fn, ms) { AS_FN[key] = fn; clearTimeout(AS[key]); AS[key] = setTimeout(function () { AS[key] = 0; fn(); }, ms || 900); }
+function asFlushAll() { Object.keys(AS).forEach(function (k) { if (AS[k]) { clearTimeout(AS[k]); AS[k] = 0; try { AS_FN[k](); } catch (e) { } } }); }
+function asMsg(id, text, kind) { msg(id, text, kind); clearTimeout(AS['t_' + id]); if (kind === 'ok') AS['t_' + id] = setTimeout(function () { msg(id, ''); }, 2200); }
+window.addEventListener('beforeunload', asFlushAll);
+function mrKitAuto() {
+  var K = MR.kd; if (!K || !K.r || !K.r.edit || K.ws === '__ALL__') return;
+  var rr = [];
+  for (var j = 0; j < KCAPS.length; j++) { var c = KCAPS[j], a = document.querySelector('#mkout .mkn[data-c="' + c + '"][data-k="to_other"]'), b = document.querySelector('#mkout .mkn[data-c="' + c + '"][data-k="from_other"]'); if (!a || !b) return; rr.push({ cap: c, to_other: Math.max(0, parseInt(a.value, 10) || 0), from_other: Math.max(0, parseInt(b.value, 10) || 0) }); }
+  msg('mkmsg', 'Saving...', 'info');
+  rpc('kitty_save', { p_ws: K.ws, p_day: mrIso(K.d), p_rows: rr }).then(function () { asMsg('mkmsg', 'Saved', 'ok'); var sb = $('mksave'); if (sb) sb.disabled = true; }).catch(function (er) { msg('mkmsg', esc(er.message), 'err'); });
+}
+function mrRepAuto() {
+  var P = MR.pd; if (!P || !P.r || !P.r.edit || P.ws === '__ALL__' || !document.querySelector('#mpout .rq')) return;
+  msg('mpmsg', 'Saving...', 'info');
+  rpc('rr_save', { p_ws: P.ws, p_day: mrIso(P.d), p_rows: mrRepCollect() }).then(function () { asMsg('mpmsg', 'Saved', 'ok'); var sb = $('mpsave'); if (sb) sb.disabled = true; }).catch(function (er) { msg('mpmsg', esc(er.message), 'err'); });
+}
+function mrScAuto() {
+  if (!MR.sd) return; var day = mrIso(MR.sd.d), k = Promise.resolve(), by = {}, ins = document.querySelectorAll('#mstb .msn'); if (!ins.length) return;
+  ins.forEach(function (i) { var w = i.dataset.w; by[w] = by[w] || { issue: 0, auction: 0, dirty: false }; by[w][i.dataset.k] = parseFloat(i.value) || 0; if ((parseFloat(i.value) || 0) !== (parseFloat(i.dataset.o) || 0)) by[w].dirty = true; });
+  var n = 0; msg('msmsg', 'Saving...', 'info');
+  Object.keys(by).forEach(function (w) { if (by[w].dirty) { n++; k = k.then(function () { return rpc('scrap_save', { p_ws: w, p_day: day, p_issue: by[w].issue, p_auction: by[w].auction }); }); } });
+  k.then(function () { ins.forEach(function (i) { i.dataset.o = i.value; }); asMsg('msmsg', n ? 'Saved' : '', n ? 'ok' : ''); var sb = $('mssave'); if (sb) sb.disabled = true; }).catch(function (er) { msg('msmsg', esc(er.message), 'err'); });
+}
+document.addEventListener('input', function (e) {
+  var t = e.target; if (!t.classList) return;
+  if (t.classList.contains('mkn')) asRun('kit', mrKitAuto);
+  else if (t.classList.contains('rq') || t.classList.contains('rf')) asRun('rep', mrRepAuto);
+  else if (t.classList.contains('msn')) asRun('sc', mrScAuto);
+  else if (t.classList.contains('mkly')) asRun('ly', function () { var b = $('mklys'); if (b && !b.disabled) b.click(); });
+  else if (t.classList.contains('mklk')) asRun('lyk', mrLykSave, 800);
+});
+(function () {
+  ['mrKitLoad', 'mrRepLoad', 'mrScLoad'].forEach(function (n) { var o = window[n]; if (typeof o !== 'function') return; window[n] = function () { asFlushAll(); return o.apply(this, arguments); }; });
+})();
+
+
+/* ---- KITTY vs LAST YEAR: this year's net kitty against the kitty of the same date last year ---- */
+function lkChg(n) { return n > 0 ? '<b style="color:#15803d">&#9650; +' + n + '</b>' : n < 0 ? '<b style="color:#c00">&#9660; ' + n + '</b>' : '<b style="color:#64748b">0</b>'; }
+function mrLykHtml() {
+  return '<div class="card" id="mklk"><div class="bar" style="justify-content:space-between;align-items:center"><h3 style="margin:0">Kitty compared with last year <span class="muted" style="text-transform:none;font-weight:600">- same date, last year</span></h3><span><button class="btn" id="mklkb" type="button">Compare</button> <button class="btn sec hide" id="mklkxl" type="button">&#11015; Excel</button></span></div><div id="mklkmsg"></div><div id="mklkout"></div></div>';
+}
+function mrLykLoad() {
+  var K = MR.kd; if (!K || !K.r.base) return; MR.lkOn = true; var b = $('mklkb'); if (b) busy(b, true, 'Loading...'); msg('mklkmsg', '');
+  var seq = MR.lkseq = (MR.lkseq || 0) + 1;
+  rpc('kitty_lyk_json', { p_day: mrIso(K.d) }).then(function (r) { if (b) busy(b, false); if (seq !== MR.lkseq || !$('mklkout')) return; MR.lk = { r: r, ws: K.ws, d: K.d }; mrLykDraw(); })
+    .catch(function (er) { if (b) busy(b, false); if ($('mklkmsg')) msg('mklkmsg', esc(er.message), 'err'); });
+}
+function mrLykSel() {
+  var L = MR.lk, list = L.r.ws.filter(function (w) { return L.ws === '__ALL__' || w.ws === L.ws; });
+  return list;
+}
+function mrLykCap() {
+  var L = MR.lk, list = mrLykSel(), out = {};
+  KCAPS.forEach(function (c) { out[c] = [c, 0, 0]; });
+  list.forEach(function (w) { w.rows.forEach(function (x) { if (out[x[0]]) { out[x[0]][1] += x[1]; out[x[0]][2] += x[2]; } }); });
+  return KCAPS.map(function (c) { return out[c]; });
+}
+function mrLykDraw() {
+  var L = MR.lk, list = mrLykSel(), single = L.ws !== '__ALL__' && list.length === 1 ? list[0] : null, manual = !!(single && !single.auto && single.edit);
+  var h = '<div class="muted" style="font-size:12.5px;margin:8px 0 6px">Net kitty on <b>' + esc(L.d) + '</b> against <b>' + mrDmy(L.r.ly) + '</b>.</div><div class="wrap" id="mklkws"></div>';
+  h += '<div class="muted" style="font-size:12.5px;margin:12px 0 6px"><b>Capacity-wise</b> - ' + esc(L.ws === '__ALL__' ? 'all workshops' : L.ws) + (single && !single.auto ? ' &middot; <span style="color:#c2410c">last year\'s kitty of this date is not in the app' + (manual ? ' - type it here once, it is saved by itself' : '') + '</span>' : '') + '</div>';
+  h += '<div class="wrap"><table class="mkt xg" id="mklkt"><thead><tr><th class="l">CAPACITY IN KVA</th><th>THIS YEAR</th><th' + (manual ? ' class="ed"' : '') + '>LAST YEAR</th><th>CHANGE</th></tr></thead><tbody>';
+  mrLykCap().forEach(function (x) {
+    h += '<tr data-c="' + x[0] + '"><td class="l">' + x[0] + '</td><td class="cy">' + x[1] + '</td><td' + (manual ? ' class="ed"' : '') + '>' + (manual ? '<input type="text" inputmode="numeric" autocomplete="off" class="mklk" data-c="' + x[0] + '" value="' + x[2] + '">' : '<span class="cl">' + x[2] + '</span>') + '</td><td class="cc"></td></tr>';
+  });
+  h += '<tr class="t" id="mklkT"><td class="l">TOTAL</td><td></td><td></td><td></td></tr></tbody></table></div>';
+  $('mklkout').innerHTML = h; $('mklkxl').classList.remove('hide'); mrLykPaint();
+}
+function mrLykPaint() {
+  var L = MR.lk, list = mrLykSel(), tw = '<table class="mkt xg"><thead><tr><th class="l">NAME OF WORKSHOP</th><th>THIS YEAR</th><th>LAST YEAR</th><th>CHANGE</th><th>%</th></tr></thead><tbody>', a = 0, b = 0;
+  L.r.ws.forEach(function (w) {
+    var cy = 0, ly = 0; w.rows.forEach(function (x) { cy += x[1]; ly += x[2]; }); a += cy; b += ly;
+    tw += '<tr><td class="l"><b>' + esc(w.ws) + '</b>' + (w.auto ? '' : ' <span class="muted" style="font-size:11px">(typed)</span>') + '</td><td>' + cy + '</td><td>' + ly + '</td><td>' + lkChg(cy - ly) + '</td><td>' + (ly ? Math.round((cy - ly) * 1000 / Math.abs(ly)) / 10 + '%' : '-') + '</td></tr>';
+  });
+  tw += '<tr class="t"><td class="l">TOTAL</td><td><b>' + a + '</b></td><td><b>' + b + '</b></td><td>' + lkChg(a - b) + '</td><td>' + (b ? Math.round((a - b) * 1000 / Math.abs(b)) / 10 + '%' : '-') + '</td></tr></tbody></table>';
+  $('mklkws').innerHTML = tw;
+  var ct = 0, cl = 0;
+  document.querySelectorAll('#mklkt tbody tr[data-c]').forEach(function (tr) {
+    var cy = +tr.querySelector('.cy').textContent, i = tr.querySelector('.mklk'), ly = i ? (parseInt(i.value, 10) || 0) : +tr.querySelector('.cl').textContent;
+    tr.querySelector('.cc').innerHTML = lkChg(cy - ly); ct += cy; cl += ly;
+  });
+  var T = $('mklkT'); if (T) { T.children[1].innerHTML = '<b>' + ct + '</b>'; T.children[2].innerHTML = '<b>' + cl + '</b>'; T.children[3].innerHTML = lkChg(ct - cl); }
+}
+function mrLykSave() {
+  var L = MR.lk; if (!L || L.ws === '__ALL__') return; var w = L.r.ws.filter(function (x) { return x.ws === L.ws; })[0]; if (!w || w.auto || !w.edit) return;
+  var ins = document.querySelectorAll('#mklkt .mklk'); if (!ins.length) return;
+  var rows = [].map.call(ins, function (i) { return { cap: +i.dataset.c, qty: Math.max(0, parseInt(i.value, 10) || 0) }; });
+  rows.forEach(function (r) { w.rows.forEach(function (x) { if (x[0] === r.cap) x[2] = r.qty; }); });
+  msg('mklkmsg', 'Saving...', 'info');
+  rpc('kitty_lyk_set', { p_ws: L.ws, p_day: L.r.ly, p_rows: rows }).then(function () { asMsg('mklkmsg', 'Saved', 'ok'); mrLykPaint(); }).catch(function (er) { msg('mklkmsg', esc(er.message), 'err'); });
+}
+document.addEventListener('input', function (e) { if (e.target.classList && e.target.classList.contains('mklk')) { var v = e.target.value.replace(/\D/g, ''); if (v !== e.target.value) e.target.value = v; mrLykPaint(); } });
+document.addEventListener('click', function (e) {
+  var t = e.target; if (!t.closest) return;
+  if (t.closest('#mklkb')) { mrLykLoad(); return; }
+  if (t.closest('#mklkxl') && MR.lk) {
+    var L = MR.lk, rows = [['Net kitty on ' + L.d + ' against ' + mrDmy(L.r.ly)], [], ['NAME OF WORKSHOP', 'THIS YEAR', 'LAST YEAR', 'CHANGE']];
+    L.r.ws.forEach(function (w) { var a = 0, b = 0; w.rows.forEach(function (x) { a += x[1]; b += x[2]; }); rows.push([w.ws, a, b, a - b]); });
+    rows.push([]); rows.push(['CAPACITY IN KVA - ' + (L.ws === '__ALL__' ? 'All workshops' : L.ws), 'THIS YEAR', 'LAST YEAR', 'CHANGE']);
+    mrLykCap().forEach(function (x) { var i = document.querySelector('#mklkt .mklk[data-c="' + x[0] + '"]'); var ly = i ? (parseInt(i.value, 10) || 0) : x[2]; rows.push([x[0], x[1], ly, x[1] - ly]); });
+    xlsxDownload('Kitty_vs_LastYear_' + mrFile(L.ws === '__ALL__' ? 'All' : L.ws) + '_' + mrFile(L.d) + '.xlsx', [{ name: 'Kitty vs LY', rows: rows }]);
+  }
+});
 
 /* KITTY COMPARE: on top of the Kitty tab, for the date of the Kitty tab */
 function mrCmpLoad() {
@@ -5118,8 +5226,8 @@ document.addEventListener('click', function (e) {
   if (t.closest('#rradd')) { mrRepGrow(1); var ns = document.querySelectorAll('#mpout table.rrt[data-b="REPAIR"] .rf'); if (ns.length) ns[ns.length - 1].focus(); return; }
   if ((b = t.closest('.rrdel'))) {
     var tr2 = b.closest('tr'), p = [].indexOf.call(tr2.parentNode.querySelectorAll('tr[data-b]'), tr2), F = mrRepRead(), fn = (F[p] && F[p].firm || '').trim();
-    if (!confirm('Remove the firm' + (fn ? ' \"' + fn + '\"' : '') + ' from REPAIR, ASSEMBLY and OVEN?\n\nThe numbers of this firm are removed when you press Save.')) return;
-    F.splice(p, 1); mrRepRender(F, true); mrRepSaveOn(); return;
+    if (!confirm('Remove the firm' + (fn ? ' \"' + fn + '\"' : '') + ' from REPAIR, ASSEMBLY and OVEN?\n\nThe numbers of this firm will be removed.')) return;
+    F.splice(p, 1); mrRepRender(F, true); mrRepSaveOn(); asRun('rep', mrRepAuto, 150); return;
   }
   if ((b = t.closest('#mpsave'))) {
     busy(b, true, 'Saving...'); rpc('rr_save', { p_ws: MR.pd.ws, p_day: mrIso(MR.pd.d), p_rows: mrRepCollect() }).then(function () { busy(b, false); mrRepLoad(true); setTimeout(function () { msg('mpmsg', 'Saved.', 'ok'); }, 0); }).catch(function (er) { busy(b, false); msg('mpmsg', esc(er.message), 'err'); }); return;

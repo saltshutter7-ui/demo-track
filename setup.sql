@@ -3049,3 +3049,58 @@ begin
   end loop;
 end $$;
 notify pgrst, 'reload schema';
+
+-- ================================================================================================================
+-- STEP 81 : Kitty compared with last year (kitty of the same date last year)
+-- If the app already counted the kitty on that date last year it is used automatically; otherwise it is typed once
+-- (per workshop and date) and saved in kitty_lyk. Safe to run again.
+-- ================================================================================================================
+create table if not exists public.kitty_lyk (
+  workshop text not null, day date not null, cap int not null,
+  qty int not null default 0 check (qty >= 0),
+  by_login text, at timestamptz not null default now(),
+  primary key (workshop, day, cap)
+);
+alter table public.kitty_lyk enable row level security;
+revoke all on public.kitty_lyk from public, anon, authenticated;
+
+create or replace function public.kitty_lyk_json(p_day date) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare ly date := (p_day - interval '1 year')::date; w text; a jsonb; b jsonb; auto boolean; rows jsonb; outj jsonb := '[]'::jsonb;
+        caps int[] := array[10, 16, 25, 63, 100, 160, 250, 400, 630, 1000];
+begin
+  if not public.mr_ok() then raise exception 'No access to the M&R dashboard.'; end if;
+  foreach w in array public.my_workshops() loop
+    a := public.kitty_json(w, p_day);
+    if (a->>'base') is null then continue; end if;
+    b := public.kitty_json(w, ly);
+    auto := (b->>'base') is not null;
+    select jsonb_agg(jsonb_build_array(c,
+             coalesce((select (x->>7)::int from jsonb_array_elements(a->'rows') x where (x->>0)::int = c), 0),
+             case when auto then coalesce((select (x->>7)::int from jsonb_array_elements(b->'rows') x where (x->>0)::int = c), 0)
+                  else coalesce((select k.qty from public.kitty_lyk k where k.workshop = w and k.day = ly and k.cap = c), 0) end) order by c)
+      into rows from unnest(caps) c;
+    outj := outj || jsonb_build_array(jsonb_build_object('ws', w, 'auto', auto, 'edit', public.mr_edit_ok(w), 'rows', rows));
+  end loop;
+  return jsonb_build_object('ly', ly, 'ws', outj);
+end $$;
+
+create or replace function public.kitty_lyk_set(p_ws text, p_day date, p_rows jsonb) returns text
+language plpgsql security definer set search_path = public as $$
+declare e jsonb; c public.profiles := public.tf_caller(); n int := 0;
+begin
+  if not public.mr_edit_ok(p_ws) then raise exception 'You cannot change the kitty of this workshop.'; end if;
+  if p_day is null or p_day >= current_date then raise exception 'Choose a day of the past.'; end if;
+  for e in select * from jsonb_array_elements(coalesce(p_rows, '[]')) loop
+    if (e->>'cap')::int not in (10, 16, 25, 63, 100, 160, 250, 400, 630, 1000) then continue; end if;
+    if coalesce((e->>'qty')::int, 0) < 0 or coalesce((e->>'qty')::int, 0) > 100000 then raise exception 'Numbers must be 0 or more.'; end if;
+    insert into public.kitty_lyk(workshop, day, cap, qty, by_login, at) values (p_ws, p_day, (e->>'cap')::int, coalesce((e->>'qty')::int, 0), c.login_id, now())
+      on conflict (workshop, day, cap) do update set qty = excluded.qty, by_login = excluded.by_login, at = now();
+    n := n + 1;
+  end loop;
+  return 'saved ' || n;
+end $$;
+
+revoke all on function public.kitty_lyk_json(date), public.kitty_lyk_set(text, date, jsonb) from public, anon;
+grant execute on function public.kitty_lyk_json(date), public.kitty_lyk_set(text, date, jsonb) to authenticated;
+notify pgrst, 'reload schema';
