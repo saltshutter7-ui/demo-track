@@ -824,6 +824,20 @@ body.kdrag{user-select:none;-webkit-user-select:none;cursor:cell}
 .asub{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px;position:sticky;top:0;z-index:5;background:var(--bg,#f3f5fb);padding:6px 0}
 .asub button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 14px;font-size:12.5px;font-weight:700;color:var(--mut);cursor:pointer}
 .asub button.on{background:linear-gradient(135deg,#3b5bdb,#5c7cfa);color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(59,91,219,.28)}
+.achips{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:10px;margin:2px 0 14px}
+.achip{display:flex;align-items:center;gap:10px;text-align:left;padding:10px 12px;border:1px solid #e3d8c8;background:#fffdf8;border-radius:14px;cursor:pointer;color:#2a2118;font:inherit;transition:transform .15s,box-shadow .15s,border-color .15s,background .15s}
+.achip:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(120,80,30,.12)}
+.achip .ic{flex:none;width:36px;height:36px;border-radius:11px;display:grid;place-items:center;font-size:18px;background:var(--c,#eef1ff)}
+.achip b{display:block;font-size:13.5px;line-height:1.2}
+.achip small{display:block;font-size:11px;color:#7a6a58;margin-top:2px;line-height:1.25}
+.achip small.ok{color:#15803d;font-weight:700}.achip small.wn{color:#b45309;font-weight:700}
+.achip.on{border-color:#c2410c;background:#fff3e8;box-shadow:0 6px 18px rgba(194,65,12,.18)}
+.achip.on b{color:#9a3412}
+#t-adm .acard:not(.apg):not(.hide){animation:admIn .25s ease both}
+.apg{display:none!important}
+@keyframes admIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media(max-width:700px){.achips{grid-template-columns:1fr 1fr;gap:8px}.achip{padding:8px 9px;gap:8px}.achip .ic{width:30px;height:30px;font-size:16px}.achip b{font-size:12.5px}.achip small{font-size:10.5px}}
+@media(prefers-reduced-motion:reduce){#t-adm .acard{animation:none!important}.achip{transition:none}}
 .acard{border-top:3px solid #4c6ef5;border-radius:14px;margin-bottom:14px}.acard h3{margin:0 0 6px;font-size:15px}
 .meter{height:12px;border-radius:99px;background:#e8ecf6;overflow:hidden}.meter i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,#22c55e,#16a34a);transition:width .6s}
 .meter i.mid{background:linear-gradient(90deg,#fbbf24,#f59e0b)}.meter i.hi{background:linear-gradient(90deg,#f87171,#dc2626)}
@@ -1879,6 +1893,7 @@ nav button#mdtc::before{-webkit-mask-image:url("data:image/svg+xml,%3Csvg%20xmln
 nav button#mkit::before{-webkit-mask-image:url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2024%2024%22%20fill=%22none%22%20stroke=%22black%22%20stroke-width=%222%22%20stroke-linecap=%22round%22%20stroke-linejoin=%22round%22%3E%3Cpath%20d=%22M21%208l-9-5-9%205v8l9%205%209-5z%22/%3E%3Cpath%20d=%22M3%208l9%205%209-5M12%2013v8%22/%3E%3C/svg%3E");mask-image:url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2024%2024%22%20fill=%22none%22%20stroke=%22black%22%20stroke-width=%222%22%20stroke-linecap=%22round%22%20stroke-linejoin=%22round%22%3E%3Cpath%20d=%22M21%208l-9-5-9%205v8l9%205%209-5z%22/%3E%3Cpath%20d=%22M3%208l9%205%209-5M12%2013v8%22/%3E%3C/svg%3E")}
 nav button#mrep::before{-webkit-mask-image:url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2024%2024%22%20fill=%22none%22%20stroke=%22black%22%20stroke-width=%222%22%20stroke-linecap=%22round%22%20stroke-linejoin=%22round%22%3E%3Cpath%20d=%22M14.7%206.3a4%204%200%200%200-5.4%205.4L3%2018l3%203%206.3-6.3a4%204%200%200%200%205.4-5.4l-2.5%202.5-2.4-.6-.6-2.4z%22/%3E%3C/svg%3E");mask-image:url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2024%2024%22%20fill=%22none%22%20stroke=%22black%22%20stroke-width=%222%22%20stroke-linecap=%22round%22%20stroke-linejoin=%22round%22%3E%3Cpath%20d=%22M14.7%206.3a4%204%200%200%200-5.4%205.4L3%2018l3%203%206.3-6.3a4%204%200%200%200%205.4-5.4l-2.5%202.5-2.4-.6-.6-2.4z%22/%3E%3C/svg%3E")}
 nav button#msc::before{-webkit-mask-image:url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2024%2024%22%20fill=%22none%22%20stroke=%22black%22%20stroke-width=%222%22%20stroke-linecap=%22round%22%20stroke-linejoin=%22round%22%3E%3Cpath%20d=%22M14.7%206.3a4%204%200%200%200-5.4%205.4L3%2018l3%203%206.3-6.3a4%204%200%200%200%205.4-5.4l-2.5%202.5-2.4-.6-.6-2.4z%22/%3E%3C/svg%3E");mask-image:url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2024%2024%22%20fill=%22none%22%20stroke=%22black%22%20stroke-width=%222%22%20stroke-linecap=%22round%22%20stroke-linejoin=%22round%22%3E%3Cpath%20d=%22M14.7%206.3a4%204%200%200%200-5.4%205.4L3%2018l3%203%206.3-6.3a4%204%200%200%200%205.4-5.4l-2.5%202.5-2.4-.6-.6-2.4z%22/%3E%3C/svg%3E")}
+nav button#mtst::before{-webkit-mask-image:url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2024%2024%22%20fill=%22none%22%20stroke=%22black%22%20stroke-width=%222%22%20stroke-linecap=%22round%22%20stroke-linejoin=%22round%22%3E%3Crect%20x=%225%22%20y=%224%22%20width=%2214%22%20height=%2217%22%20rx=%222%22/%3E%3Cpath%20d=%22M9%204V3h6v1M9%2012l2%202%204-4M9%2018h6%22/%3E%3C/svg%3E");mask-image:url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2024%2024%22%20fill=%22none%22%20stroke=%22black%22%20stroke-width=%222%22%20stroke-linecap=%22round%22%20stroke-linejoin=%22round%22%3E%3Crect%20x=%225%22%20y=%224%22%20width=%2214%22%20height=%2217%22%20rx=%222%22/%3E%3Cpath%20d=%22M9%204V3h6v1M9%2012l2%202%204-4M9%2018h6%22/%3E%3C/svg%3E")}
 .mpchm{flex:1 1 auto;min-width:0;align-self:center;text-align:left}#chmov{position:fixed;inset:0;z-index:300;background:rgba(20,16,10,.55);display:flex;align-items:flex-start;justify-content:center;padding:4vh 10px;overflow:auto}#chmov .box{background:#fff;border-radius:14px;max-width:1300px;width:100%;padding:12px 14px;box-shadow:0 12px 40px rgba(0,0,0,.35)}#chmov .hd{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}#chmb table.chm{-webkit-user-select:none;user-select:none;cursor:cell}#chmb .chm td.csel,#chmb .chm th.csel{background:#bcd7ff!important;outline:1px solid #217346;outline-offset:-1px}#chmov .hd b{flex:1;font-size:15px}.mpchm table{border-collapse:collapse;font-size:11px;line-height:1.25;width:100%;background:#fff;color:#1a2a6c}.mpchm th,.mpchm td{border:1px solid #9aa4c8;padding:1px 4px;text-align:center;white-space:nowrap}.mpchm th{background:#e8ecfa;font-weight:700}.mpchm td.nm{text-align:left;font-weight:700;background:#f3f5fd}.mpchm tr.fin td{font-weight:700;background:#fff3d6}.mpchm .neg{color:#c0392b;font-weight:700}.mpchm .tt{font-weight:700;font-size:10px;letter-spacing:.04em;color:#5a6390;margin-bottom:2px}
 @media(max-width:700px){.sbar>div.mpchm{flex:1 1 100%!important;order:9;width:100%;grid-column:1/-1!important}}
 .chm{border-collapse:collapse;width:100%;font-family:"Times New Roman",Times,serif;font-size:14px;background:#fff;color:#1a2a6c}.chm td,.chm th{border:1px solid #222;padding:4px 6px;text-align:center;font-weight:400}.chm th{font-weight:700;background:#fff;text-transform:none;font-size:14px;letter-spacing:0}.chm th.nm{font-size:14px}.chm .nm{width:150px;font-weight:700;color:#1a2a6c}.chm .ttl{font-weight:700;font-size:15px}.chm td.g,.chm th.g{background:#cfe89a;font-weight:700}.chm tr.fin td{background:#fff200;font-weight:700;font-size:16px;color:#1a2a6c}.chm td.neg{color:#c00}.chm td.dt{text-align:right;font-weight:700;border:1px solid #222}.chm td.e{border:0;height:10px}
@@ -1964,6 +1979,129 @@ table.dwt td.dwd{font-weight:700;text-align:left}
 table.dwt td.dwtt{font-weight:800;font-size:15px}
 table.dwt td.dwdf{font-weight:800}table.dwt td.dwdf.neg{color:#c00}
 table.dwt tr.dwT td{background:#ffff00;font-weight:800;font-size:14px}
+
+/* M&R: pending DTC pop-up */
+.pdk{cursor:pointer;text-decoration:underline;text-underline-offset:2px}.pdk:hover{filter:brightness(.9)}
+#pdov{position:fixed;inset:0;z-index:300;background:rgba(20,16,10,.55);display:flex;align-items:flex-start;justify-content:center;padding:3vh 10px;overflow:auto;animation:mrFade .25s both}
+#pdov.hide{display:none}
+#pdov .box{background:#fff;border-radius:14px;max-width:1700px;width:100%;padding:12px 14px 16px;box-shadow:0 20px 60px rgba(0,0,0,.35);animation:mrPop .4s cubic-bezier(.2,.8,.2,1) both}
+#pdov .hd{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;font-size:16px}
+#pdt{border-collapse:collapse;width:100%;font-size:12.5px;background:#fff}
+#pdt th{background:#eef0fb;color:#2c3a8c;padding:7px 6px;border:1px solid #cfd6f3;font-size:11px;text-align:left;white-space:nowrap;position:sticky;top:0;z-index:1}
+#pdt th.ed{background:#fff1e3;color:#c2410c;border-color:#f2c9a5}
+#pdt td{padding:5px 6px;border:1px solid #e6e6ef}#pdt td.lk{background:#f6f6fa;color:#555}#pdt td.ed{background:#fffaf4}
+#pdt input{width:100%;min-width:100px;border:1.5px solid #e8a672;border-radius:6px;padding:5px 7px;font-size:13px;background:#fff;color:#222}
+#pdt tr.dirty td.ed{background:#ffe9c7}
+
+/* Repair tab: everything on one screen, and the Repair summary pop-up */
+.rrt.xg td>input{height:calc(var(--rh,33px) - 2px)!important;padding-top:0!important;padding-bottom:0!important;line-height:1}
+.rrt.xg td{height:var(--rh,33px)!important;padding-top:0!important;padding-bottom:0!important}.rrt.xg td>input{box-sizing:border-box;font-size:12.5px}
+.rrt.xg td.bl,.rrt.xg td.tt{line-height:1.1}
+.rrt.xg td.x button{width:min(26px,calc(var(--rh,33px) - 2px))!important;height:min(26px,calc(var(--rh,33px) - 2px))!important;padding:0!important;font-size:12px;line-height:1}
+@media(min-width:901px){
+ .rrk{margin-bottom:8px}.rrkc{flex-direction:row;align-items:baseline;gap:10px;padding:6px 14px}.rrkc small{display:none}.rrkc b{font-size:22px}
+ .rrc{margin-bottom:8px}.rrh{padding:5px 14px 0}.rrc .wrap{padding:2px 10px 8px}
+ #mpout.cmp .rrt.xg th{padding:2px 4px!important;font-size:11.5px!important}#mpout.cmp .rrt.xg td{font-size:12.5px}
+}
+#rsov{position:fixed;inset:0;z-index:300;background:rgba(20,16,10,.55);display:flex;align-items:flex-start;justify-content:center;padding:3vh 10px;overflow:auto;animation:mrFade .25s both}
+#rsov.hide{display:none}
+#rsov .box{background:#fff;border-radius:14px;max-width:1500px;width:100%;padding:12px 14px 16px;box-shadow:0 20px 60px rgba(0,0,0,.35);animation:mrPop .4s cubic-bezier(.2,.8,.2,1) both}
+#rsov .hd{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;font-size:16px}
+table.rst{border-collapse:collapse;font-size:13px;background:#fff;color:#000;margin:6px 0 14px}
+table.rst th,table.rst td{border:1px solid #c9cfdb;padding:4px 10px;text-align:center;white-space:nowrap}
+table.rst th{background:#e4f6ea;color:#15803d;font-weight:700}table.rst td.l,table.rst th.l{text-align:left;font-weight:700}
+table.rst td.tt{background:#f1f5ff;font-weight:800}table.rst tr.T td{background:#cfe89a;font-weight:800}
+table.rst td.z{color:#b6bcc9}
+
+/* Kitty vs last year (Excel-like sheet) */
+.lkw{font-family:"Times New Roman",Times,serif;color:#000;overflow:auto}
+.lkhd{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin:4px 0 4px}.lkhd b{font-size:17px}.lkhd .dt{font-size:26px;font-weight:800}
+table.lkt{border-collapse:collapse;background:#fff;font-family:inherit;color:#000}
+table.lkt th,table.lkt td{border:1px solid #000!important;padding:2px 10px;text-align:center;white-space:nowrap;background:#fff!important}
+table.lkt th{font-size:12px;font-weight:700;line-height:1.2;color:#000!important}
+table.lkt th.wn{font-size:19px;font-weight:700;padding:3px 14px}table.lkt th.wn .yr{font-size:11px;margin-top:1px}table.lkt th.yr{font-size:12px}table.lkt th.tl{font-size:13px}
+table.lkt td{height:30px;font-size:19px}table.lkt td.sl{font-size:17px}table.lkt td.cp{font-size:12px;font-weight:700}
+table.lkt td.lt,table.lkt td.tt,table.lkt td.df,table.lkt td.rt{font-size:18px;font-weight:700}
+table.lkt tr.T td{font-weight:700;font-size:18px}
+table.lkt td.lyc input{width:84px;border:0;background:transparent;text-align:center;font:600 19px "Times New Roman",Times,serif;color:#1c3d7a;padding:2px}
+table.lkt td.lyc input:focus{outline:2px solid #3b5bdb;background:#fffbe6}
+details.lkd{margin:2px 0 6px}details.lkd>summary{cursor:pointer;list-style:none;font:700 15px "Times New Roman",Times,serif;padding:7px 12px;border:1px solid #cfd6f3;border-radius:10px;background:#f4f6ff;color:#1c3d7a}details.lkd>summary::-webkit-details-marker{display:none}details.lkd>summary::before{content:'\25B8  '}details.lkd[open]>summary::before{content:'\25BE  '}details.lkd>summary span{font:500 12.5px Inter,system-ui,sans-serif;color:#555}details.lkd[open]>summary{margin-bottom:8px}
+
+/* M&R Summary: Kitty table */
+#mrkitt{border-collapse:collapse;background:#fff;color:#000;width:100%}
+#mrkitt th,#mrkitt td{border:1px solid #000;padding:6px 8px;text-align:center;font-size:14px;white-space:nowrap;background:#fff;color:#000}
+#mrkitt th{font-weight:700}#mrkitt td.l,#mrkitt th.l{font-weight:600}#mrkitt td.neg{color:#c00}#mrkitt tr.t td{font-weight:700}#mrkitt td.muted{color:#999}
+
+/* generic pop-up, OTP bell, Testing Register */
+#gov{position:fixed;inset:0;z-index:310;background:rgba(20,16,10,.55);display:flex;align-items:flex-start;justify-content:center;padding:3vh 10px;overflow:auto;animation:mrFade .25s both}
+#gov.hide{display:none}
+#gov .box{background:#fff;border-radius:14px;max-width:1500px;width:100%;padding:12px 14px 16px;box-shadow:0 20px 60px rgba(0,0,0,.35);animation:mrPop .4s cubic-bezier(.2,.8,.2,1) both}
+#gov .hd{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;font-size:16px}
+#gov.narrow .box{max-width:560px}
+#otpbell{position:fixed;top:10px;right:10px;z-index:400;max-width:340px;display:flex;flex-direction:column;gap:8px}
+#otpbell.hide{display:none}
+#otpbell .ob{background:#fff1f0;border:2px solid #dc2626;border-radius:12px;padding:10px 12px;box-shadow:0 8px 26px rgba(220,38,38,.3);font-size:13px;color:#7f1d1d;animation:mrPop .4s both}
+#otpbell .ob b.code{display:block;font-size:30px;letter-spacing:6px;color:#b91c1c;margin:4px 0 0;font-family:ui-monospace,Menlo,monospace}
+.otpin{font-size:26px;letter-spacing:8px;text-align:center;width:100%;padding:8px;border:2px solid #cbd5e1;border-radius:10px;font-family:ui-monospace,Menlo,monospace}
+.otps{display:flex;flex-direction:column;gap:10px}.otps .st{display:flex;gap:10px;align-items:flex-start;font-size:14px}.otps .st i{flex:none;width:24px;height:24px;border-radius:50%;background:#1d4ed8;color:#fff;font-style:normal;font-weight:700;text-align:center;line-height:24px}
+#tsout .wrap{max-height:calc(100vh - 230px);overflow:auto;border:1px solid #cfd6f3;border-radius:10px;background:#fff}
+table.tst{border-collapse:separate;border-spacing:0;font-size:12.5px;background:#fff;color:#000;min-width:1500px}
+#gov .tqf{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px}#gov .tqf label{display:block;font-size:12px;font-weight:700;margin-bottom:3px}#gov .tqf input[type=text],#gov .tqf select{width:100%;box-sizing:border-box;min-height:42px;font-size:16px}
+#gov .tqf{gap:8px 10px}
+#gov .tqf label{font-size:11px;margin-bottom:2px}
+#gov .tqf input[type=text],#gov .tqf select{min-height:38px;height:38px;padding:0 10px;font-size:16px;border-radius:10px}
+#gov .tqf .dt{display:flex;gap:4px;width:100%;align-items:center}#gov .tqf input.dtx{width:100%;min-width:0;text-align:left}
+#gov .tqf .calw{flex:none}
+#gov .box:has(.tqf){padding:10px 12px 12px}#gov .box:has(.tqf) .hd{margin-bottom:6px}
+#gov .tqgo{padding:11px!important}
+#gov .tqf>div{animation:tqIn .5s cubic-bezier(.2,.8,.2,1) both}
+#gov .tqf>div:nth-child(1){animation-delay:.04s}#gov .tqf>div:nth-child(2){animation-delay:.08s}#gov .tqf>div:nth-child(3){animation-delay:.12s}#gov .tqf>div:nth-child(4){animation-delay:.16s}#gov .tqf>div:nth-child(5){animation-delay:.2s}#gov .tqf>div:nth-child(6){animation-delay:.24s}#gov .tqf>div:nth-child(7){animation-delay:.28s}#gov .tqf>div:nth-child(8){animation-delay:.32s}#gov .tqf>div:nth-child(9){animation-delay:.36s}#gov .tqf>div:nth-child(10){animation-delay:.4s}#gov .tqf>div:nth-child(11){animation-delay:.44s}#gov .tqf>div:nth-child(12){animation-delay:.48s}
+@keyframes tqIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+#gov .tqf label{color:#1c3d7a;letter-spacing:.2px}#gov .tqf label i{font-weight:400;color:#7a86a6;font-style:normal}
+#gov .tqf input[type=text],#gov .tqf select{border:1.5px solid #d3dbf2;border-radius:12px;background:#f7f9ff;transition:border-color .2s,box-shadow .2s,background .2s,transform .2s}
+#gov .tqf input[type=text]:focus,#gov .tqf select:focus{outline:0;border-color:#3b5bdb;background:#fff;box-shadow:0 0 0 4px rgba(59,91,219,.16);transform:translateY(-1px)}
+#gov .tqf input.tqa{color:#8e98b3;font-style:italic;filter:blur(.7px);background:linear-gradient(90deg,#eef2ff,#f7f9ff)}
+#gov .tqf input.tqa:focus{filter:none}
+#gov .tqn{font-size:12px;color:#7a86a6;margin-top:10px;animation:tqIn .5s .5s both}
+#gov .tqgo{background:linear-gradient(135deg,#3b5bdb,#6d4de0)!important;border:0;color:#fff;border-radius:14px;font-weight:800;font-size:16px;box-shadow:0 8px 20px rgba(59,91,219,.35);transition:transform .15s,box-shadow .15s;animation:tqIn .5s .52s both}
+#gov .tqgo:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(59,91,219,.45)}#gov .tqgo:active{transform:scale(.97)}
+#gov .box:has(.tqf){border-top:5px solid #3b5bdb;background:linear-gradient(180deg,#eef2ff 0,#fff 90px)}
+#gov .box:has(.tqf) #govmsg .msg{animation:mrPop .4s both}
+table.tst td.jb.d2,.jbk.d2{background:#86efac!important}table.tst td.jb.d3,.jbk.d3{background:#fde047!important}table.tst td.jb.d4,.jbk.d4{background:#fb923c!important}table.tst td.jb.d5,.jbk.d5{background:#ef4444!important;color:#fff}
+.jbk{display:inline-block;padding:0 7px;border-radius:6px;font-weight:700;color:#111;margin-left:3px}.jbk.d5{color:#fff}
+table.tst td.jb.d5 input{color:#fff}
+table.tst th,table.tst td{border-right:1px solid #000;border-bottom:1px solid #000;padding:0;text-align:center;white-space:nowrap;background:#fff}
+table.tst thead th{position:sticky;top:0;z-index:2;background:#e8effc;font-weight:700;font-size:12px;padding:4px 6px;border-top:1px solid #000}
+table.tst thead tr+tr th{top:25px}
+table.tst th:first-child,table.tst td:first-child{border-left:1px solid #000}
+table.tst td.sn{background:#f4f6fb;font-weight:700;width:44px}
+table.tst td input,table.tst td select{width:100%;height:28px;border:0;background:transparent;text-align:center;font:inherit;padding:0 4px;color:#111;box-sizing:border-box}
+table.tst td input:focus,table.tst td select:focus{outline:2px solid #3b5bdb;outline-offset:-2px;background:#fffbe6}
+table.tst td input::placeholder{color:#b8bfd1;font-style:italic}
+table.tst td input.dflt{color:#9aa3b8;font-style:italic}
+table.tst td.au{background:#f1f8f1;font-weight:600;min-width:46px;padding:0 6px}
+table.tst td.au1{background:#d9f2d9}
+table.tst td:nth-child(2){min-width:112px}table.tst td:nth-child(3){min-width:160px}table.tst td:nth-child(4){min-width:74px}table.tst td:nth-child(5){min-width:140px}table.tst td:nth-child(6){min-width:96px}table.tst td:nth-child(n+7):nth-child(-n+9){min-width:78px}table.tst td:nth-child(n+10):nth-child(-n+12){min-width:112px}table.tst td:nth-child(13),table.tst td:nth-child(14){min-width:90px}table.tst td:nth-child(15),table.tst td:nth-child(16){min-width:92px}table.tst td:last-child{min-width:34px}
+table.tst tr.inc td{background:#fff8e6}table.tst tr.inc td.au{background:#fff1cf}
+table.tst tr.tt td{background:#cfe89a;font-weight:800;position:sticky;bottom:0;z-index:1;padding:4px 6px}
+table.tst td.rx{width:30px}table.tst td.rx button{border:0;background:transparent;color:#c00;font-size:16px;cursor:pointer;width:100%}
+table.tst td.rx button:hover{background:#fee2e2}
+
+/* Kitty: nicer look */
+.rrk-PURPLE{--ac:#6d28d9;--bg:#ede9fe;--bd:#d6ccf8}.kk4{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+#mkout .card>.wrap>table.mkt{border-collapse:separate;border-spacing:0;border-radius:12px;overflow:hidden;width:100%}
+#mkout table.mkt thead th{background:linear-gradient(180deg,#eef2ff,#dfe7ff)!important;color:#1e3a8a!important;border:1px solid #c7d2fe!important;font-weight:800!important;padding:9px 8px!important}
+#mkout table.mkt thead th.ed{background:linear-gradient(180deg,#fff4e6,#ffe4c7)!important;color:#c2410c!important;border-color:#f6cfa8!important}
+#mkout table.mkt tbody td{border:1px solid #e3e8f5!important;padding:7px 8px!important;background:#fff!important;color:#1f2937!important;font-size:14px!important}
+#mkout table.mkt tbody tr:nth-child(even) td{background:#f7f9ff!important}
+#mkout table.mkt tbody td.l{font-weight:800!important;color:#1e3a8a!important;background:#eef2ff!important}
+#mkout table.mkt td.repair{color:#15803d!important}
+#mkout table.mkt td.n{font-weight:800!important;background:#f0fdf4!important;color:#166534!important}#mkout table.mkt td.n.neg{background:#fef2f2!important;color:#b91c1c!important}
+#mkout table.mkt tbody td.ed{background:#fffaf4!important}
+#mkout table.mkt tr.t td{background:linear-gradient(180deg,#d6edaa,#c2de8a)!important;font-weight:800!important;color:#1a3d0a!important}
+#mkout table.mkt tbody tr:hover td{filter:brightness(.97)}
+/* M&R Summary on one page */
+@media screen{body:not(.printing) #t-mrsum{zoom:var(--mz,1)}}
 nav button#tmr{margin-top:auto}
 #mrnav button#mrr{margin-top:auto;border:2px solid #c2410c!important;color:#c2410c!important}
 @media (max-width:700px){nav button#tmr{margin-top:0}#mrnav button#mrr{margin-top:0;border:0!important;background:linear-gradient(135deg,#7a3bd8,#3b4fd8)!important;color:#fff!important}}
@@ -1992,6 +2130,52 @@ nav button#tmr{margin-top:auto}
  #mrdt td.ed input{max-width:62%}
  .mkt th,.mkt td{padding:4px 3px;font-size:11px}.mkt input{min-width:46px;padding:4px 2px}
 }
+
+.ins{display:none!important}
+/* ---- phones: bigger numbers in the M&R summary, Kitty and Testing Register as cards ---- */
+@media (max-width:700px){
+  #mrout td,#mrout td.l{font-size:12px!important;font-weight:700!important;padding:7px 0!important;line-height:1.2;white-space:nowrap!important;word-break:normal!important;letter-spacing:-.2px}
+  #mrout th{font-size:8.5px!important;padding:4px 1px!important;line-height:1.15}
+  #mrout th.l,#mrout td.l{width:14%;font-size:11px!important}
+  #mrout .capt td{font-size:11.5px!important}
+  #mrout td.l[data-sh]::after,#mrout th[data-sh]::after,#mrout a[data-sh]::after{font-size:11px!important}
+  #mrout .card{padding:8px!important}#mrout .card h3{font-size:12px!important}#mrout .card h3 .muted{font-size:9.5px!important}
+  #mrout a.n{font-size:inherit!important}
+  #mrkpi.skpi i{font-size:30px}
+  /* Kitty: the same table as on the computer, made smaller so all columns are seen at once */
+  #mkout .wrap{overflow:visible}
+  #mkout table.mkt.xg{table-layout:fixed;width:100%;min-width:0}
+  #mkout table.mkt.xg th{font-size:8.5px!important;padding:5px 1px!important;line-height:1.15;word-break:normal}
+  #mkout table.mkt.xg td{font-size:13px!important;height:34px;padding:0 1px!important}
+  #mkout table.mkt.xg td b{font-size:13px!important;font-weight:700}
+  #mkout table.mkt.xg th.l,#mkout table.mkt.xg td.l{width:13%}
+  #mkout table.mkt.xg td>input.mkn{width:100%!important;min-width:0!important;margin:0!important;padding:3px 0!important;font-size:13px!important;text-align:center;border:1px solid #e8a672!important;border-radius:6px!important;height:28px;box-sizing:border-box;background:#fff!important}
+  /* Testing Register: header bar and cards */
+  #t-mrtst .bar.sbar{display:grid!important;grid-template-columns:repeat(12,1fr)!important;gap:10px!important;align-items:end}
+  #t-mrtst .bar.sbar>*{min-width:0;box-sizing:border-box}
+  #t-mrtst .bar.sbar .ptitle{grid-column:1/-1}
+  #t-mrtst .bar.sbar #tsq{grid-column:span 8;padding:13px 8px!important;font-size:16px!important;white-space:nowrap;width:100%}
+  #t-mrtst .bar.sbar #tstd{grid-column:span 4;white-space:nowrap;width:100%;padding:13px 6px!important;font-size:14px!important}
+  #t-mrtst .bar.sbar>div{grid-column:span 6!important}
+  #t-mrtst .bar.sbar>div:has(#tsw){grid-column:1/-1!important}
+  #t-mrtst .bar.sbar #tsw{width:100%}
+  #t-mrtst .bar.sbar .dt{width:100%;display:flex}#t-mrtst .bar.sbar input.dtx{width:100%!important;min-width:0;font-size:15px!important;padding:10px 6px!important;text-align:left!important}
+  #t-mrtst .bar.sbar .calw{display:inline-block!important}
+  #t-mrtst .bar.sbar #tsgo,#t-mrtst .bar.sbar #tsrep,#t-mrtst .bar.sbar #tsxl{grid-column:span 4;white-space:nowrap;min-height:44px;padding:10px 4px!important;font-size:14px!important;width:100%}
+}
+/* Kitty compare on screen: same look as the Kitty table, fits the screen */
+#mkout .lkw{font-family:inherit;overflow:visible}
+#mkout .lkw .wrap{overflow:visible}
+#mkout table.lkt{width:100%;table-layout:fixed;font-family:inherit}
+#mkout table.lkt th,#mkout table.lkt td{border:1px solid #cfd6f3!important;padding:4px 2px;white-space:normal;word-break:normal;text-align:center}
+#mkout table.lkt th{background:#eef0fb!important;color:#2c3a8c!important;font-size:11px;font-weight:700}
+#mkout table.lkt th.wn{font-size:12px;padding:5px 2px}#mkout table.lkt th.wn .yr{font-size:10px}#mkout table.lkt th.yr{font-size:11px}#mkout table.lkt th.tl{font-size:11px}
+#mkout table.lkt td{height:34px;font-size:14px;background:#fff!important}
+#mkout table.lkt td.cp{font-size:13px;font-weight:700;background:#eef0fb!important;color:#2c3a8c}
+#mkout table.lkt td.df,#mkout table.lkt td.lt,#mkout table.lkt td.tt{font-weight:700}
+#mkout table.lkt tr.T td{background:linear-gradient(180deg,#d6edaa,#c2de8a)!important;color:#1a3d0a;font-size:14px;font-weight:800}
+#mkout table.lkt td.lyc input{width:100%;min-width:0;font:600 14px Inter,system-ui,sans-serif;border:1px solid #e8a672;border-radius:6px}
+#mkout details.lkd>summary{font:700 13px Inter,system-ui,sans-serif}
 .gc.sirD input{color:#0f7a4e!important;font-weight:700}.gc.sirP input{color:#b45309!important;font-weight:700}
 </style>
 </head>
@@ -2042,6 +2226,7 @@ nav button#tmr{margin-top:auto}
     <button data-t="mkit" id="mkit" type="button">Kitty</button>
     <button data-t="mrep" id="mrep" type="button">Repair</button>
     <button data-t="msc" id="msc" type="button">Scrap</button>
+    <button data-t="mtst" id="mtst" type="button">Testing Register</button>
     <button data-t="mrr" id="mrr" type="button">R&amp;R</button>
   </nav></div>
   <main>
@@ -2127,8 +2312,9 @@ nav button#tmr{margin-top:auto}
     <!-- ADMIN -->
     <section id="t-adm" class="hide">
       <div id="amsg"></div>
-      <div id="sirtop" class="hide" style="display:flex;justify-content:flex-end;margin-bottom:6px"><button class="btn" id="sirtg" title="SIR linked Google Sheet" style="padding:3px 10px;font-size:12px">&#128203; SIR <span class="tag" id="sirst"></span></button></div>
-      <div class="card acard hide" id="sircfg"><h3>SIR - Site Inspection Report (linked Google Sheet)</h3>
+      <div id="admchips" class="achips"></div>
+      <div id="sirtop" style="display:none!important"><button class="btn hide" id="artg" title="Google Drive archive (M&R)" style="padding:3px 10px;font-size:12px;margin-right:6px">&#9729; Google Drive <span class="tag" id="arst"></span></button><button class="btn" id="sirtg" title="SIR linked Google Sheet" style="padding:3px 10px;font-size:12px">&#128203; SIR <span class="tag" id="sirst"></span></button></div>
+      <div class="card acard" id="sircfg"><h3>SIR - Site Inspection Report (linked Google Sheet)</h3>
         <div class="muted" style="font-size:12px;line-height:1.5;margin-bottom:8px">
           <b>How to link:</b> 1) Open the Google Sheet where the SIR form saves its answers. 2) File &gt; Share &gt; <b>Publish to web</b> &gt; choose the sheet tab and <b>Comma-separated values (.csv)</b> &gt; Publish. 3) Paste that link below (or the normal sheet link, if the sheet is shared as "Anyone with the link - Viewer"). 4) Write the exact heading of the column that holds the INDENT NO (PR number). 5) Press Test, then Save.<br>
           <b>Rule:</b> if a PR number of 100 KVA &amp; above is found in that column, its SIR is <b>done</b>, otherwise it is <b>pending</b>. The result is shown in the Summary screen under "SIR Summary". Only the PR number column is read.</div>
@@ -2137,7 +2323,7 @@ nav button#tmr{margin-top:auto}
           <div><label>Column heading of INDENT NO</label><input type="text" id="sircol" value="INDENT NO"></div></div>
         <div class="bar" style="margin-top:10px"><button class="btn" id="sirtest">Test</button><button class="btn" id="sirsave">Save</button><button class="btn" id="sirrm">Remove link</button></div>
       </div>
-      <div class="card acard"><h3>Workshops</h3>
+      <div class="card acard" id="wscard"><h3>Workshops</h3>
         <div class="muted" style="font-size:12px;margin-bottom:6px">Write the names of your own workshops here. Then give each user the workshops he works for.</div>
         <div class="bar"><input type="text" id="wn" placeholder="New workshop name" style="max-width:240px"><span id="wdw" class="hide"><input type="text" id="wd" list="dvl" placeholder="Division name" style="max-width:240px"></span><button class="btn" id="wadd">Add workshop</button></div>
         <div class="wrap"><table id="wlt" class="mt"></table></div>
@@ -2150,8 +2336,11 @@ nav button#tmr{margin-top:auto}
         <div class="bar"><input type="text" id="wcn" placeholder="Short name, e.g. azamgarh" autocapitalize="off" spellcheck="false" style="max-width:240px"><button class="btn" id="wcr" type="button">Get workshop code</button></div>
         <div id="wcshow"></div>
       </div>
+      <div class="card acard hide" id="ulcard"><h3>Login without code <span class="muted" style="font-weight:400">(ID and password only)</span></h3><div id="ulbox"></div><div id="ulmsg"></div></div>
+      <div class="card acard hide" id="udcard"><h3>Admin directory <span class="muted" style="font-weight:400">(App Creator)</span></h3><div id="udbox"></div><div id="udmsg"></div></div>
+      <div class="card acard hide" id="archard"><h3>Google Drive archive <span class="muted" style="font-weight:400">(M&amp;R Repair + Testing Register)</span></h3><div id="arbox"></div><div id="armsg"></div></div>
       <div class="card acard hide" id="stcard"><h3>Structure: Circles and Divisions</h3><div id="stbox"></div></div>
-      <div class="card acard"><h3>Create a new user</h3>
+      <div class="card acard" id="nucard"><h3>Create a new user</h3>
         <div class="bar" style="align-items:flex-end">
           <div><label>User ID</label><input type="text" id="nu" autocapitalize="off" spellcheck="false" placeholder="e.g. je.mau1"></div>
           <div><label>Name</label><input type="text" id="nn" placeholder="Full name"></div>
@@ -2165,7 +2354,7 @@ nav button#tmr{margin-top:auto}
         <div class="bar" style="margin-top:10px"><button class="btn" id="ncreate">Create user</button></div>
         <datalist id="dvl"></datalist>
       </div>
-      <div class="card acard"><h3>Users</h3>
+      <div class="card acard" id="uscard"><h3>Users</h3>
         <div class="bar"><input type="text" id="auq" placeholder="Search user..." style="max-width:260px"></div>
         <div class="wrap"><table id="aut" class="mt"></table></div>
       </div>
@@ -2204,6 +2393,10 @@ nav button#tmr{margin-top:auto}
     <!-- CHAMBER ASSEMBLY -->
 
     <div id="dwov" class="hide"><div class="box"><div class="hd"><b>Day-wise PR &amp; Repair comparison</b><span class="muted" id="dwsub" style="flex:1"></span><button class="btn sec sm" id="dwxl" type="button">&#11015; Excel</button><button class="btn sec sm" id="dwx" type="button">Close &#10005;</button></div><div id="dwmsg"></div><div id="dwb"></div></div></div>
+    <div id="pdov" class="hide"><div class="box"><div class="hd"><b>Pending for DTC</b><span class="muted" id="pdsub" style="flex:1"></span><button class="btn sm" id="pdsave" type="button" disabled>Save DTC</button><button class="btn sec sm" id="pdx" type="button">Close &#10005;</button></div><div id="pdmsg"></div><div class="wrap mrtb"><table id="pdt"></table></div></div></div>
+    <div id="gov" class="hide"><div class="box"><div class="hd"><b id="govt"></b><span id="govbtn" style="margin-left:auto;display:flex;gap:6px;flex-wrap:wrap"></span><button class="btn sec sm" id="govx" type="button">Close &#10005;</button></div><div id="govmsg"></div><div id="govb"></div></div></div>
+    <div id="otpbell" class="hide"></div>
+    <div id="rsov" class="hide"><div class="box"><div class="hd"><b>Repair summary</b><span class="muted" style="flex:1">transformers from date to date - firm &amp; capacity wise</span><button class="btn sec sm" id="rsxl" type="button">&#11015; Excel</button><button class="btn sec sm" id="rsx" type="button">Close &#10005;</button></div><div id="rsbar"></div><div id="rsmsg"></div><div id="rsout"></div></div></div>
     <div id="chmov" class="hide"><div class="box"><div class="hd"><b id="chmt">Chamber Assembly Report</b><button class="btn sec sm" id="chmpr" type="button">&#128424; Print</button><button class="btn sec sm" id="chmxl" type="button">&#11015; Excel</button><button class="btn sec sm hide" id="chmbase" type="button">Start figures (Admin)</button><button class="btn sec sm" id="chmx" type="button">Close &#10005;</button></div><div class="muted" style="font-size:12px;margin:-2px 0 6px">Select cells like in Excel (drag with the mouse, Shift+click, or Ctrl+A), press Ctrl+C and paste in Excel.</div><div id="chmmsg"></div><div id="chmbw" class="hide"></div><div id="chmb"></div></div></div>
     <!-- SCRAP -->
     <section id="t-mrsc" class="hide">
@@ -2219,12 +2412,31 @@ nav button#tmr{margin-top:auto}
       <div id="msbw" class="hide"></div>
     </section>
 
+    <!-- TESTING REGISTER -->
+    <section id="t-mrtst" class="hide">
+      <div class="card">
+        <div class="bar sbar">
+          <div class="ptitle"><b>Testing Register</b><span>test results of the repaired transformers</span></div>
+          <button class="btn" id="tsq" type="button" title="Quick entry - fill one test and submit (easy on a phone)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:5px"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>Quick entry</button>
+          <button class="btn sec" id="tstd" type="button" title="STD - the standard full load loss of every capacity (IS losses)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:5px"><path d="M12 3l8 3v6c0 4.5-3.2 8-8 9-4.8-1-8-4.5-8-9V6z"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg>STD</button>
+          <div><label>Workshop</label><select id="tsw"></select></div>
+          <div><label>From (testing date)</label><div class="dt"><input type="text" class="dtx" id="tsf" inputmode="numeric" placeholder="DD.MM.YYYY"><span class="calw">&#128197;<input type="date" data-c="tsf"></span></div></div>
+          <div><label>To</label><div class="dt"><input type="text" class="dtx" id="tst" inputmode="numeric" placeholder="DD.MM.YYYY"><span class="calw">&#128197;<input type="date" data-c="tst"></span></div></div>
+          <button class="btn" id="tsgo" type="button">Show</button>
+          <button class="btn sec" id="tsrep" type="button" title="Report of the period: counts by % loss">&#128202; Report</button>
+          <button class="btn sec" id="tsxl" type="button">&#11015; Excel</button>
+        </div>
+      </div>
+      <div id="tsmsg"></div>
+      <div id="tsout"></div>
+    </section>
+
     <!-- REPAIR (REPAIR / ASSEMBLY / OVEN) -->
     <section id="t-mrrep" class="hide">
       <div class="card">
         <div class="bar sbar">
           <div class="ptitle"><b>Repair</b><span>repair, assembly and oven - firm-wise</span></div>
-          <div class="mpchm"><button class="btn sec" id="mpchmb" type="button" title="Open the Chamber Assembly Report">&#128295; Chamber Assembly Report</button></div>
+          <div class="mpchm"><button class="btn sec" id="mpchmb" type="button" title="Open the Chamber Assembly Report">&#128295; Chamber Assembly Report</button> <button class="btn sec" id="mprs" type="button" title="Repair summary from date to date">&#128202; Repair summary</button></div>
           <div><label>Workshop</label><select id="mpw"></select></div>
           <div><label>Date</label><div class="tg"><button class="ib" id="mpprev" title="Previous day">&#9664;</button><div class="dt"><input type="text" class="dtx" id="mpd" inputmode="numeric" placeholder="DD.MM.YYYY"><span class="calw">&#128197;<input type="date" data-c="mpd"></span></div><button class="ib" id="mpnext" title="Next day">&#9654;</button><button class="btn sec sm" id="mptoday" type="button">Today</button></div></div>
         </div>
@@ -2240,15 +2452,14 @@ nav button#tmr{margin-top:auto}
           <div class="ptitle"><b>Kitty</b><span>daily stock of repaired transformers</span></div>
           <div><label>Workshop</label><select id="mkw"></select></div>
           <div><label>Date</label><div class="tg"><button class="ib" id="mkprev" title="Previous day">&#9664;</button><div class="dt"><input type="text" class="dtx" id="mkd" inputmode="numeric" placeholder="DD.MM.YYYY"><span class="calw">&#128197;<input type="date" data-c="mkd"></span></div><button class="ib" id="mknext" title="Next day">&#9654;</button><button class="btn sec sm" id="mktoday" type="button">Today</button></div></div>
-          <div class="tg" style="align-self:flex-end"><button class="btn sec sm" id="mkcmpb" type="button" title="Compare the kitty of your workshops">Compare</button><button class="btn sec sm hide" id="mklyb" type="button" title="Fill last year's repair">LY repair</button></div>
+          <div class="tg" style="align-self:flex-end"><button class="btn sec sm hide" id="mklyb" type="button" title="Fill last year's repair">LY repair</button></div>
         </div>
       </div>
       <div id="mkmsg"></div>
-      <div id="mkcmp" class="hide"></div>
       <div id="mkout"></div>
       <div id="mklyo" class="ov hide" style="z-index:80"><div class="md" style="max-width:460px">
         <div class="bar" style="justify-content:space-between;align-items:center"><h2 style="margin:0">Last year repair</h2><button class="btn sec" id="mklyx" type="button">Close &#10005;</button></div>
-        <div class="muted" style="font-size:12.5px;margin:6px 0">How many transformers were repaired in each capacity in the month (total). Used for "Next month need". This button goes away by itself once the kitty has its own repair figures for that time.</div>
+        <div class="muted ins" style="font-size:12.5px;margin:6px 0">How many transformers were repaired in each capacity in the month (total). Used for "Next month need". This button goes away by itself once the kitty has its own repair figures for that time.</div>
         <div class="bar"><div><label>Month</label><input type="month" id="mklym"></div></div>
         <div id="mklyt"></div>
         <div class="bar" style="margin-top:8px"><button class="btn" id="mklys" type="button">Save last year repair</button></div>
@@ -2269,7 +2480,7 @@ nav button#tmr{margin-top:auto}
 </div></div>
 
 <!-- GRAPH DASHBOARD -->
-<div id="gov" class="ov hide"><div class="gdash">
+<div id="gdov" class="ov hide"><div class="gdash">
   <button class="btn sec gx" id="gclose">Close &#10005;</button>
   <div id="gbody"></div>
 </div></div>
@@ -2517,13 +2728,34 @@ function enter(user) {
     });
   });
 }
+/* ---- login with only the ID and password: the DEFAULT project keeps a directory "ID -> the Admin's project" (SQL step 53) ---- */
+function udLookup(id) {
+  var l = String(id || '').trim().toLowerCase();
+  if (!/^[a-z0-9._@+-]{2,80}$/.test(l) || !window.supabase || !window.TT_SB_URL) return Promise.resolve(null);
+  return wcDefault().rpc('ud_find', { p_login: l }).then(function (r) { return r.error ? null : r.data; }).catch(function () { return null; });
+}
+function ttConnSet(c) { try { if (c) localStorage.setItem('tt_conn', JSON.stringify({ u: c.u, k: c.k })); else localStorage.removeItem('tt_conn'); } catch (e) { } ttInitClient(); }
+function ttTryLogin(id, pw, cands) {                       // cands: connections to try in order (null = the default project)
+  var i = 0;
+  function next() {
+    ttConnSet(cands[i++]);
+    return SB.auth.signInWithPassword({ email: idMail(id), password: pw }).then(function (r) { return r.error && /invalid login/i.test(r.error.message) && i < cands.length ? next() : r; });
+  }
+  return next();
+}
 $('lbtn').onclick = function () {
   var id = $('lu').value.trim(), pw = $('lp').value, b = $('lbtn');
   if (!id || !pw) return msg('lmsg', 'Enter your ID and password.', 'err');
   busy(b, true, 'Logging in...'); msg('lmsg', '');
-  SB.auth.signInWithPassword({ email: idMail(id), password: pw }).then(function (r) {
-    if (r.error) { busy(b, false); return msg('lmsg', /invalid login/i.test(r.error.message) ? 'Wrong ID or password.' : esc(friendly(r.error)), 'err'); }
-    return enter(r.data.user).then(function () { busy(b, false); });
+  var cur = ttConn(), orig = cur.own ? { u: cur.u, k: cur.k } : null;
+  udLookup(id).then(function (f) {
+    if (f && f.n > 1) { busy(b, false); return msg('lmsg', 'This ID is used by more than one Admin, so it cannot log in. Ask your Admin to change the ID.', 'err'); }
+    var cands = f && f.n === 1 && wcOk(f.u, f.k) ? [{ u: f.u, k: f.k }] : (orig ? [orig, null] : [null]);
+    if (f && f.n === 1 && id.indexOf('@') > 0) { if (orig && orig.u !== f.u) cands.push(orig); cands.push(null); }   // an e-mail login (Admin / App Creator) is never locked out by a wrong directory entry
+    return ttTryLogin(id, pw, cands).then(function (r) {
+      if (r.error) { ttConnSet(orig); busy(b, false); return msg('lmsg', /invalid login/i.test(r.error.message) ? 'Wrong ID or password.' : esc(friendly(r.error)), 'err'); }
+      return enter(r.data.user).then(function () { busy(b, false); });
+    });
   }).catch(function (e) { busy(b, false); msg('lmsg', esc(friendly(e)), 'err'); });
 };
 ['lu', 'lp'].forEach(function (i) { $(i).addEventListener('keydown', function (e) { if (e.key === 'Enter') $('lbtn').click(); }); });
@@ -3005,13 +3237,16 @@ $('ddel').onclick = function () {
   var sel = DROWS.filter(function (r) { return r.sel && !isBlankNew(r); }); if (!sel.length) return;
   var saved = sel.filter(function (r) { return r.k; }), loose = sel.length - saved.length;
   if (!confirm('Delete ' + sel.length + ' selected row(s)?' + (saved.length ? '\n' + saved.length + ' saved PR(s) will be deleted from the database for ever.' : ''))) return;
+  var run = function (permit) {
   DROWS = DROWS.filter(function (r) { return !(r.sel && !r.k); });
   var b = $('ddel'), n = 0, bad = 0; busy(b, true, 'Deleting...');
   (function next() {
     if (n >= saved.length) { busy(b, false); DTOTAL -= (saved.length - bad); DROWS = DROWS.filter(function (r) { return !(r.sel && r.k && r._gone); }); cclear(); drawData(); dstat(bad ? bad + ' could not be deleted' : 'Deleted', bad ? 'bad' : 'ok'); return; }
     var r = saved[n++]; dstat('Deleting ' + n + ' of ' + saved.length + '...');
-    rpc('delete_pr', { p_ws: r.k[0], p_pr: r.k[1] }).then(function () { r._gone = true; next(); }).catch(function (er) { bad++; r.sel = false; msg('dmsg', esc(er.message), 'err'); next(); });
+    rpc('delete_pr_otp', { p_ws: r.k[0], p_pr: r.k[1], p_permit: permit }).then(function () { r._gone = true; next(); }).catch(function (er) { bad++; r.sel = false; msg('dmsg', esc(er.message), 'err'); next(); });
   })();
+  };
+  if (!saved.length) run(null); else askDelete('Delete ' + saved.length + ' saved PR(s) of the Data Sheet', function () { var x = $('dxl'); if (x) x.click(); }, run);
 };
 function loadData(force) {
   var d = $('dd').value.trim(), all = $('dall').checked;
@@ -3093,8 +3328,10 @@ $('dt').addEventListener('click', function (e) {
   var ri = +b.closest('tr').dataset.r, r = DROWS[ri];
   if (!r.k) { DROWS.splice(ri, 1); drawData(); return; }
   if (!confirm('Delete PR ' + r.k[1] + ' of ' + r.k[0] + '? This cannot be undone.')) return;
-  rpc('delete_pr', { p_ws: r.k[0], p_pr: r.k[1] }).then(function () { DROWS.splice(ri, 1); DTOTAL--; drawData(); dstat('Deleted', 'ok'); cclear(); })
-    .catch(function (er) { msg('dmsg', esc(er.message), 'err'); });
+  askDelete('Delete PR ' + r.k[1] + ' of ' + r.k[0] + ' from the Data Sheet', function () { var x = $('dxl'); if (x) x.click(); }, function (permit) {
+    rpc('delete_pr_otp', { p_ws: r.k[0], p_pr: r.k[1], p_permit: permit }).then(function () { var j = DROWS.indexOf(r); if (j >= 0) DROWS.splice(j, 1); DTOTAL--; drawData(); dstat('Deleted', 'ok'); cclear(); })
+      .catch(function (er) { msg('dmsg', esc(er.message), 'err'); });
+  });
 });
 $('dsave').onclick = function () { flushData(true); };
 $('dmore').onclick = function () { DSHOW += 400; drawData(); };
@@ -3156,6 +3393,22 @@ function mapCols(rows) {
   // normal layout (no Category, no TIME): Workshop, Division, Substation, Feeder, Place, Capacity, Complain no, PR NO, PR DATE, JE name ...
   return { start: 0, idx: ALLCOLS.map(function (c, i) { var j = i < 6 ? i : i === 6 || i === 17 ? -1 : i < 17 ? i - 1 : i - 2; return j < 0 ? -1 : j + off; }) };
 }
+function pasteDiag(items) {      // plain-words reason summary of the pasted rows (checked in the browser) - shown when rows are skipped
+  var nk = function (v) { return String(v || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); }, mine = WSL.map(nk), badWs = {}, noPr = 0, badDt = 0, badDtEx = {}, nWs = 0;
+  items.forEach(function (it) {
+    var r = it.r, w = nk(r[0]);
+    if (!String(r[8]).trim()) noPr++;
+    var d = String(r[9]).trim(); if (!/^\d{2}\.\d{2}\.\d{4}$/.test(d) || !validD(d)) { badDt++; if (Object.keys(badDtEx).length < 3) badDtEx[d || '(empty)'] = 1; }
+    var ok = w && mine.some(function (m) { return m === w || (m.length >= 3 && (w.indexOf(m) >= 0 || m.indexOf(w) >= 0)); });
+    if (!ok) { nWs++; var k = String(r[0]).trim() || '(empty)'; badWs[k] = (badWs[k] || 0) + 1; }
+  });
+  var h = '<br><b>Why (checked on your screen, ' + items.length + ' rows pasted):</b>';
+  if (nWs) h += '<br>- ' + nWs + ' rows: workshop name not in your list. Names found in the paste: ' + Object.keys(badWs).sort(function (a, b) { return badWs[b] - badWs[a]; }).slice(0, 8).map(function (k) { return esc(k) + ' (' + badWs[k] + ')'; }).join(', ') + '. <b>Your workshops here:</b> ' + (WSL.map(esc).join(', ') || '(none)') + '.';
+  if (badDt) h += '<br>- ' + badDt + ' rows: PR DATE is not a valid DD.MM.YYYY date. Examples: ' + Object.keys(badDtEx).map(esc).join(', ') + '.';
+  if (noPr) h += '<br>- ' + noPr + ' rows: PR NO is empty.';
+  if (!nWs && !badDt && !noPr) h += '<br>- The rows look fine on the screen: the reason is in the "Line ..." notes above (permission / division).';
+  return h;
+}
 $('dpaste').onclick = function () { $('xta').value = ''; msg('xmsg', ''); $('xov').classList.remove('hide'); $('xta').focus(); };
 $('xclose').onclick = function () { $('xov').classList.add('hide'); };
 $('xgo').onclick = function () {
@@ -3167,12 +3420,13 @@ $('xgo').onclick = function () {
     items.push({ r: m.idx.map(function (j, i) { var v = j >= 0 ? String(src[j] == null ? '' : src[j]).trim() : ''; return DATE_IDX.indexOf(i) >= 0 ? normDate(v) : v; }) }); lines.push(k + 1);
   }
   if (!items.length) return msg('xmsg', 'No rows found.', 'err');
+  var diag = pasteDiag(items);
   var b = $('xgo'), tot = { added: 0, updated: 0, same: 0, skipped: 0, datefix: 0 }, notes = [], pos = 0, B = 500;
   busy(b, true, 'Saving...');
   (function next() {
     if (pos >= items.length) {
       busy(b, false); cclear();
-      msg('xmsg', '<b>Done.</b> ' + tot.added + ' added, ' + tot.updated + ' updated, ' + tot.same + ' unchanged, ' + tot.skipped + ' skipped.' + (tot.datefix ? '<br>' + tot.datefix + ' date(s) were not valid dates: left empty, and the text you wrote is kept in the Remark.' : '') + (notes.length ? '<br>' + notes.slice(0, 15).map(esc).join('<br>') : ''), tot.skipped ? 'info' : 'ok');
+      msg('xmsg', '<b>Done.</b> ' + tot.added + ' added, ' + tot.updated + ' updated, ' + tot.same + ' unchanged, ' + tot.skipped + ' skipped.' + (tot.datefix ? '<br>' + tot.datefix + ' date(s) were not valid dates: left empty, and the text you wrote is kept in the Remark.' : '') + (notes.length ? '<br>' + notes.slice(0, 15).map(esc).join('<br>') : '') + (tot.skipped ? diag : ''), tot.skipped ? 'info' : 'ok');
       return loadData();
     }
     var part = items.slice(pos, pos + B), base = pos; pos += B;
@@ -3192,11 +3446,15 @@ function ttConn() {
   return { u: window.TT_SB_URL, k: window.TT_SB_KEY, own: false };
 }
 var TT_REC = /type=recovery/.test(location.hash || '');   // opened from the 'reset password' mail
+function ttInitClient() {
+  var C = ttConn();
+  SB = window.supabase.createClient(C.u, C.k, { auth: { persistSession: true, autoRefreshToken: true } });
+  SB.auth.onAuthStateChange(function (ev) { if (ev === 'PASSWORD_RECOVERY' && typeof ttRecovery === 'function') setTimeout(ttRecovery, 0); if (ev === 'SIGNED_OUT' && ME) setTimeout(function () { showLogin(''); }, 0); });
+}
 function boot() {
   var C = ttConn();
   if (!window.supabase || !C.u || !C.k) { showLogin('The app is not connected to a database yet. Tap "Set up your own free account" below.'); return; }
-  SB = window.supabase.createClient(C.u, C.k, { auth: { persistSession: true, autoRefreshToken: true } });
-  SB.auth.onAuthStateChange(function (ev) { if (ev === 'PASSWORD_RECOVERY' && typeof ttRecovery === 'function') setTimeout(ttRecovery, 0); if (ev === 'SIGNED_OUT' && ME) setTimeout(function () { showLogin(''); }, 0); });
+  ttInitClient();
   SB.auth.getSession().then(function (r) {
     var s = r.data && r.data.session;
     if (s && TT_REC && typeof ttRecovery === 'function') { ttRecovery(); return; }
@@ -3468,7 +3726,7 @@ $('ncreate').onclick = function () {
   var body = { action: 'create', login: id, name: $('nn').value.trim() || id, role: role, div: divOf(), scope: chkGet($('ns')), edit: $('ne').value === '1', tabs: role === 'discom' || all ? null : tabs.concat(mr ? ['mr'] : []) };
   if (role === 'je' && !body.scope.length) return msg('amsg', 'Choose at least one workshop for this user.', 'err');
   busy(b, true, 'Creating...');
-  fnCall(body).then(function (r) { busy(b, false); showPw('User created', id, r.password); newUserForm(); return admLoad(); }).catch(function (e) { busy(b, false); msg('amsg', esc(e.message), 'err'); try { $('amsg').scrollIntoView({ block: 'center' }); } catch (x) { } });
+  udOtherUse(id).then(function (used) { if (used) throw new Error('This ID is already used by another Admin. Please choose a different ID.'); return fnCall(body); }).then(function (r) { busy(b, false); showPw('User created', id, r.password); newUserForm(); return admLoad(); }).catch(function (e) { busy(b, false); msg('amsg', esc(e.message), 'err'); try { $('amsg').scrollIntoView({ block: 'center' }); } catch (x) { } });
 };
 function fnCall(body) {
   return SB.functions.invoke('admin-users', { body: body }).then(function (r) {
@@ -4067,7 +4325,7 @@ function openDash() {
   if (!validD(f) || !validD(t)) return msg('smsg', 'Enter the From and To dates first.', 'err');
   if (parseD(f) > parseD(t)) return msg('smsg', 'The "From" date cannot be later than the "To" date.', 'err');
   var key = 'dash|' + f + '|' + t, c = cget(key), seq = ++DASHSEQ;
-  $('gov').classList.remove('hide');
+  $('gdov').classList.remove('hide');
   if (c && Date.now() - c.t < TTL) { $('gbody').innerHTML = dashHtml(c.v, f, t); return; }
   $('gbody').innerHTML = '<div class="msg info"><span class="sp" style="border-color:#3b5bdb55;border-top-color:#3b5bdb"></span>Loading...</div>';
   rpc('dashboard_json', { p_from: d2i(f), p_to: d2i(t) }).then(function (r) {
@@ -4075,8 +4333,8 @@ function openDash() {
   }).catch(function (e) { if (seq === DASHSEQ) $('gbody').innerHTML = '<div class="msg err">' + esc(e.message) + '</div>'; });
 }
 $('sgr').onclick = openDash;
-$('gclose').onclick = function () { $('gov').classList.add('hide'); DASHSEQ++; };
-$('gov').addEventListener('click', function (e) { if (e.target === $('gov')) { $('gov').classList.add('hide'); DASHSEQ++; } });
+$('gclose').onclick = function () { $('gdov').classList.add('hide'); DASHSEQ++; };
+$('gdov').addEventListener('click', function (e) { if (e.target === $('gdov')) { $('gdov').classList.add('hide'); DASHSEQ++; } });
 
 var HS_DESIGNS = [{"n": "Cream Editorial", "no": "01", "top": false, "dark": false, "v": {"bg": "#f7f1e6", "bgimg": "none", "ink": "#2b2118", "sdbg": "#fbf7ef", "sdink": "#2b2118", "nibg": "#ffffff", "niink": "#2b2118", "nirad": "10px", "cdbg": "#fffdf8", "cdbd": "#eadfca", "cdbw": "1px", "cdrad": "14px", "cdsh": "0 6px 18px rgba(80,55,20,.10)", "cdblur": "none", "cdink": "#2b2118", "thbg": "#f1e6d2", "think": "#4a3724", "g1": "#f7d9bf", "g2": "#d6e8d3", "tdink": "#2b2118", "tot": "#efe2c8", "h3": "#9a3412", "hf": "Georgia,\"Times New Roman\",serif", "krad": "14px", "anim": "fade", "k1bg": "#fffdf8", "k1im": "none", "k1ink": "#2b2118", "k1bd": "#eadfca", "k1bw": "1px", "k2bg": "#fffdf8", "k2im": "none", "k2ink": "#15803d", "k2bd": "#eadfca", "k2bw": "1px", "k3bg": "#fffdf8", "k3im": "none", "k3ink": "#1d4ed8", "k3bd": "#eadfca", "k3bw": "1px", "k4bg": "#fffdf8", "k4im": "none", "k4ink": "#c2410c", "k4bd": "#eadfca", "k4bw": "1px", "k5bg": "#fffdf8", "k5im": "none", "k5ink": "#a16207", "k5bd": "#eadfca", "k5bw": "1px", "k6bg": "#fffdf8", "k6im": "none", "k6ink": "#7e22ce", "k6bd": "#eadfca", "k6bw": "1px", "navon": "#c2410c"}}, {"n": "Midnight Glass", "no": "02", "top": false, "dark": true, "v": {"bg": "#070b24", "bgimg": "radial-gradient(900px 500px at 15% 0%,rgba(79,70,229,.35),transparent 60%),radial-gradient(800px 500px at 100% 100%,rgba(236,72,153,.22),transparent 60%)", "ink": "#e8ecff", "sdbg": "rgba(10,14,40,.92)", "sdink": "#e8ecff", "nibg": "rgba(255,255,255,.16)", "niink": "#ffffff", "nirad": "14px", "cdbg": "rgba(255,255,255,.06)", "cdbd": "rgba(255,255,255,.15)", "cdbw": "1px", "cdrad": "16px", "cdsh": "0 8px 24px rgba(0,0,0,.3)", "cdblur": "blur(14px)", "cdink": "#e8ecff", "thbg": "rgba(255,255,255,.09)", "think": "#d3dcff", "g1": "rgba(251,146,60,.28)", "g2": "rgba(52,211,153,.25)", "tdink": "#e8ecff", "tot": "rgba(255,255,255,.15)", "h3": "#a5b4fc", "hf": "inherit", "krad": "16px", "anim": "glow", "k1bg": "rgba(96,165,250,.2)", "k1im": "none", "k1ink": "#bfdbfe", "k1bd": "transparent", "k1bw": "0px", "k2bg": "rgba(52,211,153,.2)", "k2im": "none", "k2ink": "#a7f3d0", "k2bd": "transparent", "k2bw": "0px", "k3bg": "rgba(129,140,248,.22)", "k3im": "none", "k3ink": "#c7d2fe", "k3bd": "transparent", "k3bw": "0px", "k4bg": "rgba(251,146,60,.24)", "k4im": "none", "k4ink": "#fed7aa", "k4bd": "transparent", "k4bw": "0px", "k5bg": "rgba(250,204,21,.2)", "k5im": "none", "k5ink": "#fde68a", "k5bd": "transparent", "k5bw": "0px", "k6bg": "rgba(192,132,252,.24)", "k6im": "none", "k6ink": "#e9d5ff", "k6bd": "transparent", "k6bw": "0px", "navon": "#a5b4fc"}}, {"n": "Mint Fresh", "no": "03", "top": true, "dark": false, "v": {"bg": "#e8f2ec", "bgimg": "none", "ink": "#12332a", "sdbg": "#ffffff", "sdink": "#12332a", "nibg": "#0f3d2e", "niink": "#ffffff", "nirad": "99px", "cdbg": "#ffffff", "cdbd": "#d5e6dc", "cdbw": "1px", "cdrad": "20px", "cdsh": "0 8px 22px rgba(15,61,46,.08)", "cdblur": "none", "cdink": "#12332a", "thbg": "#e3f1e8", "think": "#12503c", "g1": "#ffd9bd", "g2": "#cdeedb", "tdink": "#12332a", "tot": "#d3ead9", "h3": "#0f6b4f", "hf": "inherit", "krad": "20px", "anim": "pop", "k1bg": "#0f3d2e", "k1im": "none", "k1ink": "#ffffff", "k1bd": "transparent", "k1bw": "0px", "k2bg": "#d4f3e2", "k2im": "none", "k2ink": "#0f5a3f", "k2bd": "transparent", "k2bw": "0px", "k3bg": "#e4dcfb", "k3im": "none", "k3ink": "#4c2fa3", "k3bd": "transparent", "k3bw": "0px", "k4bg": "#ffe3cf", "k4im": "none", "k4ink": "#b4470f", "k4bd": "transparent", "k4bw": "0px", "k5bg": "#fff0b8", "k5im": "none", "k5ink": "#8a6100", "k5bd": "transparent", "k5bw": "0px", "k6bg": "#fbd9e7", "k6im": "none", "k6ink": "#a61e5a", "k6bd": "transparent", "k6bw": "0px", "navon": "#0f3d2e"}}, {"n": "Orange & Black", "no": "04", "top": true, "dark": false, "v": {"bg": "#f2efe8", "bgimg": "none", "ink": "#111111", "sdbg": "#111111", "sdink": "#ffffff", "nibg": "#ff5a1f", "niink": "#111111", "nirad": "0px", "cdbg": "#ffffff", "cdbd": "#111111", "cdbw": "2px", "cdrad": "0px", "cdsh": "none", "cdblur": "none", "cdink": "#111111", "thbg": "#111111", "think": "#ffffff", "g1": "#ff5a1f", "g2": "#555555", "tdink": "#111111", "tot": "#ffd9c9", "h3": "#111111", "hf": "\"Courier New\",ui-monospace,monospace", "krad": "0px", "anim": "snap", "k1bg": "#ffffff", "k1im": "none", "k1ink": "#111111", "k1bd": "#111111", "k1bw": "2px", "k2bg": "#ffffff", "k2im": "none", "k2ink": "#111111", "k2bd": "#111111", "k2bw": "2px", "k3bg": "#ffffff", "k3im": "none", "k3ink": "#111111", "k3bd": "#111111", "k3bw": "2px", "k4bg": "#ffffff", "k4im": "none", "k4ink": "#111111", "k4bd": "#111111", "k4bw": "2px", "k5bg": "#ff5a1f", "k5im": "none", "k5ink": "#111111", "k5bd": "#111111", "k5bw": "2px", "k6bg": "#ffffff", "k6im": "none", "k6ink": "#111111", "k6bd": "#111111", "k6bw": "2px", "navon": "#ff5a1f"}}, {"n": "One-Page Aurora", "no": "05", "top": false, "dark": true, "v": {"bg": "#080c26", "bgimg": "radial-gradient(900px 600px at 10% 0%,rgba(45,212,191,.22),transparent 60%),radial-gradient(900px 600px at 90% 100%,rgba(168,85,247,.28),transparent 60%)", "ink": "#e6ebff", "sdbg": "rgba(9,13,38,.95)", "sdink": "#e6ebff", "nibg": "rgba(125,211,252,.22)", "niink": "#e0f7ff", "nirad": "14px", "cdbg": "rgba(255,255,255,.05)", "cdbd": "rgba(255,255,255,.14)", "cdbw": "1px", "cdrad": "18px", "cdsh": "0 10px 30px rgba(0,0,0,.35)", "cdblur": "blur(16px)", "cdink": "#e6ebff", "thbg": "rgba(255,255,255,.08)", "think": "#cfd8ff", "g1": "rgba(251,146,60,.26)", "g2": "rgba(45,212,191,.24)", "tdink": "#e6ebff", "tot": "rgba(255,255,255,.14)", "h3": "#93c5fd", "hf": "inherit", "krad": "18px", "anim": "aurora", "rail": "1", "k1bg": "rgba(96,165,250,.22)", "k1im": "none", "k1ink": "#bfdbfe", "k1bd": "rgba(255,255,255,.14)", "k1bw": "1px", "k2bg": "rgba(45,212,191,.2)", "k2im": "none", "k2ink": "#99f6e4", "k2bd": "rgba(255,255,255,.14)", "k2bw": "1px", "k3bg": "rgba(129,140,248,.22)", "k3im": "none", "k3ink": "#c7d2fe", "k3bd": "rgba(255,255,255,.14)", "k3bw": "1px", "k4bg": "rgba(251,146,60,.22)", "k4im": "none", "k4ink": "#fed7aa", "k4bd": "rgba(255,255,255,.14)", "k4bw": "1px", "k5bg": "rgba(250,204,21,.2)", "k5im": "none", "k5ink": "#fde68a", "k5bd": "rgba(255,255,255,.14)", "k5bw": "1px", "k6bg": "rgba(192,132,252,.24)", "k6im": "none", "k6ink": "#e9d5ff", "k6bd": "rgba(255,255,255,.14)", "k6bw": "1px", "navon": "#7dd3fc"}}];
 
@@ -4138,7 +4396,7 @@ function renderRingCard(s) {
 var HS_FZ = 1, HS_T = 0;
 function hsFit() {
   var t = document.getElementById('t-sum'); if (!t || t.classList.contains('hide') || t.offsetParent === null) return;
-  var phone = window.innerWidth <= 900, floor = phone ? 0.86 : 0.62, nav = 0;
+  var phone = window.innerWidth <= 900, floor = 1, nav = 0;   // floor = 1: the Summary keeps its full (100%) size, the page scrolls
   if (phone) { HS_FZ = 1; document.documentElement.style.setProperty('--fz', 1); return; }   // phone: full size, the page scrolls
   if (phone) { var nv = document.querySelector('nav'); nav = nv && nv.getBoundingClientRect().top > window.innerHeight / 2 ? nv.offsetHeight : 0; }
   document.documentElement.style.setProperty('--fz', 1);
@@ -4383,6 +4641,13 @@ function sgCopy(file, btn) {
     });
   }).then(function (n) { btn.textContent = 'Copied ✓ (' + Math.round(n / 1024) + ' KB)'; }).catch(function () { btn.textContent = 'Could not copy - tap to try again'; }).then(function () { btn.disabled = false; setTimeout(function () { btn.textContent = old; }, 5000); });
 }
+document.addEventListener('click', function (e) {
+  var d = e.target.closest && e.target.closest('[data-sgd]'); if (!d) return;
+  var f = d.dataset.sgd, old = d.innerHTML; d.disabled = true;
+  fetch(f + '?v=' + Date.now()).then(function (r) { if (!r.ok) throw new Error('file'); return r.blob(); }).then(function (bl) {
+    var a = document.createElement('a'); a.href = URL.createObjectURL(bl); a.download = f; document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+  }).catch(function () { d.textContent = 'Could not download - try Copy script'; }).then(function () { d.disabled = false; setTimeout(function () { d.innerHTML = old; }, 3500); });
+});
 function sgSite() { return location.origin + location.pathname.replace(/[^\/]*$/, ''); }   // the address of THIS site, e.g. https://ewdazamgarh.github.io/TRANSFORMER-TRACKER/
 function sgCopyTxt(txt, btn) {
   var old = btn.textContent;
@@ -4399,7 +4664,7 @@ function sgOpen() {
     '<ol class="sgl">' +
     '<li><b>Make a free Supabase account.</b> <a class="btn sm" href="https://supabase.com/dashboard" target="_blank" rel="noopener">Open Supabase &rarr;</a><br>Click "Sign up" and use your e-mail (or GitHub). Open the mail Supabase sends and confirm it.</li>' +
     '<li><b>Make a new project.</b> Click "New project". Name: anything (example: <i>tf-workshop</i>). Database password: click "Generate a password" and save it in a safe place (do not share it). Region: <i>South Asia (Mumbai)</i>. Plan: <i>Free</i>. Click "Create new project" and wait 2 minutes.</li>' +
-    '<li><b>Put the tables in.</b> <button class="btn sm" type="button" data-sgc="setup.sql">Copy setup SQL</button><br>Then in Supabase, left menu: <i>SQL Editor</i> &rarr; <i>New query</i> &rarr; paste (Ctrl+V) &rarr; click <i>Run</i>. You should see "Success. No rows returned". Run it only once.</li>' +
+    '<li><b>Put the tables in.</b> <button class="btn sm" type="button" data-sgc="setup.sql">Copy setup SQL</button><br>Then in Supabase, left menu: <i>SQL Editor</i> &rarr; <i>New query</i> &rarr; paste (Ctrl+V) &rarr; click <i>Run</i>. You should see "Success. No rows returned". If it shows an error, copy the button again and re-run: it is safe to run it more than once.</li>' +
     '<li><b>Add the user-management function.</b> <button class="btn sm" type="button" data-sgc="admin-users.ts">Copy function code</button><br>In Supabase, left menu: <i>Edge Functions</i> &rarr; <i>Deploy a new function</i> (via Editor) &rarr; name it exactly <code>admin-users</code> &rarr; delete the sample code, paste &rarr; <i>Deploy</i>.</li>' +
     '<li><b>Make your own first login.</b> In Supabase: <i>Authentication</i> &rarr; <i>Users</i> &rarr; <i>Add user</i> &rarr; <i>Create new user</i>. E-mail: your <b>own real e-mail</b> (the same e-mail of your Supabase account, for example <code>anita@gmail.com</code>). You will login with this e-mail, and a forgotten password can be reset by mail. (Your employees get simple IDs like <code>anup@tf.uppcl</code>, made by you in the Admin tab.) Type a password and <b>tick "Auto Confirm User"</b>. Click Create.</li>' +
     '<li><b>Copy the two connection values</b> from your Supabase project. Open your project first (supabase.com/dashboard &rarr; click your project). You need <b>two</b> things:<br>' +
@@ -4628,8 +4893,236 @@ function stBuild() {
     });
   });
 }
+
+/* ---- Admin: Google Drive archive of the M&R Repair + Testing Register (oldest month -> Drive -> only then deleted here) ---- */
+var AR = { st: null, cfg: { url: '', token: '' }, run: false };
+var AR_HR = ['key', 'workshop', 'day', 'block', 'firm', 'capacity', 'qty', 'entered by', 'entered at'];
+var AR_HT = ['id', 'workshop', 'firm', 'capacity', 'job no', 'test date', 'turn ratio R', 'turn ratio Y', 'turn ratio B', 'megger HV/E', 'megger LV/E', 'megger HV/LV', 'DVDF', 'high voltage', 'no load loss', 'full load loss', 'remark', 'entered by', 'created at'];
+function arOn() { return !!ME && (ME.role === 'admin' || ME.role === 'creator'); }
+function arLoad() {
+  var card = $('archard'), bt = $('artg'); if (!card || !bt) return;
+  bt.classList.toggle('hide', !arOn()); if (!arOn()) { card.classList.add('hide'); admChips(); return; }
+  card.classList.remove('hide');
+  $('sirtop').classList.remove('hide');
+  Promise.all([rpc('arch_status_json'), rpc('arch_cfg_get')]).then(function (a) { AR.st = a[0]; AR.cfg = a[1]; arDraw(); var ok = a[1].url && a[1].token; $('arst').textContent = ok ? 'Linked' : 'Not linked'; $('arst').className = 'tag ' + (ok ? 'ok' : ''); admChips(); })
+    .catch(function (e) { $('arbox').innerHTML = ''; msg('armsg', esc(e.message) + ' (If the SQL step 51 was not run yet, run setup.sql again.)', 'err'); });
+}
+function arDraw() {
+  var s = AR.st, c = AR.cfg, ok = c.url && c.token, h = '', i;
+  h += '<div class="muted" style="font-size:12.5px;line-height:1.55;margin-bottom:8px">R&amp;R PRs are deleted by themselves (oldest 12 months at a time, only when the storage is 90% full) and the <b>last 3 years always stay</b>. Repair and Testing Register are never deleted by themselves. When R&amp;R is down to 3 years and the storage is still full, save the <b>oldest month</b> to <b>your own Google Drive</b> (steps below). It is deleted from Supabase only after Drive has confirmed every row. A month is never saved twice.</div>';
+  h += '<details' + (ok ? '' : ' open') + ' class="drg" style="margin-bottom:10px"><summary style="cursor:pointer;font-weight:700">First time? How to set up your Google Drive (one time, about 5 minutes)</summary>' +
+    '<div class="muted" style="font-size:12.5px;margin:6px 0">You need your <b>own Google (Gmail) account</b>. Your data goes only to <b>your</b> Drive. Nobody else can see it.</div>' +
+    '<div class="bar" style="margin:6px 0"><button class="btn sm" type="button" data-sgc="drive-archive.gs">&#128203; Copy script (.gs)</button><button class="btn sm sec" type="button" data-sgd="drive-archive.gs">&#11015; Download file (drive-archive.gs)</button></div>' +
+    '<ol class="sgl" style="margin-top:8px">' +
+    '<li><b>Open the script page.</b> Go to <b>script.google.com</b> (logged in with your own Gmail) and click <b>New project</b>. Click "Untitled project" at the top and name it <b>TF-Tracker Drive</b>.</li>' +
+    '<li><b>Put the code in.</b> Press the <b>Copy script</b> button above. In the script page, select everything in the editor (Ctrl+A), delete it, and paste (Ctrl+V). If you downloaded the file instead, open it in Notepad, copy all, and paste the same way. Keep only this one file.</li>' +
+    '<li><b>Write your secret code.</b> At the top find the line <code>var SECRET = \'CHANGE-THIS-CODE\';</code> and write a code of your own between the quotes (8 or more letters and digits, e.g. <code>Tf7kQ92mWa</code>). Keep it private; you will type the same code in the app in step 7. Press <b>Ctrl+S</b> to save.</li>' +
+    '<li><b>Give permission (once).</b> In the toolbar choose the function <code>authorizeOnce</code> from the drop-down and press <b>Run</b>. Click <b>Review permissions</b> &rarr; your account &rarr; <i>Advanced</i> &rarr; <i>Go to TF-Tracker Drive (unsafe)</i> &rarr; <b>Allow</b>. It is your own script; it only creates files in your Drive.</li>' +
+    '<li><b>Publish it.</b> Click <b>Deploy</b> &rarr; <b>New deployment</b>. Click the gear icon &rarr; <b>Web app</b>. Set <b>Execute as: Me</b> and <b>Who has access: Anyone</b>. Click <b>Deploy</b>.</li>' +
+    '<li><b>Copy the link.</b> Copy the <b>Web app URL</b> (it ends with <code>/exec</code>). Open it in a new browser tab: you must see <code>{"ok":true,"msg":"TF-Tracker archive is running"}</code>.</li>' +
+    '<li><b>Link it here.</b> Paste the URL and your secret code in the boxes below, press <b>Save</b>, then <b>Test Drive link</b>. It must say <b>"Google Drive link works"</b>. Done.</li>' +
+    '</ol>' +
+    '<div class="muted" style="font-size:12.5px;line-height:1.55;margin-top:6px"><b>If the test fails</b><br>' +
+    '&bull; <i>Wrong secret code</i>: the code in the script (step 3) and in the box below must be exactly the same. After you change the script, do Deploy &rarr; Manage deployments &rarr; pencil &rarr; Version: <b>New version</b> &rarr; Deploy.<br>' +
+    '&bull; <i>You do not have permission ...</i>: repeat step 4 (run <code>authorizeOnce</code>), then deploy a New version.<br>' +
+    '&bull; <i>No answer from your Google script</i>: the Web app must be deployed with <b>Who has access: Anyone</b> (step 5). A school / office Google account may block "Anyone": use a personal Gmail.<br>' +
+    '&bull; The script page shows each call under <b>Executions</b> (left side); open a red "Failed" row to read the reason.</div>' +
+    '<div class="muted" style="font-size:12px;margin-top:6px">In your Drive a folder <b>TF-Tracker Archive</b> is made. In it one Google Sheet per financial year: <b>repair&amp;testing register FY-2024-25</b>, with two tabs for every month (Repair, Testing). The 5 newest financial years stay there; older files are moved to a sub-folder (never deleted).</div></details>';
+  h += '<h4 style="margin:6px 0 4px">Link to your Google Drive</h4>';
+  h += '<div class="bar" style="align-items:flex-end"><div style="flex:1;min-width:240px"><label>Web app URL (ends with /exec)</label><input type="text" id="aru" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="https://script.google.com/macros/s/.../exec" value="' + esc(c.url) + '"></div>' +
+    '<div style="min-width:160px"><label>Secret code</label><input type="password" id="art" autocomplete="off" value="' + esc(c.token) + '"></div></div>' +
+    '<div class="bar" style="margin-top:8px"><button class="btn" id="arsv" type="button">Save</button><button class="btn sec" id="artest" type="button"' + (ok ? '' : ' disabled') + '>Test Drive link</button><button class="btn sec" id="arrm" type="button"' + (ok ? '' : ' disabled') + '>Remove link</button></div>';
+  h += '<div class="muted" style="margin:10px 0 2px"><b>Storage:</b> ' + s.mb + ' of ' + s.limit_mb + ' MB (' + s.pct + '%) &nbsp; <b>R&amp;R older than 3 years:</b> ' + (s.rr_old ? '<span style="color:#b45309">' + s.rr_old + ' PRs (they go first)</span>' : '<span style="color:#15803d">none</span>') + '</div>';
+  h += '<h4 style="margin:12px 0 4px">Months that can be archived <span class="muted" style="font-weight:400">(older than 12 months, oldest first)</span></h4>';
+  if (!s.months.length) h += '<div class="muted">No Repair / Testing Register month older than 12 months.</div>';
+  else {
+    h += '<div class="wrap"><table class="mt"><thead><tr><th>Month</th><th>Repair rows</th><th>Testing rows</th><th>Financial year file</th></tr></thead><tbody>';
+    s.months.slice(0, 12).forEach(function (m) { h += '<tr><td>' + m.m.slice(5) + '.' + m.m.slice(0, 4) + '</td><td>' + m.rr + '</td><td>' + m.tr + '</td><td>repair&amp;testing register FY-' + arFy(m.m) + '</td></tr>'; });
+    h += '</tbody></table></div>';
+    var can = ok && !s.rr_old;
+    h += '<div class="bar" style="margin-top:10px"><button class="btn" id="argo" type="button"' + (can ? '' : ' disabled') + '>Save oldest month (' + s.months[0].m.slice(5) + '.' + s.months[0].m.slice(0, 4) + ') to Drive and delete it here</button></div>';
+    if (!ok) h += '<div class="muted" style="margin-top:4px">First save the Apps Script link and the secret code.</div>';
+    else if (s.rr_old) h += '<div class="muted" style="margin-top:4px">R&amp;R still has PRs older than 3 years. They are deleted first (Sunday). The archive opens after that.</div>';
+  }
+  if (s.log && s.log.length) { h += '<h4 style="margin:12px 0 4px">Last archived</h4>'; s.log.forEach(function (l) { h += '<div class="muted">' + esc(l.at) + ' &nbsp; ' + l.month.slice(5) + '.' + l.month.slice(0, 4) + ' &nbsp; Repair ' + l.rr + ', Testing ' + l.tr + ' rows</div>'; }); }
+  $('arbox').innerHTML = h;
+}
+function arFy(m) { var y = +m.slice(0, 4), mo = +m.slice(5, 7), s = mo >= 4 ? y : y - 1; return s + '-' + String(s + 1).slice(-2); }
+function arPost(body) {                       // a hidden form + postMessage: it works without CORS (fetch to Apps Script is blocked in many browsers)
+  var url = $('aru') ? $('aru').value.trim() : AR.cfg.url, id = 'a' + Date.now() + Math.random().toString(36).slice(2, 8);
+  body.id = id;
+  return new Promise(function (res, rej) {
+    var fr = document.createElement('iframe'), fm = document.createElement('form'), inp = document.createElement('input'), done = false, to;
+    fr.name = 'arfr' + id; fr.style.display = 'none'; fm.method = 'POST'; fm.action = url; fm.target = fr.name; fm.style.display = 'none';
+    inp.type = 'hidden'; inp.name = 'payload'; inp.value = JSON.stringify(body); fm.appendChild(inp);
+    function end(f, v) { if (done) return; done = true; clearTimeout(to); window.removeEventListener('message', on); setTimeout(function () { fr.remove(); fm.remove(); }, 50); f(v); }
+    function on(ev) {
+      if (!(ev.origin === 'null' || /^https:\/\/([a-z0-9-]+\.)*(googleusercontent|google)\.com$/.test(ev.origin)) || !ev.data || ev.data.id !== id) return;   /* the Apps Script page is sandboxed, so its origin is "null"; the random id proves it is our answer */
+      end(res, ev.data);
+    }
+    window.addEventListener('message', on);
+    to = setTimeout(function () { end(rej, new Error('timeout')); }, 60000);
+    document.body.appendChild(fr); document.body.appendChild(fm); fm.submit();
+  });
+}
+function arGo(btn) {
+  var m = AR.st && AR.st.months[0] && AR.st.months[0].m; if (!m || AR.run) return;
+  var tok = ($('art') && $('art').value.trim()) || AR.cfg.token;
+  if (!window.confirm('Save ' + m.slice(5) + '.' + m.slice(0, 4) + ' (Repair + Testing Register) to Google Drive and then DELETE it from Supabase?\n\nIt is deleted only after Drive has confirmed every row.')) return;
+  AR.run = true; busy(btn, true, 'Saving to Drive...'); msg('armsg', '');
+  var d, sent = 0, tot = 0;
+  rpc('arch_month_json', { p_month: m }).then(function (x) {
+    d = x;
+    var jobs = [], CH = 1000, i;
+    var rr = d.rr.map(function (r) { return [[r[0], r[1], r[2], r[3], r[4]].join('|')].concat(r); }), tr = d.tr.map(function (r) { return [String(r[0])].concat(r.slice(1)); });
+    for (i = 0; i < rr.length; i += CH) jobs.push({ kind: 'rr', header: AR_HR, rows: rr.slice(i, i + CH) });
+    for (i = 0; i < tr.length; i += CH) jobs.push({ kind: 'tr', header: AR_HT, rows: tr.slice(i, i + CH) });
+    tot = rr.length + tr.length;
+    return jobs.reduce(function (p, j) {
+      return p.then(function () {
+        return arPost({ token: tok, month: m, kind: j.kind, header: j.header, rows: j.rows }).then(function (r) {
+          if (!r || !r.ok || r.confirmed !== j.rows.length) throw new Error('Google Drive did not confirm all rows' + (r && r.error ? ' (' + r.error + ')' : '') + '. Nothing was deleted.');
+          sent += j.rows.length; btn.innerHTML = '<span class="sp"></span>Saved ' + sent + ' of ' + tot + '...';
+        });
+      });
+    }, Promise.resolve());
+  }).then(function () {
+    if (sent !== tot) throw new Error('Not all rows were confirmed. Nothing was deleted.');
+    return rpc('arch_delete', { p_month: m, p_rr: d.rr.map(function (r) { return [r[0], r[1], r[2], r[3], r[4]]; }), p_tr: d.tr.map(function (r) { return r[0]; }) });
+  }).then(function (x) {
+    msg('armsg', 'Done: ' + m.slice(5) + '.' + m.slice(0, 4) + ' is in your Google Drive (repair&amp;testing register FY-' + arFy(m) + '). Deleted here: Repair ' + x.rr + ', Testing ' + x.tr + ' rows. The space is freed on Sunday.', 'ok');
+  }).catch(function (e) { msg('armsg', esc(e.message || String(e)), 'err'); }).then(function () { AR.run = false; arLoad(); });
+}
+document.addEventListener('click', function (e) {
+  var t = e.target && e.target.closest ? e.target.closest('#arsv,#artest,#argo,#arrm') : null; if (!t) return;
+  if (t.id === 'arsv') {
+    busy(t, true, 'Saving...');
+    rpc('arch_cfg_set', { p_url: $('aru').value, p_token: $('art').value }).then(function () { msg('armsg', 'Saved. Now press Test Drive link.', 'ok'); arLoad(); })
+      .catch(function (er) { msg('armsg', esc(er.message), 'err'); }).then(function () { busy(t, false); });
+  } else if (t.id === 'artest') {
+    busy(t, true, 'Testing...');
+    arPost({ token: $('art').value.trim(), ping: true }).then(function (r) { msg('armsg', r && r.ok ? 'Google Drive link works.' : 'The link answered, but: ' + esc((r && r.error) || 'unknown'), r && r.ok ? 'ok' : 'err'); })
+      .catch(function () { msg('armsg', 'No answer from your Google script (waited 1 minute). Open the same link in a new tab: it must show {"ok":true,...}. Then: copy the newest <b>drive-archive.gs</b> from the button above into the script, keep your SECRET, Deploy &rarr; Manage deployments &rarr; pencil &rarr; Version <b>New version</b> &rarr; Deploy, and press Test again.', 'err'); }).then(function () { busy(t, false); });
+  } else if (t.id === 'arrm') {
+    if (!window.confirm('Remove the Google Drive link? Nothing in your Drive is deleted.')) return;
+    rpc('arch_cfg_clear').then(function () { msg('armsg', 'Link removed.', 'info'); arLoad(); }).catch(function (er) { msg('armsg', esc(er.message), 'err'); });
+  } else if (t.id === 'argo') arGo(t);
+});
+
+
+/* ---- Admin: the jobs are shown as tiles at the top; the tapped job opens below ---- */
+var ADM_SEL = 'users';
+var ADM_DEFS = [
+  { k: 'users', card: 'uscard', t: 'Users', s: 'Search, edit, reset password', i: '\u{1F465}', c: '#e6f0ff' },
+  { k: 'new', card: 'nucard', t: 'New user', s: 'Create a login ID', i: '➕', c: '#e4f6e8' },
+  { k: 'ws', card: 'wscard', t: 'Workshops', s: 'Add your workshops', i: '\u{1F3ED}', c: '#fdebd8' },
+  { k: 'staff', card: 'slcard', t: 'Staff link', s: 'Link and workshop code', i: '\u{1F517}', c: '#efe6ff' },
+  { k: 'struct', card: 'stcard', t: 'Structure', s: 'Circles and divisions', i: '\u{1F9E9}', c: '#fff1c9' },
+  { k: 'ul', card: 'ulcard', t: 'Login without code', s: function () { return UD.tile || 'ID + password only'; }, i: '\u{1F511}', c: '#e4f6e8' },
+  { k: 'dir', card: 'udcard', t: 'Admin directory', s: function () { return UD.dtile || 'Approve Admins'; }, i: '\u{1F4D2}', c: '#fdebd8' },
+  { k: 'sir', card: 'sircfg', t: 'SIR sheet', s: function () { return ($('sirst') || {}).textContent || 'Google Sheet link'; }, i: '\u{1F4CB}', c: '#e0f4f4' },
+  { k: 'drive', card: 'archard', t: 'Google Drive', s: function () { var st = AR && AR.st, t = ($('arst') || {}).textContent || 'Archive (M&R)'; return st && st.pct >= 90 ? '⚠ Storage ' + st.pct + '% full' : t; }, i: '☁️', c: '#e6eefc' }
+];
+function admChips() {
+  var box = $('admchips'); if (!box) return;
+  var ok = {}, first = null, h = '';
+  ADM_DEFS.forEach(function (d) { var c = $(d.card); if (c && !c.classList.contains('hide')) { ok[d.k] = 1; if (!first) first = d.k; } });
+  if (!ok[ADM_SEL]) ADM_SEL = first;
+  ADM_DEFS.forEach(function (d) {
+    if (!ok[d.k]) return; var sub = typeof d.s === 'function' ? d.s() : d.s, cls = /^(Linked|Published)/.test(sub) ? ' ok' : (/⚠|Not linked|Waiting|Not published|to approve|Blocked/.test(sub) ? ' wn' : '');
+    h += '<button type="button" class="achip' + (d.k === ADM_SEL ? ' on' : '') + '" data-k="' + d.k + '"><span class="ic" style="--c:' + d.c + '">' + d.i + '</span><span><b>' + d.t + '</b><small class="' + cls.trim() + '">' + esc(sub) + '</small></span></button>';
+  });
+  if (box.innerHTML !== h) box.innerHTML = h;
+  ADM_DEFS.forEach(function (d) { var c = $(d.card); if (c) c.classList.toggle('apg', d.k !== ADM_SEL); });
+}
+document.addEventListener('click', function (e) {
+  var b = e.target.closest && e.target.closest('.achip[data-k]'); if (!b) return;
+  ADM_SEL = b.dataset.k; msg('amsg', ''); admChips(); if (ADM_SEL === 'drive') arLoad();
+});
+
+/* ---- Admin: "Login without code" (the Admin publishes his IDs) and "Admin directory" (the App Creator approves the Admins) ---- */
+var UD = { tile: '', dtile: '', token: null, st: null, ids: [] };
+function udOtherUse(id) {
+  var C = ttConn(); if (!C.own || !window.supabase) return Promise.resolve(false);
+  return wcDefault().rpc('ud_find', { p_login: String(id || '').trim().toLowerCase(), p_url: C.u }).then(function (r) { return !r.error && r.data && r.data.other > 0; }).catch(function () { return false; });
+}
+function udOwnAdmin() { return !!ME && ME.role === 'admin' && ttConn().own; }
+function udCreatorDefault() { return !!ME && ME.role === 'creator' && !ttConn().own; }
+function udLoad() {
+  var a = $('ulcard'), d = $('udcard'); if (!a || !d) return;
+  a.classList.toggle('hide', !udOwnAdmin()); d.classList.toggle('hide', !udCreatorDefault());
+  if (udOwnAdmin()) udOwnLoad();
+  if (udCreatorDefault()) udDirLoad();
+  admChips();
+}
+function udTile(st) {
+  UD.tile = !st || st.status === 'none' ? 'Not published' : st.status === 'approved' ? 'Published ✓' : st.status === 'blocked' ? 'Blocked' : 'Waiting for approval';
+}
+function udOwnLoad() {
+  var C = ttConn();
+  Promise.all([rpc('ud_cfg_get'), rpc('ud_logins_json')]).then(function (a) {
+    UD.token = a[0] || null; UD.ids = a[1] || [];
+    if (!UD.token) return { status: 'none' };
+    return wcDefault().rpc('ud_status', { p_url: C.u, p_token: UD.token }).then(function (r) { return r.error ? { status: 'none', err: r.error.message } : r.data; });
+  }).then(function (st) {
+    UD.st = st; udTile(st);
+    var h = '<div class="muted" style="font-size:12.5px;line-height:1.55;margin-bottom:8px">With this, your employees open the app and type <b>only their ID and password</b>. They do not need the workshop code or the staff link. Press <b>Publish my IDs</b> once. After that every new or deleted user is published by itself. The App Creator approves your Admin ID once; until then the workshop code still works.</div>';
+    h += '<div style="margin-bottom:8px"><b>Status:</b> ' + (st.status === 'approved' ? '<span style="color:#15803d">Published and approved (' + st.count + ' IDs)</span>' : st.status === 'pending' ? '<span style="color:#b45309">Published (' + st.count + ' IDs), waiting for the App Creator to approve</span>' : st.status === 'blocked' ? '<span style="color:#b91c1c">Blocked by the App Creator</span>' : '<span style="color:#b45309">Not published yet</span>') + ' &nbsp; <span class="muted">IDs in this project: ' + UD.ids.length + '</span></div>';
+    if (st.conflicts && st.conflicts.length) h += '<div class="msg err">These IDs are also used by another Admin, so they <b>cannot log in</b> until one Admin changes the ID: <b>' + st.conflicts.map(esc).join(', ') + '</b></div>';
+    h += '<div class="bar"><button class="btn" id="ulpub" type="button">' + (UD.token ? 'Publish my IDs again' : 'Publish my IDs') + '</button></div>';
+    $('ulbox').innerHTML = h; admChips();
+  }).catch(function (e) { $('ulbox').innerHTML = ''; msg('ulmsg', esc(e.message) + ' (Run setup.sql again, SQL step 53, in this project and in the default project.)', 'err'); });
+}
+function udPublish() {
+  var C = ttConn();
+  return Promise.all([rpc('ud_logins_json'), rpc('ud_cfg_get')]).then(function (a) {
+    return wcDefault().rpc('ud_register', { p_url: C.u, p_key: C.k, p_label: (ME.login || '') + (ME.div ? ' · ' + ME.div : ''), p_logins: a[0], p_token: a[1] || null }).then(function (r) {
+      if (r.error) throw new Error(/function|schema cache/i.test(r.error.message) ? 'The directory is not switched on in the default project yet. The App Creator must run setup.sql (step 53) there.' : r.error.message);
+      var d = r.data; try { localStorage.setItem('tt_udh', a[0].slice().sort().join('|')); } catch (x) { }
+      return (d.token ? rpc('ud_cfg_set', { p_token: d.token }) : Promise.resolve()).then(function () { return d; });
+    });
+  });
+}
+function udAuto() {                                           // after users were added / deleted: publish again by itself (only if the Admin published once)
+  if (!udOwnAdmin()) return;
+  Promise.all([rpc('ud_logins_json'), rpc('ud_cfg_get')]).then(function (a) {
+    var h = a[0].slice().sort().join('|'), old = ''; try { old = localStorage.getItem('tt_udh') || ''; } catch (x) { }
+    if (a[1] && h !== old) return udPublish().then(function () { udOwnLoad(); });
+  }).catch(function () { });
+}
+function udDirLoad() {
+  rpc('ud_admin_list').then(function (L) {
+    var pend = L.filter(function (x) { return x.status === 'pending'; }).length; UD.dtile = pend ? pend + ' to approve' : (L.length + ' Admins');
+    var h = '<div class="muted" style="font-size:12.5px;line-height:1.55;margin-bottom:8px">Every Admin who publishes his IDs appears here as <b>pending</b>. Check that you know this Admin, then press <b>Approve</b>. Only approved Admins are used by the login page. An ID that is in two approved Admins cannot log in.</div>';
+    if (!L.length) h += '<div class="muted">No Admin has published yet.</div>';
+    else {
+      h += '<div class="wrap"><table class="mt"><thead><tr><th>Admin</th><th>Project</th><th>IDs</th><th>Same ID elsewhere</th><th>Status</th><th></th></tr></thead><tbody>';
+      L.forEach(function (x) {
+        h += '<tr><td>' + esc(x.label || '-') + '<br><span class="muted">' + esc(x.at) + '</span></td><td style="word-break:break-all">' + esc(x.url.replace('https://', '').replace('.supabase.co', '')) + '</td><td>' + x.ids + '</td><td>' + (x.conf ? '<b style="color:#b91c1c">' + x.conf + '</b>' : '0') + '</td><td><b>' + esc(x.status) + '</b></td><td style="white-space:nowrap">' +
+          (x.status !== 'approved' ? '<button class="btn sm" type="button" data-ud="approved" data-p="' + esc(x.pid) + '">Approve</button> ' : '<button class="btn sm sec" type="button" data-ud="blocked" data-p="' + esc(x.pid) + '">Block</button> ') +
+          '<button class="btn sm sec" type="button" data-ud="remove" data-p="' + esc(x.pid) + '">Remove</button></td></tr>';
+      });
+      h += '</tbody></table></div>';
+    }
+    $('udbox').innerHTML = h; admChips();
+  }).catch(function (e) { $('udbox').innerHTML = ''; msg('udmsg', esc(e.message) + ' (Run setup.sql again in this project: SQL step 53.)', 'err'); });
+}
+document.addEventListener('click', function (e) {
+  var t = e.target.closest && e.target.closest('#ulpub,[data-ud]'); if (!t) return;
+  if (t.id === 'ulpub') {
+    busy(t, true, 'Publishing...'); msg('ulmsg', '');
+    udPublish().then(function () { msg('ulmsg', 'Published.', 'ok'); udOwnLoad(); }).catch(function (er) { msg('ulmsg', esc(er.message), 'err'); }).then(function () { busy(t, false); });
+  } else {
+    if (t.dataset.ud === 'remove' && !window.confirm('Remove this Admin from the directory? His users will need the workshop code again until he publishes and you approve again.')) return;
+    busy(t, true, '...'); rpc('ud_admin_set', { p_pid: t.dataset.p, p_action: t.dataset.ud }).then(function () { udDirLoad(); }).catch(function (er) { msg('udmsg', esc(er.message), 'err'); busy(t, false); });
+  }
+});
+
 function stLoad() {
   if (typeof slLoad === 'function') slLoad();
+  if (typeof arLoad === 'function') arLoad();
+  if (typeof udLoad === 'function') { udLoad(); udAuto(); }
+  admChips(); setTimeout(admChips, 400); setTimeout(admChips, 1500);
   var card = $('stcard'); if (!card) return;
   var on = ME && (ME.role === 'admin' || ME.role === 'creator');
   card.classList.toggle('hide', !on); if (!on) return;
@@ -4639,8 +5132,8 @@ function stLoad() {
 function stMsg(t, k) { var e = $('stmsg'); if (e) e.innerHTML = t ? '<div class="msg ' + (k || 'info') + '">' + t + '</div>' : ''; }
 function stDraw() {
   var b = $('stbox'); if (!b) return;
-  if (!STW.length) { b.innerHTML = '<div class="muted">Add a workshop first (Workshops box above).</div>'; return; }
-  if (!STRUCT_OK) { b.innerHTML = '<div class="msg err">The Structure is not switched on yet: the owner must run SQL step 37 (supabase-step37-structure.sql).</div>'; return; }
+  if (!STW.length) { b.innerHTML = '<div class="muted">Add a workshop first (Workshops).</div>'; return; }
+  if (!STRUCT_OK) { b.innerHTML = '<div class="msg err">The Structure is not switched on yet: the owner must run setup.sql again in Supabase (SQL Editor).</div>'; return; }
   var h = '<div class="muted" style="font-size:12.5px;margin:0 0 8px">Make your Circles, then put every Division in a Circle. The order here is the order in the Comparison tab and in the Division wise table. Write the <b>division name exactly as it is in your PRs</b> (if you change it here, it is changed in all PRs too). The <b>short name</b> is what is shown on the screen. Tip: tap <b>Fill from my data</b> to bring the divisions that are already in your PRs.</div><div id="stmsg"></div>';
   STW.forEach(function (w, wi) {
     var s = ST[w];
@@ -4751,7 +5244,7 @@ printHtml = function (title, inner) {
    A second dashboard inside the same app: M&R Summary, DTC Sheet and Kitty. The R&R button (last in the menu) goes back to the main dashboard.
    Who: an Admin, and an M&R user = a user whose tabs list holds 'mr'. All figures come from the Data Sheet; only DTC no / DTC date and the kitty figures are typed here. */
 var MR = { on: false, tab: 'msum', month: '', ws: '', st: 'all', q: '', rows: [], total: 0, cnt: {}, dirty: {}, kws: '', kday: '', kd: null, sum: null, qt: null };
-var MR_SECT = { msum: 't-mrsum', mdtc: 't-mrdtc', mkit: 't-mrkit', mrep: 't-mrrep', msc: 't-mrsc' };
+var MR_SECT = { msum: 't-mrsum', mdtc: 't-mrdtc', mkit: 't-mrkit', mrep: 't-mrrep', msc: 't-mrsc', mtst: 't-mrtst' };
 var MR_WORD = ['AZAMGARH', 'MAU', 'BALLIA'];
 function mrAccess() { return !!ME && (ME.role === 'admin' || (ME.tabs && ME.tabs.indexOf('mr') >= 0)); }
 function mrOnly() { return !!ME && ME.role !== 'admin' && !!ME.tabs && ME.tabs.indexOf('mr') >= 0 && ME.tabs.indexOf('sum') < 0; }
@@ -4777,7 +5270,7 @@ function mrShow(t) {
   MR.tab = t;
   Object.keys(MR_SECT).forEach(function (k) { $(MR_SECT[k]).classList.toggle('hide', k !== t); });
   document.querySelectorAll('#mrnav button').forEach(function (b) { b.classList.toggle('on', b.dataset.t === t); });
-  if (t === 'msum') mrSumLoad(); else if (t === 'mdtc') mrDtcLoad(); else if (t === 'mkit') mrKitLoad(true); else if (t === 'mrep') mrRepLoad(true); else if (t === 'msc') mrScLoad(true);
+  if (t === 'msum') mrSumLoad(); else if (t === 'mdtc') mrDtcLoad(); else if (t === 'mkit') mrKitLoad(true); else if (t === 'mrep') mrRepLoad(true); else if (t === 'msc') mrScLoad(true); else if (t === 'mtst') tsLoad();
 }
 function mrAfterLogin() {
   MR = { on: false, tab: 'msum', month: '', ws: '', st: 'all', q: '', rows: [], total: 0, cnt: {}, dirty: {}, kws: '', kday: '', kd: null, sum: null, qt: null };
@@ -4807,27 +5300,30 @@ function mrSumLoad() {
   if (!validD(d) || !validD(f) || !validD(t)) return msg('mrsmsg', 'Enter all three dates in DD.MM.YYYY format.', 'err');
   if (parseD(f) > parseD(t)) return msg('mrsmsg', 'The "From" date cannot be later than the "To" date.', 'err');
   msg('mrsmsg', ''); var b = $('mrbtn'); busy(b, true, 'Loading...');
-  rpc('mr_summary_json', { p_date: mrIso(d), p_from: mrIso(f), p_to: mrIso(t) }).then(function (r) { busy(b, false); MR.sum = { r: r, d: d, f: f, t: t }; mrSumDraw(); })
+  Promise.all([rpc('mr_summary_json', { p_date: mrIso(d), p_from: mrIso(f), p_to: mrIso(t) }), rpc('mr_repair_json', { p_date: mrIso(d), p_from: mrIso(f), p_to: mrIso(t) }).catch(function () { return { ws: [], cap: [], off: true }; })]).then(function (a) { busy(b, false); MR.sum = { r: a[0], rp: a[1], d: d, f: f, t: t }; mrSumDraw(); })
     .catch(function (er) { busy(b, false); msg('mrsmsg', esc(er.message), 'err'); });
 }
 function mrSumDraw() {
-  var S = MR.sum; if (!S) return; var r = S.r, ws = mrWs().filter(function (w) { return r.ws.some(function (x) { return x[0] === w; }); }), W = {}, h = '', i;
-  r.ws.forEach(function (x) { W[x[0]] = x; });
+  var S = MR.sum; if (!S) return; var r = S.r, rp = S.rp || { ws: [], cap: [] }, ws = mrWs().filter(function (w) { return r.ws.some(function (x) { return x[0] === w; }) || rp.ws.some(function (x) { return x[0] === w; }); }), W = {}, RW = {}, RC = {}, h = '', i;
+  r.ws.forEach(function (x) { W[x[0]] = x; }); ws.forEach(function (w) { if (!W[w]) W[w] = [w, 0, 0, 0, 0, 0]; });
+  rp.ws.forEach(function (x) { RW[x[0]] = x; }); rp.cap.forEach(function (x) { (RC[x[1]] = RC[x[1]] || {})[x[0]] = x[2]; });
+  var rt = [0, 0]; ws.forEach(function (w) { rt[0] += RW[w] ? RW[w][1] : 0; rt[1] += RW[w] ? RW[w][2] : 0; });
   var tot = [0, 0, 0, 0, 0]; ws.forEach(function (w) { for (i = 0; i < 5; i++) tot[i] += W[w][i + 1]; });
-  $('mrkpi').innerHTML = [['a1', 'Total PR', tot[2], S.f + ' to ' + S.t], ['a2', 'Total DTC', tot[3], 'DTC no entered'], ['a4', 'Pending for DTC', tot[4], 'PR without DTC']]
-    .map(function (k) { return '<div class="' + k[0] + '"><b>' + k[1] + '</b><i>' + k[2] + '</i><u>' + esc(k[3]) + '</u></div>'; }).join('');
+  $('mrkpi').innerHTML = [['a1', 'Total PR', tot[2], S.f + ' to ' + S.t], ['a2', 'Total DTC', tot[3], 'DTC no entered'], ['a3', 'Total Repair', rt[1], 'repaired in period'], ['a4', 'Pending for DTC', tot[4], 'PR without DTC']]
+    .map(function (k) { var pd = k[0] === 'a4'; return '<div class="' + k[0] + (pd && k[2] ? ' pdk' : '') + '"' + (pd ? ' data-w="" data-c="" title="Click to open the pending DTC list"' : '') + '><b>' + k[1] + '</b><i>' + k[2] + '</i><u>' + esc(k[3]) + '</u></div>'; }).join('');
   $('mrsub').textContent = S.d + ' · from ' + S.f + ' to ' + S.t;
-  h += '<div class="card k-ws"><h3>Workshop wise summary</h3><div class="wrap tbl11d"><table><thead><tr><th class="l" rowspan="2">WORKSHOP NAME</th><th class="g1" colspan="2">TODAY (' + esc(S.d) + ')</th><th class="g2" colspan="3">TILL TODAY (' + esc(S.f) + ' - ' + esc(S.t) + ')</th></tr>' +
-    '<tr><th class="g1">TODAY PR</th><th class="g1">TODAY DTC</th><th class="g2">TOTAL PR</th><th class="g2">TOTAL DTC</th><th class="g2 pe">PENDING FOR DTC</th></tr></thead><tbody>';
-  ws.forEach(function (w) { var x = W[w]; h += '<tr><td class="l">' + esc(w) + '</td><td>' + x[1] + '</td><td>' + x[2] + '</td><td>' + x[3] + '</td><td>' + x[4] + '</td><td class="pe">' + x[5] + '</td></tr>'; });
-  if (ws.length > 1) h += '<tr class="t"><td class="l">TOTAL</td><td>' + tot[0] + '</td><td>' + tot[1] + '</td><td>' + tot[2] + '</td><td>' + tot[3] + '</td><td class="pe">' + tot[4] + '</td></tr>';
+  h += '<div class="card k-ws"><h3>Workshop wise summary</h3><div class="wrap tbl11d"><table><thead><tr><th class="l" rowspan="2">WORKSHOP NAME</th><th class="g1" colspan="3">TODAY (' + esc(S.d) + ')</th><th class="g2" colspan="4">TILL TODAY (' + esc(S.f) + ' - ' + esc(S.t) + ')</th></tr>' +
+    '<tr><th class="g1">TODAY PR</th><th class="g1">TODAY DTC</th><th class="g1">TODAY REPAIR</th><th class="g2">TOTAL PR</th><th class="g2">TOTAL DTC</th><th class="g2">TOTAL REPAIR</th><th class="g2 pe">PENDING FOR DTC</th></tr></thead><tbody>';
+  ws.forEach(function (w) { var x = W[w]; var q = RW[w] || [w, 0, 0]; h += '<tr><td class="l">' + esc(w) + '</td><td>' + x[1] + '</td><td>' + x[2] + '</td><td>' + q[1] + '</td><td>' + x[3] + '</td><td>' + x[4] + '</td><td>' + q[2] + '</td><td class="pe' + (x[5] ? ' pdk' : '') + '" data-w="' + esc(w) + '" data-c="">' + x[5] + '</td></tr>'; });
+  if (ws.length > 1) h += '<tr class="t"><td class="l">TOTAL</td><td>' + tot[0] + '</td><td>' + tot[1] + '</td><td>' + rt[0] + '</td><td>' + tot[2] + '</td><td>' + tot[3] + '</td><td>' + rt[1] + '</td><td class="pe' + (tot[4] ? ' pdk' : '') + '" data-w="" data-c="">' + tot[4] + '</td></tr>';
   h += '</tbody></table></div></div>';
+  h += '<div class="card k-kit" id="mrkit"><div class="msg info">Loading kitty...</div></div>';
   // capacity wise: PR received, DTC done, pending DTC
-  var capSet = {}; STD_CAPS.forEach(function (c) { capSet[c] = 1; }); r.cap.forEach(function (x) { if (x[1]) capSet[x[1]] = 1; });
+  var capSet = {}; STD_CAPS.forEach(function (c) { capSet[c] = 1; }); r.cap.forEach(function (x) { if (x[1]) capSet[x[1]] = 1; }); rp.cap.forEach(function (x) { if (x[1]) capSet[x[1]] = 1; });
   var caps = Object.keys(capSet).map(Number).sort(function (a, b) { return a - b; }), C = {};
   r.cap.forEach(function (x) { (C[x[1]] = C[x[1]] || {})[x[0]] = x; });
   // one table like the R&R "Capacity wise summary": capacity rows; groups PR RECEIVED / DTC DONE / PENDING FOR DTC, each with the workshops and a TOTAL
-  var G = [['PR RECEIVED', 2, 'g2', ''], ['DTC DONE', 3, 'g2', ''], ['PENDING FOR DTC', 4, 'g1', 'pe']], nw = ws.length, span = nw + (nw > 1 ? 1 : 0), GT = G.map(function () { return zero(nw); });
+  var G = [['PR RECEIVED', 2, 'g2', ''], ['DTC DONE', 3, 'g2', ''], ['REPAIR', -1, 'g2', ''], ['PENDING FOR DTC', 4, 'g1', 'pe']], nw = ws.length, span = nw + (nw > 1 ? 1 : 0), GT = G.map(function () { return zero(nw); });
   h += '<div class="card k-cap"><h3>Capacity wise summary <span class="muted" style="text-transform:none">(PR date ' + esc(S.f) + ' to ' + esc(S.t) + ')</span></h3><div class="wrap tbl11d capt"><table><tbody><tr><th class="l" rowspan="2">CAPACITY IN KVA</th>' +
     G.map(function (g) { return '<th class="' + g[2] + '" colspan="' + span + '">' + g[0] + '</th>'; }).join('') + '</tr><tr>' +
     G.map(function () { return ws.map(function (w) { return '<th>' + esc(w) + '</th>'; }).join('') + (nw > 1 ? '<th>TOTAL</th>' : ''); }).join('') + '</tr>';
@@ -4835,17 +5331,490 @@ function mrSumDraw() {
     h += '<tr><td class="l"><b>' + c + '</b></td>';
     G.forEach(function (g, gi) {
       var row = 0;
-      ws.forEach(function (w, j) { var v = C[c] && C[c][w] ? C[c][w][g[1]] : 0; row += v; GT[gi][j] += v; h += '<td class="' + (j === 0 ? 'gs ' : '') + (v ? g[3] : '') + '">' + (v ? v : '<span class="z">0</span>') + '</td>'; });
-      if (nw > 1) h += '<td class="sub"><b>' + (row ? row : '<span class="z">0</span>') + '</b></td>';
+      ws.forEach(function (w, j) { var v = g[1] < 0 ? ((RC[c] && RC[c][w]) || 0) : (C[c] && C[c][w] ? C[c][w][g[1]] : 0); row += v; GT[gi][j] += v; h += '<td class="' + (j === 0 ? 'gs ' : '') + (v ? g[3] : '') + (gi === 3 && v ? ' pdk' : '') + '"' + (gi === 3 && v ? ' data-w="' + esc(w) + '" data-c="' + c + '"' : '') + '>' + (v ? v : '<span class="z">0</span>') + '</td>'; });
+      if (nw > 1) h += '<td class="sub' + (gi === 3 && row ? ' pdk' : '') + '"' + (gi === 3 && row ? ' data-w="" data-c="' + c + '"' : '') + '><b>' + (row ? row : '<span class="z">0</span>') + '</b></td>';
     });
     h += '</tr>';
   });
   h += '<tr class="t"><td class="l">TOTAL</td>';
-  G.forEach(function (g, gi) { var all = 0; GT[gi].forEach(function (v) { all += v; h += '<td>' + (v ? v : '<span class="z">0</span>') + '</td>'; }); if (nw > 1) h += '<td>' + (all ? all : '<span class="z">0</span>') + '</td>'; });
+  G.forEach(function (g, gi) { var all = 0; GT[gi].forEach(function (v, j) { all += v; h += '<td' + (gi === 3 && v ? ' class="pdk" data-w="' + esc(ws[j]) + '" data-c=""' : '') + '>' + (v ? v : '<span class="z">0</span>') + '</td>'; }); if (nw > 1) h += '<td' + (gi === 3 && all ? ' class="pdk" data-w="" data-c=""' : '') + '>' + (all ? all : '<span class="z">0</span>') + '</td>'; });
   h += '</tr></tbody></table></div></div>';
-  $('mrout').innerHTML = h;
+  $('mrout').innerHTML = h; mrSumKit(); setTimeout(sumFit, 60);
 }
 $('mrbtn').onclick = mrSumLoad;
+
+function sumFit() {
+  var t = $('t-mrsum'); if (!t || t.classList.contains('hide')) return;
+  t.style.setProperty('--mz', 1); if (window.innerWidth <= 900) return;
+  var r = t.getBoundingClientRect(), z = Math.max(1, Math.min(1, (window.innerHeight - r.top - 14) / Math.max(1, r.height)));
+  t.style.setProperty('--mz', z.toFixed(3));
+}
+window.addEventListener('resize', function () { setTimeout(sumFit, 80); });
+
+
+/* ---- Testing Register: Excel of the register (same two-row heading as the Excel sheet) ---- */
+function tsExcel() {
+  var rows = [], i, H = ['S.No.', 'NAME OF WORKSHOP', 'FIRM NAME', 'CAPACITY (IN KVA)', 'JOB NO/UNIQUE NO', 'TESTING DATE', 'TURN RATIO', 'MEGGER', 'DVDF', 'HIGH VOLTAGE', 'NO LOAD LOSSES (W)', 'FULL LOAD LOSS', 'IS LOSSES', '% LOSSES', 'REMARK'];
+  rows.push(H.map(function (x) { return { v: x, s: 5 }; })); var n = 0;
+  TS.rows.forEach(function (r) {
+    if (!r.id && !r.dirty) return; n++; var p = tsPct(r), sd = tsStd(r.cap), nn = function (v) { return v === '' || v == null || isNaN(+v) ? (v || '') : +v; };
+    rows.push([{ v: n, s: 4 }, { v: r.ws, s: 11 }, { v: r.firm, s: 11 }, { v: +r.cap || '', s: 4 }, { v: r.job, s: 4 }, { v: r.date, s: 4 }, { v: r.tr[0], s: 4 }, { v: r.mg[0], s: 4 }, { v: r.dvdf, s: 4 }, { v: r.hv, s: 4 }, { v: nn(r.nll), s: 4 }, { v: nn(r.fll), s: 4 }, { v: sd || '', s: 4 }, { v: p == null ? '' : p, s: 4 }, { v: r.remark, s: 11 }]);
+  });
+  var last = []; for (i = 0; i < H.length; i++) last.push({ v: '', s: 5 }); last[1] = { v: 'TOTAL', s: 5 }; last[2] = { v: n + ' rows', s: 5 }; rows.push(last);
+  xlsxDownload('Testing_Register_' + mrFile(TS.f) + '_to_' + mrFile(TS.t) + '.xlsx', [{ name: 'Testing Register', rows: rows, merges: [], cw: [6, 17, 17, 10, 22, 12, 10, 14, 12, 12, 13, 14, 12, 10, 20] }]);
+}
+/* ---- Testing Register: report of a period (counts by % loss slab), workshop wise and capacity wise, TOTAL at the end ---- */
+function tsRepOpen() {
+  var ws = mrWs();
+  govOpen('&#128202; Testing report - transformers by % loss', '<div class="bar" style="align-items:flex-end;margin-bottom:8px"><div><label>From (testing date)</label>' + mrDt('trf', $('tsf').value) + '</div><div><label>To</label>' + mrDt('trt', $('tst').value) + '</div>' +
+    '<div><label>Workshop</label><select id="trw"><option value="">All workshops</option>' + ws.map(function (w) { return '<option' + (w === $('tsw').value ? ' selected' : '') + '>' + esc(w) + '</option>'; }).join('') + '</select></div><button class="btn" id="trgo" type="button">Show report</button></div><div id="trmsg"></div><div id="trout"></div>',
+    false, '<button class="btn sec sm" id="trpr" type="button">&#128424; Print</button><button class="btn sec sm" id="trxl" type="button">&#11015; Excel</button>');
+  trLoad();
+}
+var TR = null;
+function trLoad() {
+  var f = $('trf').value.trim(), t = $('trt').value.trim(), w = $('trw').value;
+  if (!validD(f) || !validD(t)) return msg('trmsg', 'Enter both dates in DD.MM.YYYY format.', 'err');
+  if (parseD(f) > parseD(t)) return msg('trmsg', 'The "From" date cannot be later than the "To" date.', 'err');
+  msg('trmsg', 'Loading...', 'info'); var seq = TR = { f: f, t: t, w: w };
+  rpc('test_report_json', { p_from: mrIso(f), p_to: mrIso(t), p_ws: w || null }).then(function (r) { if (TR !== seq) return; TR.rows = r.rows || []; msg('trmsg', ''); trDraw(); })
+    .catch(function (e) { if (TR === seq) { $('trout').innerHTML = ''; msg('trmsg', esc(e.message), 'err'); } });
+}
+function trAgg(idx) {
+  var M = {}; TR.rows.forEach(function (x) { var k = x[idx]; M[k] = M[k] || { c: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], u: 0, n: 0 }; if (x[2] < 0) M[k].u += x[3]; else M[k].c[x[2]] += x[3]; M[k].n += x[3]; });
+  return M;
+}
+function trTable(first, M, keys, id) {
+  var SH = ['up to 100%', '100-115%', '115-120%', '120-125%', '125-130%', '130-135%', '135-140%', '140-145%', '145-150%', 'above 150%'], tc = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], tu = 0, tn = 0;
+  var h = '<table class="mkt" id="' + id + '" style="min-width:900px"><thead><tr><th class="l">' + first + '</th><th>TESTED</th>' + SH.map(function (x) { return '<th>' + x + '</th>'; }).join('') + '<th>% NOT KNOWN</th></tr></thead><tbody>';
+  keys.forEach(function (k) { var m = M[k]; tn += m.n; tu += m.u; h += '<tr><td class="l">' + esc(k) + '</td><td><b>' + m.n + '</b></td>' + m.c.map(function (v, i) { tc[i] += v; return '<td>' + v + '</td>'; }).join('') + '<td class="muted">' + m.u + '</td></tr>'; });
+  return h + '<tr class="t"><td class="l">TOTAL</td><td><b>' + tn + '</b></td>' + tc.map(function (v) { return '<td><b>' + v + '</b></td>'; }).join('') + '<td>' + tu + '</td></tr></tbody></table>';
+}
+function trDraw() {
+  var W = trAgg(0), C = trAgg(1), wk = Object.keys(W).sort(), ck = Object.keys(C).map(Number).sort(function (a, b) { return a - b; });
+  if (!wk.length) { $('trout').innerHTML = '<div class="msg info">No transformer was tested in this period.</div>'; return; }
+  var C2 = {}; ck.forEach(function (k) { C2[k + ' KVA'] = C[k]; });
+  $('trout').innerHTML = '<div id="trboth" style="overflow:auto"><b style="font-size:12px;color:#1c3d7a">WORKSHOP WISE</b>' + trTable('NAME OF WORKSHOP', W, wk, 'trt1') + '<b style="font-size:12px;color:#1c3d7a">CAPACITY WISE</b>' + trTable('CAPACITY', C2, ck.map(function (k) { return k + ' KVA'; }), 'trt2') +
+    '<div class="muted ins" style="font-size:12px">% LOSSES = FULL LOAD LOSS x 100 / STD load loss. "% NOT KNOWN" = no full load loss typed or no STD for that capacity.</div></div>';
+}
+document.addEventListener('click', function (e) {
+  var t = e.target; if (!t.closest) return;
+  if (t.closest('#trgo')) trLoad();
+  else if (t.closest('#trpr') && TR && TR.rows) kitPrint($('trboth'), 'TESTING REPORT - ' + (TR.w || 'ALL WORKSHOPS'), TR.f + ' TO ' + TR.t);
+  else if (t.closest('#trxl') && TR && TR.rows) {
+    var a = kitXlRows($('trt1'), 1), b = kitXlRows($('trt2'), 1), rows = [[{ v: 'Testing report ' + TR.f + ' to ' + TR.t + ' - ' + (TR.w || 'All workshops'), s: 1 }], []].concat(a, [[]], b), cw = [20]; for (var q = 1; q < 13; q++) cw.push(12);
+    xlsxDownload('Testing_report_' + mrFile(TR.f) + '_to_' + mrFile(TR.t) + '.xlsx', [{ name: 'Report', rows: rows, cw: cw }]);
+  }
+});
+
+/* ---- Admin: storage warning (the oldest PRs are deleted by themselves at 90% - download before) ---- */
+function stoCheck() {
+  if (!ME || !(ME.role === 'admin' || ME.role === 'creator')) return;
+  rpc('db_usage_json').then(function (u) {
+    var el = $('stobar'); if (!el) { el = document.createElement('div'); el.id = 'stobar'; el.style.cssText = 'position:fixed;left:10px;bottom:10px;z-index:390;max-width:420px;background:#fff7e0;border:2px solid #d97706;border-radius:12px;padding:10px 34px 10px 12px;font-size:13px;color:#7c2d12;box-shadow:0 8px 24px rgba(217,119,6,.3)'; document.body.appendChild(el); }
+    if (!u || !u.ok || u.pct < 80 || el.dataset.off === '1') { el.style.display = 'none'; return; }
+    el.style.display = 'block'; el.innerHTML = '<b>&#9888; Storage is ' + u.pct + '% full</b> (' + u.mb + ' of ' + u.limit_mb + ' MB).<br>At 90% the oldest PRs' + (u.oldest ? ' (from ' + u.oldest + ')' : '') + ' older than 3 years are deleted by themselves on Sunday (R&R always keeps the last 3 years). If R&R is already at 3 years, open <b>Admin &rarr; Google Drive archive</b> to save the oldest M&R month to Drive. Or upgrade the plan.<button type="button" onclick="this.parentNode.dataset.off=\'1\';this.parentNode.style.display=\'none\'" style="position:absolute;top:4px;right:8px;border:0;background:none;font-size:18px;cursor:pointer">&times;</button>';
+  }).catch(function () { });
+}
+setInterval(stoCheck, 600000); setTimeout(stoCheck, 8000);
+
+
+/* ---- generic pop-up ---- */
+function govOpen(title, html, narrow, btns) {
+  $('govt').innerHTML = title; $('govb').innerHTML = html; $('govbtn').innerHTML = btns || ''; msg('govmsg', ''); $('gov').classList.toggle('narrow', !!narrow); $('gov').classList.remove('hide');
+}
+function govClose() { $('gov').classList.add('hide'); $('govb').innerHTML = ''; if (OTPX && OTPX.open) OTPX.open = false; }
+$('govx').onclick = govClose;
+$('gov').addEventListener('mousedown', function (e) { if (e.target === this && !(OTPX && OTPX.open)) govClose(); });
+
+/* ---- DELETE ONLY WITH AN OTP: the person asks, the Admin sees the 6 digit code in the red box, tells it, the person types it (valid 10 minutes) ---- */
+var OTPX = { permit: null, until: 0, open: false };
+function otpPermit() { return OTPX.permit && Date.now() < OTPX.until ? OTPX.permit : null; }
+function askDelete(detail, download, cb) {
+  var pm = otpPermit(); if (pm) { cb(pm); return; }
+  var isAdm = ME && (ME.role === 'admin' || ME.role === 'creator'), rid = null; OTPX.open = true;
+  govOpen('&#128274; Delete needs the Admin OTP', '<div class="otps"><div class="muted" style="font-size:14px"><b>' + esc(detail) + '</b></div>' +
+    (download ? '<div class="st"><i>1</i><div><b>Download a copy first.</b> Deleted data cannot be brought back.<br><button class="btn sec sm" id="otpdl" type="button" style="margin-top:6px">&#11015; Download Excel</button></div></div>' : '') +
+    '<div class="st"><i>' + (download ? 2 : 1) + '</i><div><b>Send the OTP to the Admin.</b> ' + (isAdm ? 'The code appears in the red box at the top right of this screen.' : 'The Admin sees a 6 digit code in the red box of his screen and tells it to you.') + '<br><button class="btn sm" id="otpsend" type="button" style="margin-top:6px">Send OTP</button></div></div>' +
+    '<div class="st"><i>' + (download ? 3 : 2) + '</i><div style="flex:1"><b>Type the OTP.</b><input class="otpin" id="otpcode" maxlength="6" inputmode="numeric" autocomplete="off" placeholder="------" disabled style="margin-top:6px"><button class="btn sm" id="otpok" type="button" disabled style="margin-top:8px">Delete</button></div></div></div>', true);
+  if (download) $('otpdl').onclick = function () { try { download(); } catch (e) { } };
+  $('otpsend').onclick = function () {
+    var b = this; busy(b, true, 'Sending...');
+    rpc('del_request', { p_detail: detail }).then(function (id) { rid = id; busy(b, false); b.textContent = 'Send again'; $('otpcode').disabled = false; $('otpok').disabled = false; $('otpcode').focus(); msg('govmsg', 'OTP sent to the Admin (valid 10 minutes).', 'ok'); otpPoll(); })
+      .catch(function (er) { busy(b, false); msg('govmsg', esc(er.message), 'err'); });
+  };
+  $('otpok').onclick = function () {
+    var b = this, c = $('otpcode').value.trim(); if (!/^\d{6}$/.test(c)) return msg('govmsg', 'Type the 6 digit OTP.', 'err');
+    busy(b, true, 'Checking...');
+    rpc('del_verify', { p_id: rid, p_code: c }).then(function (r) { busy(b, false); OTPX.permit = r.permit; OTPX.until = Date.now() + 9 * 60000; govClose(); cb(r.permit); otpPoll(); })
+      .catch(function (er) { busy(b, false); msg('govmsg', esc(er.message), 'err'); });
+  };
+  $('otpcode').addEventListener('input', function () { this.value = this.value.replace(/\D/g, ''); });
+}
+var OTPT = null;
+function otpPoll() {
+  if (!ME || !(ME.role === 'admin' || ME.role === 'creator')) return;
+  rpc('del_pending_json').then(function (a) {
+    var el = $('otpbell'); a = a || []; el.classList.toggle('hide', !a.length);
+    el.innerHTML = a.map(function (x) { return '<div class="ob">&#128274; <b>' + esc(x.who || '') + '</b> wants to delete:<br>' + esc(x.detail || '') + '<b class="code">' + esc(x.code) + '</b><span style="font-size:11px">OTP - tell it only if you agree. Valid ' + Math.ceil(x.left / 60) + ' min.</span></div>'; }).join('');
+  }).catch(function () { });
+}
+setInterval(function () { if (document.visibilityState === 'visible') otpPoll(); }, 15000);
+
+/* ---- TESTING REGISTER ---- */
+var TS = { rows: [], std: {}, stdEdit: false, firms: {}, f: '', t: '', w: '' };
+var TS_CAPS = [10, 16, 25, 63, 100, 160, 250, 400, 630, 1000];
+var TS_SLAB = ['up to 100%', 'above 100% & up to 115%', 'above 115% & up to 120%', 'above 120% & up to 125%', 'above 125% & up to 130%', 'above 130% & up to 135%', 'above 135% & up to 140%', 'above 140% & up to 145%', 'above 145% & up to 150%', 'above 150%'];
+var TS_DT = '43.5-44.5', TS_DM = '2000-5000M-ohm';
+function tsInit() {
+  var t = new Date(), td = fmt(t); $('tsf').value = '01.' + p2(t.getMonth() + 1) + '.' + t.getFullYear(); $('tst').value = td;
+  $('tsw').innerHTML = '<option value="">All workshops</option>' + mrWs().map(function (w) { return '<option>' + esc(w) + '</option>'; }).join('');
+  TS.rows = []; TS.firms = {}; $('tsout').innerHTML = '';
+}
+(function () { var o = mrAfterLogin; mrAfterLogin = function () { o.apply(this, arguments); tsInit(); }; })();
+function tsRow(a) { return { id: a[0], ws: a[1], firm: a[2] || '', cap: a[3] || '', job: a[4] || '', date: a[5] || '', tr: [a[6] || ''], mg: [a[9] || ''], cnt: +a[18] || 0, dvdf: a[12] || '', hv: a[13] || '', nll: a[14] == null ? '' : a[14], fll: a[15] == null ? '' : a[15], remark: a[16] || '', edit: a[17] === 1 }; }
+function tsBlank() { var w = $('tsw').value || mrWs()[0] || ''; return { id: null, ws: w, firm: '', cap: '', job: '', date: fmt(new Date()), tr: [''], mg: [''], cnt: 0, dvdf: '', hv: '', nll: '', fll: '', remark: '', edit: true, isNew: true }; }
+function tsFirms(ws) {
+  if (!ws) return Promise.resolve([]); if (TS.firms[ws]) return Promise.resolve(TS.firms[ws]);
+  return rpc('test_firms_json', { p_ws: ws }).then(function (a) { TS.firms[ws] = a || []; return TS.firms[ws]; }).catch(function () { return []; });
+}
+function tsLoad() {
+  var f = $('tsf').value.trim(), t = $('tst').value.trim(), w = $('tsw').value;
+  if (!validD(f) || !validD(t)) return msg('tsmsg', 'Enter both dates in DD.MM.YYYY format.', 'err');
+  if (parseD(f) > parseD(t)) return msg('tsmsg', 'The "From" date cannot be later than the "To" date.', 'err');
+  asFlushAll(); TS.f = f; TS.t = t; TS.w = w; msg('tsmsg', 'Loading...', 'info'); var seq = TS.seq = (TS.seq || 0) + 1, b = $('tsgo'); busy(b, true, 'Loading...');
+  Promise.all([rpc('test_std_json'), rpc('test_list_json', { p_from: mrIso(f), p_to: mrIso(t), p_ws: w || null })]).then(function (a) {
+    if (seq !== TS.seq) return; TS.std = {}; (a[0].rows || []).forEach(function (x) { TS.std[x[0]] = x; }); TS.stdEdit = !!a[0].edit;
+    TS.rows = (a[1].rows || []).map(tsRow); TS.total = a[1].total || 0;
+    var wl = {}; TS.rows.forEach(function (r) { wl[r.ws] = 1; }); wl[w || mrWs()[0]] = 1;
+    return Promise.all(Object.keys(wl).map(tsFirms)).then(function () { if (seq !== TS.seq) return; for (var i = 0; i < 10; i++) TS.rows.push(tsBlank()); busy(b, false); msg('tsmsg', TS.total > TS.rows.length - 10 ? 'First ' + (TS.rows.length - 10) + ' of ' + TS.total + ' rows are shown. Narrow the dates to see the rest.' : '', 'info'); tsDraw(); });
+  }).catch(function (e) { busy(b, false); if (seq === TS.seq) msg('tsmsg', esc(e.message), 'err'); });
+}
+function tsOpts(list, cur, blank) { var h = '<option value="">' + (blank || '') + '</option>', seen = false; list.forEach(function (x) { if (String(x) === String(cur)) seen = true; h += '<option' + (String(x) === String(cur) ? ' selected' : '') + '>' + esc(x) + '</option>'; }); if (cur && !seen) h += '<option selected>' + esc(cur) + '</option>'; return h; }
+function tsInp(k, v, ph, dflt, i, dis) { return '<input type="text" data-k="' + k + '" autocomplete="off" value="' + esc(v) + '"' + (ph ? ' placeholder="' + ph + '"' : '') + (dflt ? ' class="dflt"' : '') + (dis ? ' disabled' : '') + '>'; }
+function tsRowHtml(r, i) {
+  var d = !r.edit, dt = function (v, def) { return v === def; };
+  var h = '<tr data-i="' + i + '"><td class="sn">' + (i + 1) + '</td>' +
+    '<td data-h="WORKSHOP"><select data-k="ws"' + (d || r.id ? ' disabled' : '') + '>' + tsOpts(mrWs(), r.ws) + '</select></td>' +
+    '<td data-h="FIRM"><select data-k="firm"' + (d ? ' disabled' : '') + '>' + tsOpts(TS.firms[r.ws] || [], r.firm, '(choose firm)') + '</select></td>' +
+    '<td data-h="CAPACITY (KVA)"><select data-k="cap"' + (d ? ' disabled' : '') + '>' + tsOpts(TS_CAPS, r.cap, '') + '</select></td>' +
+    '<td class="jb" data-h="JOB NO / UNIQUE NO">' + tsInp('job', r.job, '', false, i, d) + '</td><td data-h="TESTING DATE">' + tsInp('date', r.date, 'DD.MM.YYYY', false, i, d) + '</td>';
+  h += '<td data-h="TURN RATIO">' + tsInp('tr0', r.tr[0], TS_DT, false, i, d) + '</td><td data-h="MEGGER">' + tsInp('mg0', r.mg[0], '2000-5000', false, i, d) + '</td>';
+  h += '<td data-h="DVDF">' + tsInp('dvdf', r.dvdf, '', false, i, d) + '</td><td data-h="HIGH VOLTAGE">' + tsInp('hv', r.hv, '', false, i, d) + '</td><td data-h="NO LOAD LOSS (W)">' + tsInp('nll', r.nll, '', false, i, d) + '</td><td data-h="FULL LOAD LOSS">' + tsInp('fll', r.fll, '', false, i, d) + '</td>';
+  h += '<td class="au q" data-h="IS LOSSES"></td><td class="au p" data-h="% LOSSES"></td>';
+  h += '<td data-h="REMARK" style="grid-column:1/-1">' + tsInp('remark', r.remark, '', false, i, d) + '</td><td class="rx">' + (r.edit ? '<button type="button" title="Delete this row">&times;</button>' : '') + '</td></tr>';
+  return h;
+}
+function tsStd(cap) { var x = TS.std[cap]; return x && x[2] ? +x[2] : 0; }
+function tsPct(r) { var sd = tsStd(r.cap), f = parseFloat(r.fll); return sd && !isNaN(f) && r.fll !== '' ? Math.round(f * 100 / sd) : null; }
+function tsSlab(p) { return p == null ? -1 : p <= 100 ? 0 : p <= 115 ? 1 : p <= 120 ? 2 : p <= 125 ? 3 : p <= 130 ? 4 : p <= 135 ? 5 : p <= 140 ? 6 : p <= 145 ? 7 : p <= 150 ? 8 : 9; }
+function tsDraw() {
+  var h = '<div class="wrap"><table class="tst xg" id="tstb" data-ts="1"><thead><tr><th>S.No.</th><th>NAME OF WORKSHOP</th><th>FIRM NAME</th><th>CAPACITY<br>(IN KVA)</th><th>JOB NO / UNIQUE NO</th><th>TESTING DATE</th><th>TURN RATIO</th><th>MEGGER</th><th>DVDF</th><th>HIGH VOLTAGE</th><th>NO LOAD LOSSES (W)</th><th>FULL LOAD LOSS</th><th style="background:#dff3df">IS LOSSES</th><th style="background:#dff3df">% LOSSES</th><th>REMARK</th><th></th></tr></thead><tbody>';
+  TS.rows.forEach(function (r, i) { h += tsRowHtml(r, i); });
+  h += '<tr class="tt" id="tstt"><td colspan="12" style="text-align:right">TOTAL &nbsp;</td><td class="n" colspan="2"></td><td colspan="2"></td></tr></tbody></table></div>' +
+    '<div class="bar" style="margin-top:8px"><button class="btn sec" id="tsadd" type="button">+ 10 rows</button><span class="muted" style="font-size:12.5px;flex:1">Job no: <span class="jbk d2">2 times</span> <span class="jbk d3">3 times</span> <span class="jbk d4">4 times</span> <span class="jbk d5">more than 4</span></span></div>';
+  $('tsout').innerHTML = h; tsPaintAll();
+}
+function tsKey(r) { var j = String(r.job || '').trim().toUpperCase(); return j && r.ws ? r.ws + '|' + j : ''; }
+function tsDupMap() {      // how many times each job no is in the register: the larger of what the database said and what is on the screen now
+  var loc = {}, srv = {}, M = {}; TS.rows.forEach(function (r) { var k = tsKey(r); if (!k) return; if (r.id || r.dirty) loc[k] = (loc[k] || 0) + 1; if (r.id && r.cnt) srv[k] = Math.max(srv[k] || 0, r.cnt); });
+  Object.keys(loc).concat(Object.keys(srv)).forEach(function (k) { M[k] = Math.max(loc[k] || 0, srv[k] || 0); }); return M;
+}
+function tsPaint(tr, M) {
+  var r = TS.rows[+tr.dataset.i]; if (!r) return; var p = tsPct(r), sd = tsStd(r.cap);
+  tr.querySelector('.q').textContent = sd || ''; tr.querySelector('.p').textContent = p == null ? '' : p;
+  var ready = !!(r.ws && r.cap && String(r.job).trim()); tr.classList.toggle('inc', !!(r.dirty && !ready));
+  var n = (M || tsDupMap())[tsKey(r)] || 0, td = tr.querySelector('td.jb'); td.className = 'jb' + (n >= 2 ? ' d' + Math.min(n, 5) : ''); td.title = n >= 2 ? 'This job no is in the register ' + n + ' times' : '';
+}
+function tsPaintAll() {
+  var t = $('tstb'); if (!t) return; var M = tsDupMap(); [].forEach.call(t.querySelectorAll('tbody tr[data-i]'), function (tr) { tsPaint(tr, M); });
+  var n = 0; TS.rows.forEach(function (r) { if (r.id || r.dirty) n++; });
+  var T = $('tstt'); if (!T) return; T.querySelector('.n').textContent = n + ' rows';
+}
+function tsSave() {
+  var ready = TS.rows.filter(function (r) { return r.dirty && r.edit && r.ws && r.cap && String(r.job).trim(); }); if (!ready.length) return;
+  var rows = ready.map(function (r) { var d = String(r.date || '').trim(), n = function (v) { v = String(v).replace(/,/g, '.').trim(); return v === '' || isNaN(+v) ? '' : +v; };
+    return { id: r.id || null, workshop: r.ws, firm: r.firm, cap: +r.cap, job_no: String(r.job).trim(), test_date: d ? mrIso(normDate(d)) : null, tr_r: r.tr[0], tr_y: r.tr[0], tr_b: r.tr[0], meg_hve: tsMg(r.mg[0]), meg_lve: tsMg(r.mg[0]), meg_hvlv: tsMg(r.mg[0]), dvdf: r.dvdf, hv: r.hv, nll: n(r.nll), fll: n(r.fll), remark: r.remark }; });
+  if (rows.some(function (x) { return x.test_date === null && String(ready[rows.indexOf(x)].date || '').trim(); })) return msg('tsmsg', 'Testing date must be DD.MM.YYYY.', 'err');
+  ready.forEach(function (r) { r.dirty = false; r.saving = true; });
+  msg('tsmsg', 'Saving...', 'info');
+  rpc('test_save', { p_rows: rows }).then(function (res) {
+    res.forEach(function (x) { var r = ready[x.i]; r.id = x.id; r.saving = false; r.isNew = false; var tr = document.querySelector('#tstb tr[data-i="' + TS.rows.indexOf(r) + '"]');
+      if (!r.tr[0]) { r.tr[0] = x.tr; if (tr) { var i = tr.querySelector('[data-k="tr0"]'); i.value = x.tr; i.classList.add('dflt'); } }
+      if (!r.mg[0]) { r.mg[0] = x.mg; if (tr) { var m = tr.querySelector('[data-k="mg0"]'); m.value = x.mg; m.classList.add('dflt'); } }
+      r.cnt = x.cnt || 0; var kk = tsKey(r); TS.rows.forEach(function (o) { if (o !== r && o.id && tsKey(o) === kk) o.cnt = r.cnt; });
+      if (tr) tr.querySelector('[data-k="ws"]').disabled = true; });
+    asMsg('tsmsg', 'Saved', 'ok'); tsPaintAll();
+  }).catch(function (er) { ready.forEach(function (r) { r.dirty = true; r.saving = false; }); msg('tsmsg', esc(er.message), 'err'); });
+}
+function tsMg(v) { v = String(v || '').trim(); return /^\d+(\.\d+)?\s*-\s*\d+(\.\d+)?$/.test(v) ? v.replace(/\s+/g, '') + 'M-ohm' : v; }
+function tsSet(r, k, v) {
+  if (k === 'ws' || k === 'firm' || k === 'cap' || k === 'job' || k === 'date' || k === 'dvdf' || k === 'hv' || k === 'nll' || k === 'fll' || k === 'remark') r[k] = v;
+  else if (k.slice(0, 2) === 'tr') r.tr[+k[2]] = v; else if (k.slice(0, 2) === 'mg') r.mg[+k[2]] = v;
+  if (k === 'job' || k === 'ws') r.cnt = 0;
+  r.dirty = true;
+}
+function tsEdit(e) {
+  var t = e.target, tr = t.closest && t.closest('#tstb tr[data-i]'); if (!tr || !t.dataset.k) return; var r = TS.rows[+tr.dataset.i], k = t.dataset.k;
+  if (k === 'date' && /^[\d.]*$/.test(t.value)) { var f = dotFmt(t.value); if (f !== t.value) t.value = f; }
+  if (k === 'nll' || k === 'fll') { var v2 = t.value.replace(/[,\u066B\u060C]/g, '.').replace(/[^\d.]/g, ''); if (v2 !== t.value) t.value = v2; }
+  if (k === 'tr0') { var v3 = t.value.replace(/[,\u066B\u060C]/g, '.').replace(/[^\d.\-\s]/g, ''); if (v3 !== t.value) t.value = v3; }
+  if (k === 'mg0' && /[,\u066B\u060C]/.test(t.value)) t.value = t.value.replace(/[,\u066B\u060C]/g, '.');
+  t.classList.remove('dflt'); tsSet(r, k, t.value); tsPaint(tr); tsPaintAll();
+  if (k === 'ws') { r.firm = ''; tsFirms(r.ws).then(function (l) { var s = tr.querySelector('[data-k="firm"]'); s.innerHTML = tsOpts(l, '', '(choose firm)'); }); }
+  asRun('ts', tsSave, 1000);
+}
+document.addEventListener('input', function (e) { if (e.target.closest && e.target.closest('#tstb') && e.target.tagName === 'INPUT') tsEdit(e); });
+document.addEventListener('change', function (e) { if (e.target.closest && e.target.closest('#tstb') && e.target.tagName === 'SELECT') tsEdit(e); });
+function tsPaste(rows) {
+  var b = xgBox(), g = xgGrid($('tstb')), st = g[b.r1] && g[b.r1][b.c1]; if (!st) return;
+  var keys = ['ws', 'firm', 'cap', 'job', 'date', 'tr0', 'mg0', 'dvdf', 'hv', 'nll', 'fll'];
+  var ctl = st.querySelector('[data-k]'), k0 = ctl ? keys.indexOf(ctl.dataset.k) : -1; if (k0 < 0) k0 = 0;
+  var trs = [].slice.call($('tstb').querySelectorAll('tbody tr[data-i]')), r0 = Math.max(0, trs.indexOf(st.closest('tr')));
+  if (k0 === 0 && rows.every(function (rw) { return rw.length >= 12 && /^\d{1,5}$/.test(String(rw[0]).trim()); })) rows = rows.map(function (rw) { return rw.slice(1, 12); });   // the S.No column was copied too
+  rows.forEach(function (rw, i) {
+    while (r0 + i >= TS.rows.length) TS.rows.push(tsBlank());
+    var tr = $('tstb').querySelector('tr[data-i="' + (r0 + i) + '"]'); if (!tr) { TS._need = true; }
+    var r = TS.rows[r0 + i]; if (!r.edit) return;
+    rw.forEach(function (v, j) { var k = keys[k0 + j]; if (!k) return; v = String(v).trim();
+      if (k === 'ws') { var w = mrWs().filter(function (x) { return x.toUpperCase() === v.toUpperCase(); })[0]; if (w && !r.id) r.ws = w; }
+      else if (k === 'firm') { var fl = TS.firms[r.ws] || [], m = fl.filter(function (x) { return x.toUpperCase() === v.toUpperCase(); })[0]; if (m) r.firm = m; }
+      else if (k === 'cap') { var c = parseInt(v, 10); if (TS_CAPS.indexOf(c) >= 0) r.cap = c; }
+      else if (k === 'date') r.date = normDate(v); else tsSet(r, k, v); });
+    r.dirty = true;
+  });
+  var fl = {}; TS.rows.forEach(function (r) { fl[r.ws] = 1; }); Promise.all(Object.keys(fl).map(tsFirms)).then(function () { tsDraw(); asRun('ts', tsSave, 600); });
+}
+document.addEventListener('click', function (e) {
+  var t = e.target; if (!t.closest) return;
+  if (t.closest('#tsgo')) { tsLoad(); return; }
+  if (t.closest('#tsadd')) { for (var i = 0; i < 10; i++) TS.rows.push(tsBlank()); tsDraw(); return; }
+  var x = t.closest('#tstb td.rx button');
+  if (x) { var tr = x.closest('tr'), ri = +tr.dataset.i, r = TS.rows[ri];
+    if (!r.id) { TS.rows.splice(ri, 1); tsDraw(); return; }
+    askDelete('Delete test row: job ' + r.job + ' (' + r.ws + ')', function () { $('tsxl').click(); }, function (permit) {
+      rpc('test_delete', { p_id: r.id, p_permit: permit }).then(function () { var kd = tsKey(r); TS.rows.splice(TS.rows.indexOf(r), 1); TS.rows.forEach(function (o) { if (o.id && tsKey(o) === kd && o.cnt > 0) o.cnt--; }); tsDraw(); asMsg('tsmsg', 'Deleted', 'ok'); }).catch(function (er) { msg('tsmsg', esc(er.message), 'err'); });
+    });
+    return; }
+  if (t.closest('#tstd')) { tsStdOpen(); return; }
+  if (t.closest('#tsrep')) { tsRepOpen(); return; }
+  if (t.closest('#tsxl')) { tsExcel(); return; }
+});
+/* ---- Testing Register: QUICK ENTRY (one test at a time, easy on a phone). Submit -> saved in the register ---- */
+function tqAuto() { return { tr: (43.5 + Math.random()).toFixed(1), mg: String(Math.round((2000 + Math.random() * 3000) / 10) * 10) + 'M-ohm' }; }
+function tqHtml(keep) {
+  var ws = keep.ws || $('tsw').value || mrWs()[0] || '', fl = TS.firms[ws] || [], au = tqAuto();
+  var f = function (l, c) { return '<div><label>' + l + '</label>' + c + '</div>'; }, inp = function (id, ph, im) { return '<input type="text" id="' + id + '" autocomplete="off" placeholder="' + (ph || '') + '"' + (im ? ' inputmode="' + im + '"' : '') + '>'; };
+  return '<div class="tqf">' +
+    f('Workshop', '<select id="tqw">' + tsOpts(mrWs(), ws) + '</select>') + f('Firm name', '<select id="tqfm">' + tsOpts(fl, keep.firm || '', '(choose firm)') + '</select>') +
+    f('Capacity (KVA)', '<select id="tqc">' + tsOpts(TS_CAPS, keep.cap || '', '') + '</select>') + f('Job no / Unique no', inp('tqj', '', '')) +
+    f('Testing date', mrDt('tqd', keep.date || fmt(new Date()))) + f('Turn ratio <i>(' + TS_DT + ')</i>', inp('tqtr', '', '').replace('<input', '<input class="tqa" value="' + au.tr + '"')) +
+    f('Megger <i>(' + TS_DM + ')</i>', inp('tqmg', '', '').replace('<input', '<input class="tqa" value="' + au.mg + '"')) + f('DVDF', inp('tqdv', '', '')) + f('High voltage', inp('tqhv', '', '')) +
+    f('No load losses (W)', inp('tqnl', '', 'decimal')) + f('Full load loss', inp('tqfl', '', 'decimal')) + f('Remark', inp('tqrm', '', '')) +
+    '</div><div class="bar" style="margin-top:10px"><button class="btn tqgo" id="tqgo" type="button" style="flex:1">Submit &#10003;</button></div>';
+}
+function tqOpen(keep) {
+  keep = keep || {}; var ws = keep.ws || $('tsw').value || mrWs()[0] || '';
+  tsFirms(ws).then(function () {
+    govOpen('<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d4ed8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-5px;margin-right:6px"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>Testing - quick entry', tqHtml(keep), true);
+    var d = $('tqd'); if (d) d.addEventListener('input', function () { var v = dotFmt(d.value); if (v !== d.value && /^[\d.]*$/.test(d.value)) d.value = v; });
+    $('tqj').focus();
+  });
+}
+function tqSubmit() {
+  var g = function (id) { return ($(id).value || '').trim(); }, ws = g('tqw'), cap = parseInt(g('tqc'), 10), job = g('tqj'), dt = g('tqd');
+  if (!ws) return msg('govmsg', 'Choose the workshop.', 'err');
+  if (!cap) return msg('govmsg', 'Choose the capacity.', 'err');
+  if (!job) return msg('govmsg', 'Enter the job no / unique no.', 'err');
+  var di = dt ? mrIso(normDate(dt)) : null; if (dt && !validD(normDate(dt))) return msg('govmsg', 'Testing date must be DD.MM.YYYY.', 'err');
+  var nn = function (v) { v = v.replace(/,/g, '.'); return v === '' || isNaN(+v) ? '' : +v; }, tr = g('tqtr').replace(/,/g, '.'), mg = tsMg(g('tqmg'));
+  var b = $('tqgo'); busy(b, true, 'Submitting...');
+  rpc('test_save', { p_rows: [{ id: null, workshop: ws, firm: g('tqfm'), cap: cap, job_no: job, test_date: di, tr_r: tr, tr_y: tr, tr_b: tr, meg_hve: mg, meg_lve: mg, meg_hvlv: mg, dvdf: g('tqdv'), hv: g('tqhv'), nll: nn(g('tqnl')), fll: nn(g('tqfl')), remark: g('tqrm') }] }).then(function (res) {
+    var x = res[0] || {}, keep = { ws: ws, firm: g('tqfm'), cap: cap, date: dt };
+    govOpen($('govt').innerHTML, tqHtml(keep), true);
+    var cm = x.cnt >= 2 ? ' This job no is now in the register ' + x.cnt + ' times.' : '';
+    msg('govmsg', 'Saved: job ' + esc(job) + ' (turn ratio ' + esc(x.tr) + ', megger ' + esc(x.mg) + ').' + cm + ' Next one:', x.cnt >= 2 ? 'info' : 'ok'); $('tqj').focus();
+    if (TS.f && $('tsout').innerHTML) tsLoad();
+  }).catch(function (er) { busy(b, false); msg('govmsg', esc(er.message), 'err'); });
+}
+document.addEventListener('focusin', function (e) { var t = e.target; if (t.classList && t.classList.contains('tqa')) t.select(); });
+document.addEventListener('input', function (e) { var t = e.target; if (t.classList && t.classList.contains('tqa')) t.classList.remove('tqa'); });
+document.addEventListener('input', function (e) { var t = e.target; if (t && /^(tqtr|tqmg|tqnl|tqfl)$/.test(t.id || '') && /[,\u066B\u060C\u3002]/.test(t.value)) t.value = t.value.replace(/[,\u066B\u060C\u3002]/g, '.'); });
+document.addEventListener('click', function (e) { var t = e.target; if (!t.closest) return; if (t.closest('#tsq')) tqOpen(); else if (t.closest('#tqgo')) tqSubmit(); });
+document.addEventListener('change', function (e) { if (e.target.id === 'tqw') { var ws = e.target.value; tsFirms(ws).then(function (l) { $('tqfm').innerHTML = tsOpts(l, '', '(choose firm)'); }); } });
+/* STD (IS losses) */
+function tsStdOpen() {
+  var go = function () {
+    var ed = TS.stdEdit, h = '<table class="mkt" id="tsstd" style="min-width:420px"><thead><tr><th>CAPACITY OF DT (KVA)</th><th>NO LOAD (W)</th><th>LOAD LOSS (W)</th></tr></thead><tbody>';
+    TS_CAPS.forEach(function (c) { var x = TS.std[c] || [c, null, null]; h += '<tr data-c="' + c + '"><td><b>' + c + '</b></td>' + ['nl', 'll'].map(function (k, j) { var v = x[j + 1] == null ? '' : x[j + 1]; return '<td>' + (ed ? '<input type="text" class="sdi" data-k="' + k + '" inputmode="decimal" value="' + v + '" style="width:110px;text-align:center">' : v) + '</td>'; }).join('') + '</tr>'; });
+    h += '</tbody></table><div class="muted ins" style="font-size:12.5px;margin-top:8px">The % LOSSES of the Testing Register = FULL LOAD LOSS x 100 / LOAD LOSS of this table (rounded). ' + (ed ? 'Change a figure here and the register is recalculated. It saves by itself.' : 'Only the Admin can change it.') + '</div>';
+    govOpen('<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d4ed8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-5px;margin-right:6px"><path d="M12 3l8 3v6c0 4.5-3.2 8-8 9-4.8-1-8-4.5-8-9V6z"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg>STD - standard losses (IS LOSSES)', h, true);
+  };
+  if (Object.keys(TS.std).length) go(); else rpc('test_std_json').then(function (r) { TS.std = {}; (r.rows || []).forEach(function (x) { TS.std[x[0]] = x; }); TS.stdEdit = !!r.edit; go(); }).catch(function (er) { msg('tsmsg', esc(er.message), 'err'); });
+}
+document.addEventListener('input', function (e) {
+  var t = e.target; if (!t.classList || !t.classList.contains('sdi')) return; var v = t.value.replace(/[^\d.]/g, ''); if (v !== t.value) t.value = v;
+  var tr = t.closest('tr'), c = +tr.dataset.c; TS.std[c] = [c, tr.querySelector('[data-k="nl"]').value === '' ? null : +tr.querySelector('[data-k="nl"]').value, tr.querySelector('[data-k="ll"]').value === '' ? null : +tr.querySelector('[data-k="ll"]').value];
+  asRun('std', function () { rpc('test_std_set', { p_rows: TS_CAPS.map(function (c2) { var x = TS.std[c2] || [c2, null, null]; return { cap: c2, no_load: x[1], load_loss: x[2] }; }) }).then(function () { asMsg('govmsg', 'Saved', 'ok'); tsPaintAll(); }).catch(function (er) { msg('govmsg', esc(er.message), 'err'); }); }, 800);
+});
+
+
+/* ---- M&R Summary: Kitty (net kitty of every workshop, capacity wise) on the Date of the summary ---- */
+function mrSumKit() {
+  var S = MR.sum, el = $('mrkit'); if (!S || !el) return; var seq = MR.kseq2 = (MR.kseq2 || 0) + 1;
+  rpc('kitty_cmp_json', { p_day: mrIso(S.d) }).then(function (r) { if (seq !== MR.kseq2 || !$('mrkit')) return; MR.sk = { r: r, d: S.d }; mrSumKitDraw(); })
+    .catch(function (er) { if ($('mrkit')) $('mrkit').innerHTML = '<h3>Kitty</h3><div class="msg err">' + esc(er.message) + '</div>'; });
+}
+function mrSumKitDraw() {
+  var K = MR.sk, r = K.r, ord = mrWs().filter(function (w) { return r.ws.indexOf(w) >= 0; }), V = {}, tot = KCAPS.map(function () { return 0; }), gt = 0;
+  (r.rows || []).forEach(function (x) { V[x[0]] = x; });
+  var h = '<div class="bar" style="justify-content:space-between;align-items:center"><h3 style="margin:0">Kitty <span class="muted" style="text-transform:none;font-weight:600">- net kitty on ' + esc(K.d) + '</span></h3><span><button class="btn sec sm" id="mrkpr" type="button">&#128424; Print</button> <button class="btn sec sm" id="mrkxl" type="button">&#11015; Excel</button></span></div>' +
+    '<div class="wrap"><table class="mkt" id="mrkitt"><thead><tr><th class="l">KITTY</th>' + KCAPS.map(function (c) { return '<th>' + c + '</th>'; }).join('') + '<th>TOTAL</th></tr></thead><tbody>';
+  ord.forEach(function (w) {
+    var j = r.ws.indexOf(w) + 1, s2 = 0;
+    h += '<tr><td class="l">' + esc(w) + '</td>' + KCAPS.map(function (c, i) { var v = V[c] ? V[c][j] : null; if (v == null) return '<td class="muted">-</td>'; s2 += v; tot[i] += v; return '<td class="' + (v < 0 ? 'neg' : '') + '">' + v + '</td>'; }).join('') + '<td class="' + (s2 < 0 ? 'neg' : '') + '"><b>' + s2 + '</b></td></tr>'; gt += s2;
+  });
+  h += '<tr class="t"><td class="l">TOTAL</td>' + tot.map(function (v) { return '<td class="' + (v < 0 ? 'neg' : '') + '"><b>' + v + '</b></td>'; }).join('') + '<td class="' + (gt < 0 ? 'neg' : '') + '"><b>' + gt + '</b></td></tr></tbody></table></div>';
+  if ((r.nobase || []).length) h += '<div class="muted" style="font-size:12px;margin-top:6px">Kitty not started on this date for: ' + esc(r.nobase.join(', ')) + '.</div>';
+  $('mrkit').innerHTML = h; setTimeout(sumFit, 30);
+}
+document.addEventListener('click', function (e) {
+  var t = e.target; if (!t.closest) return;
+  if (t.closest('#mrkpr') && MR.sk) kitPrint($('mrkitt'), 'KITTY - NET KITTY', MR.sk.d);
+  else if (t.closest('#mrkxl') && MR.sk) { var rows = kitXlRows($('mrkitt'), 1), cw = [14]; for (var q = 1; q < rows[0].length; q++) cw.push(9); cw[cw.length - 1] = 11; xlsxDownload('Kitty_' + mrFile(MR.sk.d) + '.xlsx', [{ name: 'Kitty', rows: rows, cw: cw }]); }
+});
+
+
+/* ---- Repair tab: shrink the rows so that all firms of the three blocks are seen on one screen (desktop) ---- */
+function repFit() {
+  var o = $('mpout'); if (!o) return; o.classList.add('cmp');
+  if (window.innerWidth <= 900 || o.offsetParent === null) { o.style.removeProperty('--rh'); return; }
+  var firms = Math.max(1, o.querySelectorAll('table.rrt[data-b="REPAIR"] tbody tr[data-b]').length), top = o.getBoundingClientRect().top;
+  var bar = 50, kpi = 46, blocks = 3 * 42, avail = window.innerHeight - top - bar - kpi - blocks - 8;
+  var rh = Math.floor(avail / (3 * (firms + 2))); rh = Math.max(20, Math.min(33, rh));
+  o.style.setProperty('--rh', rh + 'px');
+  for (var k = 0; k < 4 && rh > 20; k++) {   // measure the real height and tighten until the Save bar is inside the window
+    var br = o.querySelector('.bar'), need = br ? br.getBoundingClientRect().bottom + 10 - window.innerHeight : 0;
+    if (need <= 0) break; rh = Math.max(20, rh - Math.ceil(need / (3 * (firms + 2)))); o.style.setProperty('--rh', rh + 'px');
+  }
+}
+window.addEventListener('resize', function () { setTimeout(repFit, 60); });
+(function () { var o = mrRepDraw; mrRepDraw = function () { var r = o.apply(this, arguments); repFit(); setTimeout(repFit, 120); return r; }; })();
+document.addEventListener('click', function (e) { if (e.target.closest && e.target.closest('#rradd,.rrdel')) setTimeout(repFit, 60); });
+
+/* ---- Repair summary: from date to date, firm & capacity wise ---- */
+var RS = null;
+function rsLbl(c) { return (typeof RR_LBL !== 'undefined' && RR_LBL[c]) || c; }
+function rsOpen() {
+  var ws = mrWs(), td = fmt(new Date()), B = $('rsbar');
+  if (!RS) RS = { f: '01.' + td.slice(3), t: td, w: '', b: 'REPAIR' };
+  B.innerHTML = '<div class="bar" style="align-items:flex-end;margin-bottom:8px"><div><label>From date</label>' + mrDt('rsf', RS.f) + '</div><div><label>To date</label>' + mrDt('rst', RS.t) + '</div>' +
+    '<div><label>Workshop</label><select id="rsw"><option value="">All workshops</option>' + ws.map(function (w) { return '<option' + (w === RS.w ? ' selected' : '') + '>' + esc(w) + '</option>'; }).join('') + '</select></div>' +
+    '<button class="btn" id="rsgo" type="button">Show summary</button></div>';
+  $('rsov').classList.remove('hide'); rsLoad();
+}
+function rsLoad() {
+  var f = $('rsf').value.trim(), t = $('rst').value.trim(), w = $('rsw').value, b = 'REPAIR';
+  if (!validD(f) || !validD(t)) return msg('rsmsg', 'Enter both dates in DD.MM.YYYY format.', 'err');
+  if (parseD(f) > parseD(t)) return msg('rsmsg', 'The "From" date cannot be later than the "To" date.', 'err');
+  RS.f = f; RS.t = t; RS.w = w; RS.b = b; msg('rsmsg', 'Loading...', 'info'); var seq = RS.seq = (RS.seq || 0) + 1;
+  rpc('rr_summary_json', { p_from: mrIso(f), p_to: mrIso(t), p_ws: w || null, p_block: b }).then(function (r) { if (seq !== RS.seq) return; msg('rsmsg', ''); RS.r = r; rsDraw(); })
+    .catch(function (e) { if (seq === RS.seq) { $('rsout').innerHTML = ''; msg('rsmsg', esc(e.message), 'err'); } });
+}
+function rsBuild() {
+  var rows = RS.r.rows || [], F = {}, W = {}, ct = {}, gt = 0;
+  rows.forEach(function (x) { var w = x[0], f = x[1], c = x[2], q = x[3]; (F[f] = F[f] || {})[c] = (F[f][c] || 0) + q; (W[w] = W[w] || {})[c] = (W[w][c] || 0) + q; ct[c] = (ct[c] || 0) + q; gt += q; });
+  return { F: F, W: W, ct: ct, gt: gt };
+}
+function rsTable(first, M, keys, ct, gt) {
+  var h = '<table class="rst"><thead><tr><th class="l">' + first + '</th>' + RR_CAPS.map(function (c) { return '<th>' + rsLbl(c) + '</th>'; }).join('') + '<th>TOTAL</th></tr></thead><tbody>';
+  keys.forEach(function (k) { var t = 0; h += '<tr><td class="l">' + esc(k) + '</td>' + RR_CAPS.map(function (c) { var v = M[k][c] || 0; t += v; return v ? '<td>' + v + '</td>' : '<td class="z">-</td>'; }).join('') + '<td class="tt">' + t + '</td></tr>'; });
+  h += '<tr class="T"><td class="l">TOTAL</td>' + RR_CAPS.map(function (c) { return '<td>' + (ct[c] || 0) + '</td>'; }).join('') + '<td>' + gt + '</td></tr></tbody></table>';
+  return h;
+}
+function rsDraw() {
+  var B = rsBuild(), firms = Object.keys(B.F).sort(), wss = Object.keys(B.W).sort(), nm = { REPAIR: 'repaired', ASSEMBLY: 'sent to assembly', OVEN: 'sent to oven' }[RS.b];
+  var h = '<div class="muted" style="font-size:12.5px;margin-bottom:4px"><b>' + B.gt + '</b> transformers ' + nm + ' from <b>' + esc(RS.f) + '</b> to <b>' + esc(RS.t) + '</b> - ' + esc(RS.w || 'All workshops') + '</div>';
+  if (!firms.length) h += '<div class="msg info">Nothing was entered in the Repair tab for this period.</div>';
+  else {
+    h += '<div style="overflow:auto"><b style="font-size:12px;color:#1c3d7a">FIRM &amp; CAPACITY WISE</b>' + rsTable('NAME OF FIRM', B.F, firms, B.ct, B.gt);
+    if (wss.length > 1) h += '<b style="font-size:12px;color:#1c3d7a">WORKSHOP &amp; CAPACITY WISE</b>' + rsTable('NAME OF WORKSHOP', B.W, wss, B.ct, B.gt);
+    h += '</div>';
+  }
+  $('rsout').innerHTML = h;
+}
+$('mprs').onclick = rsOpen;
+$('rsx').onclick = function () { $('rsov').classList.add('hide'); };
+$('rsov').addEventListener('mousedown', function (e) { if (e.target === this) this.classList.add('hide'); });
+document.addEventListener('click', function (e) { if (e.target.closest && e.target.closest('#rsgo')) rsLoad(); });
+$('rsxl').onclick = function () {
+  if (!RS || !RS.r) return; var B = rsBuild(), rows = [[{ v: 'Repair summary - ' + RS.f + ' to ' + RS.t + ' - ' + (RS.w || 'All workshops') + ' - ' + ({ REPAIR: 'repaired', ASSEMBLY: 'sent to assembly', OVEN: 'sent to oven' }[RS.b]), s: 0 }], []];
+  function put(first, M, keys) {
+    rows.push([{ v: first, s: 6 }].concat(RR_CAPS.map(function (c) { return { v: rsLbl(c), s: 5 }; }), [{ v: 'TOTAL', s: 7 }]));
+    keys.forEach(function (k) { var t = 0; rows.push([{ v: k, s: 11 }].concat(RR_CAPS.map(function (c) { var v = M[k][c] || 0; t += v; return { v: v || '', s: 4 }; }), [{ v: t, s: 7 }])); });
+    rows.push([{ v: 'TOTAL', s: 7 }].concat(RR_CAPS.map(function (c) { return { v: B.ct[c] || 0, s: 7 }; }), [{ v: B.gt, s: 7 }])); rows.push([]);
+  }
+  var firms = Object.keys(B.F).sort(), wss = Object.keys(B.W).sort(); put('NAME OF FIRM', B.F, firms); if (wss.length > 1) put('NAME OF WORKSHOP', B.W, wss);
+  var cw = [26]; RR_CAPS.forEach(function () { cw.push(8); }); cw.push(9);
+  xlsxDownload('Repair_summary_' + mrFile(RS.f) + '_to_' + mrFile(RS.t) + '.xlsx', [{ name: 'Repair summary', rows: rows, cw: cw }]);
+};
+
+
+/* ---- M&R: click on a "pending for DTC" figure -> the list of those PRs, only DTC NO and DTC DATE are typed, then Save ---- */
+var PD = { rows: [], dirty: {}, w: '', c: '' };
+function pdOpen(w, c) {
+  var S = MR.sum; if (!S) return; PD = { rows: [], dirty: {}, w: w, c: c };
+  $('pdov').classList.remove('hide'); $('pdsub').textContent = (w || 'All workshops') + (c ? ' - ' + c + ' KVA' : '') + ' - PR date ' + S.f + ' to ' + S.t; $('pdt').innerHTML = ''; pdShowSave(); pdLoad();
+}
+function pdLoad(flash) {
+  var S = MR.sum; msg('pdmsg', 'Loading...', 'info');
+  rpc('mr_pending_json', { p_from: mrIso(S.f), p_to: mrIso(S.t), p_ws: PD.w || null, p_cap: PD.c ? +PD.c : null }).then(function (r) { PD.rows = r.rows || []; PD.total = r.total || 0; msg('pdmsg', flash || '', flash ? 'ok' : ''); pdDraw(); })
+    .catch(function (er) { msg('pdmsg', esc(er.message), 'err'); });
+}
+function pdDraw() {
+  var H = ['WORKSHOP', 'SUBSTATION', 'PLACE OF DAMAGE', 'CAP', 'COMPLAIN NO', 'PR NO', 'PR DATE', 'RETURN DATE', 'ISSUED TO FIRM', 'DRIVER NAME'], h = '<thead><tr>' + H.map(function (x) { return '<th>' + x + '</th>'; }).join('') + '<th class="ed">DTC NO &#9998;</th><th class="ed">DTC DATE &#9998;</th></tr></thead><tbody>';
+  PD.rows.forEach(function (r) {
+    var id = r[0], d = PD.dirty[id], no = d ? d.no : (r[14] || ''), dt = d ? d.date : mrDmy(r[15]), can = r[16] === 1;
+    var cells = [r[1], r[3], r[5], r[6] || '', r[7], r[8], mrDmy(r[9]), mrDmy(r[13]), r[11] || '', r[12] || ''];
+    h += '<tr data-id="' + id + '" class="' + (d ? 'dirty' : '') + '">' + cells.map(function (v) { return '<td class="lk">' + esc(v) + '</td>'; }).join('');
+    h += can ? '<td class="ed"><input type="text" class="pdn" maxlength="40" value="' + esc(no) + '" placeholder="DTC no" autocomplete="off"></td><td class="ed"><input type="text" class="dtx pdd" inputmode="numeric" value="' + esc(dt) + '" placeholder="DD.MM.YYYY" autocomplete="off"></td>' : '<td class="lk">' + esc(no) + '</td><td class="lk">' + esc(dt) + '</td>';
+    h += '</tr>';
+  });
+  if (!PD.rows.length) h += '<tr><td colspan="12" class="muted" style="text-align:center;padding:18px">No PR is pending for DTC here.</td></tr>';
+  $('pdt').innerHTML = h + '</tbody>';
+  if (PD.total > PD.rows.length) msg('pdmsg', 'First ' + PD.rows.length + ' of ' + PD.total + ' PRs are shown. Save these, then open again for the rest.', 'info');
+}
+function pdN() { return Object.keys(PD.dirty).length; }
+function pdShowSave() { var n = pdN(), b = $('pdsave'); b.textContent = n ? 'Save DTC (' + n + ')' : 'Save DTC'; b.disabled = !n; }
+document.addEventListener('click', function (e) {
+  var t = e.target; if (!t.closest) return;
+  var k = t.closest('.pdk'); if (k && k.closest('#mrout,#mrkpi')) { pdOpen(k.dataset.w || '', k.dataset.c || ''); return; }
+  if (t.closest('#pdx') || t === $('pdov')) { if (!pdN() || confirm('You have unsaved DTC entries. Close without saving?')) $('pdov').classList.add('hide'); }
+});
+document.addEventListener('input', function (e) {
+  var t = e.target; if (!t.classList || !(t.classList.contains('pdn') || t.classList.contains('pdd'))) return;
+  var tr = t.closest('tr'), id = tr.dataset.id, r = PD.rows.filter(function (x) { return String(x[0]) === id; })[0]; if (!r) return;
+  var no = tr.querySelector('.pdn').value.trim(), dt = tr.querySelector('.pdd').value.trim();
+  if (no === (r[14] || '') && dt === mrDmy(r[15])) { delete PD.dirty[id]; tr.classList.remove('dirty'); } else { PD.dirty[id] = { no: no, date: dt }; tr.classList.add('dirty'); }
+  pdShowSave();
+});
+$('pdsave').onclick = function () {
+  var ids = Object.keys(PD.dirty), job = [], i;
+  for (i = 0; i < ids.length; i++) {
+    var d = PD.dirty[ids[i]], pr = (PD.rows.filter(function (x) { return String(x[0]) === ids[i]; })[0] || [])[8];
+    if (d.no && !d.date) return msg('pdmsg', 'PR ' + esc(pr) + ': enter the DTC date also.', 'err');
+    if (d.date && !d.no) return msg('pdmsg', 'PR ' + esc(pr) + ': enter the DTC no also.', 'err');
+    if (d.date && !validD(d.date)) return msg('pdmsg', 'PR ' + esc(pr) + ': the DTC date must be DD.MM.YYYY.', 'err');
+    job.push([+ids[i], d.no, d.date ? mrIso(d.date) : null]);
+  }
+  if (!job.length) return; var b = $('pdsave'), n = 0; busy(b, true, 'Saving...');
+  (function next() {
+    if (n >= job.length) { PD.dirty = {}; busy(b, false); pdShowSave(); pdLoad('Saved ' + n + ' row' + (n > 1 ? 's' : '') + '.'); mrSumLoad(); return; }
+    var j = job[n]; rpc('mr_dtc_set', { p_id: j[0], p_no: j[1], p_date: j[2] }).then(function () { n++; next(); })
+      .catch(function (er) { busy(b, false); pdShowSave(); msg('pdmsg', (n ? 'Saved ' + n + ' row(s). ' : '') + esc(er.message), 'err'); });
+  })();
+};
+
 $('mrpr').onclick = function () { if (!MR.sum) return; printHtml('M&R Summary - ' + MR.sum.d + '  (From ' + MR.sum.f + ' to ' + MR.sum.t + ')', '<div class="ps soutp noanim"><div class="skpi">' + $('mrkpi').innerHTML + '</div>' + $('mrout').innerHTML + '</div>'); };
 function mrTbl(t) { var rows = []; [].forEach.call(t.querySelectorAll('tr'), function (tr) { rows.push([].map.call(tr.children, function (c) { var v = c.textContent.trim(); return /^\d+$/.test(v) ? +v : v; })); }); return rows; }
 $('mrxl').onclick = function () {
@@ -4971,17 +5940,18 @@ function mrKitDraw() {
     $('mkout').innerHTML = h + (adm ? mrBaseHtml(null) : ''); return;
   }
   var R = {}; r.rows.forEach(function (x) { R[x[0]] = x; });
+  h += '<div class="rrk kk4" id="mkkpi">' + [['OPENING KITTY', 'kk-o', 'ASSEMBLY'], ['ISSUE', 'kk-i', 'OVEN'], ['REPAIR', 'kk-r', 'REPAIR'], ['NET KITTY', 'kk-n', 'PURPLE']].map(function (k) { return '<div class="rrkc rrk-' + k[2] + '"><i>' + k[0] + '</i><b id="' + k[1] + '">0</b></div>'; }).join('') + '</div>';
   h += '<div class="card"><div class="wrap"><table class="mkt xg"><thead><tr><th class="l">CAPACITY IN KVA</th><th>OPENING KITTY</th><th>ISSUE</th><th>REPAIR</th><th class="ed">ISSUE TO OTHER WORKSHOP</th><th class="ed">RECEIVE FROM OTHER W/S</th><th>NET KITTY</th></tr></thead><tbody>';
   KCAPS.forEach(function (c) {
     var x = R[c] || [c, 0, 0, 0, 0, 0, 0, 0];
-    h += '<tr data-c="' + c + '"><td class="l">' + c + '</td><td class="o">' + x[1] + '</td><td class="i">' + x[3] + '</td><td class="repair"><b>' + x[4] + '</b></td><td class="ed to_other">' + mrKitInp(c, 'to_other', x[5], can) + '</td><td class="ed from_other">' + mrKitInp(c, 'from_other', x[6], can) + '</td><td class="n"><b>' + x[7] + '</b></td></tr>';
+    h += '<tr data-c="' + c + '"><td class="l" data-h="CAPACITY KVA">' + c + '</td><td class="o" data-h="OPENING">' + x[1] + '</td><td class="i" data-h="ISSUE">' + x[3] + '</td><td class="repair" data-h="REPAIR"><b>' + x[4] + '</b></td><td class="ed to_other" data-h="ISSUE TO OTHER W/S">' + mrKitInp(c, 'to_other', x[5], can) + '</td><td class="ed from_other" data-h="RECEIVE FROM OTHER W/S">' + mrKitInp(c, 'from_other', x[6], can) + '</td><td class="n" data-h="NET KITTY"><b>' + x[7] + '</b></td></tr>';
   });
   h += '<tr class="t" id="mktot"><td class="l">TOTAL</td><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table></div>';
-  h += '<div class="bar" style="margin-top:10px"><span class="muted" style="font-size:12px;flex:1">Issue comes from the Data Sheet. <b>Repair comes from the Repair tab</b> (all firms, every day); here type only the issue to / receive from other workshop. Unrepaired T/F is shown only in the Chamber Assembly report. Typing is saved by itself. Net kitty = opening + repair + receive &minus; issue &minus; issue to other workshop.</span>' +
-    (can ? '<button class="btn" id="mksave" type="button" disabled>Save kitty</button>' : '') + (adm ? '<button class="btn sec" id="mkbase" type="button">Start figures (Admin)</button>' : '') + '<button class="btn sec" id="mkxl" type="button">&#11015; Excel</button></div></div>';
+  h += '<div class="bar" style="margin-top:10px"><span class="muted ins" style="font-size:12px;flex:1">Issue comes from the Data Sheet. <b>Repair comes from the Repair tab</b> (all firms, every day); here type only the issue to / receive from other workshop. Unrepaired T/F is shown only in the Chamber Assembly report. Typing is saved by itself. Net kitty = opening + repair + receive &minus; issue &minus; issue to other workshop.</span>' +
+    (can ? '<button class="btn" id="mksave" type="button" disabled>Save kitty</button>' : '') + (adm ? '<button class="btn sec" id="mkbase" type="button">Start figures (Admin)</button>' : '') + '<button class="btn sec" id="mkpr" type="button">&#128424; Print</button><button class="btn sec" id="mkxl" type="button">&#11015; Excel</button></div></div>';
   h += mrLykHtml();
-  h += (isAll ? '<div class="muted" style="font-size:12.5px">All workshops together (view only). Choose one workshop to type, save or check the need.</div>' : mrNeedHtml());
-  $('mkout').innerHTML = h + (adm ? '<div id="mkbw" class="hide"></div>' : ''); mrKitTotal(); if (MR.lkOn) mrLykLoad();
+  h += (isAll ? '<div class="muted ins" style="font-size:12.5px">All workshops together (view only). Choose one workshop to type, save or check the need.</div>' : mrNeedHtml());
+  $('mkout').innerHTML = h + (adm ? '<div id="mkbw" class="hide"></div>' : ''); mrKitTotal(); if (MR.lkOn !== false) mrLykLoad();
 }
 function mrKitTotal() {
   var tot = [0, 0, 0, 0, 0, 0];
@@ -4992,10 +5962,11 @@ function mrKitTotal() {
     [o, is, rp, to, fo, net].forEach(function (v, i) { tot[i] += v; });
   });
   var t = $('mktot'); if (t) [].forEach.call(t.children, function (td, i) { if (i) td.innerHTML = '<b>' + tot[i - 1] + '</b>'; });
+  [['kk-o', 0], ['kk-i', 1], ['kk-r', 2], ['kk-n', 5]].forEach(function (k) { var e = $(k[0]); if (e && e.textContent !== String(tot[k[1]])) { e.textContent = tot[k[1]]; e.classList.add('bump'); setTimeout(function () { e.classList.remove('bump'); }, 250); } });
 }
 document.addEventListener('input', function (e) { var t = e.target; if (t.classList && t.classList.contains('mkn')) { mrKitTotal(); var b = $('mksave'); if (b) b.disabled = false; } });
 function mrBaseHtml(cur) {
-  var day = MR.kd ? MR.kd.d : fmt(new Date()), h = '<div class="card" id="mkbc"><h3>Start figures <span class="muted" style="text-transform:none">(Admin) - ' + esc(MR.kd ? MR.kd.ws : '') + '</span></h3><div class="muted" style="font-size:12.5px;margin-bottom:8px">Type the opening kitty and the unrepaired T/F as they are on the start date. From that day the app counts forward by itself.</div>' +
+  var day = MR.kd ? MR.kd.d : fmt(new Date()), h = '<div class="card" id="mkbc"><h3>Start figures <span class="muted" style="text-transform:none">(Admin) - ' + esc(MR.kd ? MR.kd.ws : '') + '</span></h3><div class="muted ins" style="font-size:12.5px;margin-bottom:8px">Type the opening kitty and the unrepaired T/F as they are on the start date. From that day the app counts forward by itself.</div>' +
     '<div class="bar"><div><label>Start date</label>' + mrDt('mkbd', day) + '</div></div><div class="wrap"><table class="mkt xg"><thead><tr><th class="l">CAPACITY IN KVA</th><th class="ed">OPENING KITTY</th><th class="ed">UNREPAIRED T/F</th></tr></thead><tbody>';
   KCAPS.forEach(function (c) { var x = cur && cur[c] ? cur[c] : [c, 0, 0]; h += '<tr><td class="l">' + c + '</td><td class="ed"><input type="text" inputmode="numeric" autocomplete="off" class="mkb" data-c="' + c + '" data-k="opening" value="' + (x[1] || 0) + '"></td><td class="ed"><input type="text" inputmode="numeric" autocomplete="off" class="mkb" data-c="' + c + '" data-k="unrep" value="' + (x[2] || 0) + '"></td></tr>'; });
   return h + '</tbody></table></div><div class="bar" style="margin-top:10px"><button class="btn" id="mkbsave" type="button">Save start figures</button></div><div id="mkbmsg"></div></div>';
@@ -5016,9 +5987,8 @@ document.addEventListener('click', function (e) {
     busy(b, true, 'Saving...'); rpc('kitty_save', { p_ws: MR.kd.ws, p_day: mrIso(MR.kd.d), p_rows: rr }).then(function () { busy(b, false); mrKitLoad(true); setTimeout(function () { msg('mkmsg', 'Saved.', 'ok'); }, 0); }).catch(function (er) { busy(b, false); msg('mkmsg', esc(er.message), 'err'); }); return;
   }
   if ((b = t.closest('#mkxl'))) {
-    var rows2 = [['CAPACITY IN KVA', 'OPENING KITTY', 'ISSUE', 'REPAIR', 'ISSUE TO OTHER WORKSHOP', 'RECEIVE FROM OTHER W/S', 'NET KITTY']];
-    document.querySelectorAll('#mkout .mkt tbody tr').forEach(function (tr) { rows2.push([].map.call(tr.children, function (td, i) { var inp = td.querySelector('input'), v = (inp ? inp.value : td.textContent).trim(); return i === 0 && v === 'TOTAL' ? v : (v === '' ? '' : +v); })); });
-    xlsxDownload('Kitty_' + mrFile(MR.kd.ws === '__ALL__' ? 'All' : MR.kd.ws) + '_' + mrFile(MR.kd.d) + '.xlsx', [{ name: 'Kitty', rows: rows2, hdr: 1 }]);
+    var rows2 = kitXlRows(document.querySelector('#mkout .mkt'), 1);
+    xlsxDownload('Kitty_' + mrFile(MR.kd.ws === '__ALL__' ? 'All' : MR.kd.ws) + '_' + mrFile(MR.kd.d) + '.xlsx', [{ name: 'Kitty', rows: rows2, cw: [16, 14, 10, 10, 16, 16, 12] }]);
   }
 });
 function mrKitDay(n) { var v = $('mkd').value.trim(); if (!validD(v)) return; var d = parseD(v); d.setDate(d.getDate() + n); $('mkd').value = fmt(d); mrKitLoad(); }
@@ -5040,7 +6010,7 @@ function mrKitTop(K, r) {
 }
 function mrNeedHtml() {
   return '<div class="card" id="mkneed"><h3>Next month need <span class="muted" style="text-transform:none;font-weight:600">- last year same month</span></h3>' +
-    '<div class="muted" style="font-size:12.5px;margin-bottom:8px">Takes the kitty of this date, <b>adds</b> last year\'s repair of the next days and <b>subtracts</b> last year\'s PR of the same days (made a little more). It tells how many transformers you still need.</div>' +
+    '<div class="muted ins" style="font-size:12.5px;margin-bottom:8px">Takes the kitty of this date, <b>adds</b> last year\'s repair of the next days and <b>subtracts</b> last year\'s PR of the same days (made a little more). It tells how many transformers you still need.</div>' +
     '<div class="bar"><div><label>Days</label><input type="number" id="mkdays" min="1" max="120" step="1" value="' + (MR.ndays || 30) + '" style="width:90px"></div><div><label>PR increase %</label><input type="number" id="mkpct" min="0" max="5" step="0.5" value="' + (MR.npct == null ? 5 : MR.npct) + '" style="width:90px"></div><button class="btn" id="mkneedb" type="button">Check need</button></div><div id="mkneedmsg"></div><div id="mkneedout"></div></div>';
 }
 function mrNeedLoad() {
@@ -5130,108 +6100,162 @@ document.addEventListener('input', function (e) {
 })();
 
 
-/* ---- KITTY vs LAST YEAR: this year's net kitty against the kitty of the same date last year ---- */
-function lkChg(n) { return n > 0 ? '<b style="color:#15803d">&#9650; +' + n + '</b>' : n < 0 ? '<b style="color:#c00">&#9660; ' + n + '</b>' : '<b style="color:#64748b">0</b>'; }
+/* ---- KITTY vs LAST YEAR: one table like the Excel sheet - capacity rows, every workshop: last year | this year, totals, DIFF.
+        Last year's kitty is typed or pasted (all workshops together) for the same date last year; if that date is missing the nearest date within 5 days is used. ---- */
 function mrLykHtml() {
-  return '<div class="card" id="mklk"><div class="bar" style="justify-content:space-between;align-items:center"><h3 style="margin:0">Kitty compared with last year <span class="muted" style="text-transform:none;font-weight:600">- same date, last year</span></h3><span><button class="btn" id="mklkb" type="button">Compare</button> <button class="btn sec hide" id="mklkxl" type="button">&#11015; Excel</button></span></div><div id="mklkmsg"></div><div id="mklkout"></div></div>';
+  return '<div class="card" id="mklk"><div class="bar" style="justify-content:space-between;align-items:center"><h3 style="margin:0">Kitty compared with last year <span class="muted" style="text-transform:none;font-weight:600">- same date, last year</span></h3><span><button class="btn" id="mklkb" type="button">Compare</button> <button class="btn sec hide" id="mklkpr" type="button">&#128424; Print</button> <button class="btn sec hide" id="mklkxl" type="button">&#11015; Excel</button></span></div><div id="mklkmsg"></div><div id="mklkout"></div></div>';
 }
 function mrLykLoad() {
   var K = MR.kd; if (!K || !K.r.base) return; MR.lkOn = true; var b = $('mklkb'); if (b) busy(b, true, 'Loading...'); msg('mklkmsg', '');
   var seq = MR.lkseq = (MR.lkseq || 0) + 1;
-  rpc('kitty_lyk_json', { p_day: mrIso(K.d) }).then(function (r) { if (b) busy(b, false); if (seq !== MR.lkseq || !$('mklkout')) return; MR.lk = { r: r, ws: K.ws, d: K.d }; mrLykDraw(); })
+  rpc('kitty_lyk_json', { p_day: mrIso(K.d) }).then(function (r) { if (b) busy(b, false); if (seq !== MR.lkseq || !$('mklkout')) return; MR.lk = { r: r, d: K.d, dirty: {} }; mrLykDraw(); })
     .catch(function (er) { if (b) busy(b, false); if ($('mklkmsg')) msg('mklkmsg', esc(er.message), 'err'); });
 }
-function mrLykSel() {
-  var L = MR.lk, list = L.r.ws.filter(function (w) { return L.ws === '__ALL__' || w.ws === L.ws; });
-  return list;
-}
-function mrLykCap() {
-  var L = MR.lk, list = mrLykSel(), out = {};
-  KCAPS.forEach(function (c) { out[c] = [c, 0, 0]; });
-  list.forEach(function (w) { w.rows.forEach(function (x) { if (out[x[0]]) { out[x[0]][1] += x[1]; out[x[0]][2] += x[2]; } }); });
-  return KCAPS.map(function (c) { return out[c]; });
-}
 function mrLykDraw() {
-  var L = MR.lk, list = mrLykSel(), single = L.ws !== '__ALL__' && list.length === 1 ? list[0] : null, manual = !!(single && !single.auto && single.edit);
-  var h = '<div class="muted" style="font-size:12.5px;margin:8px 0 6px">Net kitty on <b>' + esc(L.d) + '</b> against <b>' + mrDmy(L.r.ly) + '</b>.</div><div class="wrap" id="mklkws"></div>';
-  h += '<div class="muted" style="font-size:12.5px;margin:12px 0 6px"><b>Capacity-wise</b> - ' + esc(L.ws === '__ALL__' ? 'all workshops' : L.ws) + (single && !single.auto ? ' &middot; <span style="color:#c2410c">last year\'s kitty of this date is not in the app' + (manual ? ' - type it here once, it is saved by itself' : '') + '</span>' : '') + '</div>';
-  h += '<div class="wrap"><table class="mkt xg" id="mklkt"><thead><tr><th class="l">CAPACITY IN KVA</th><th>THIS YEAR</th><th' + (manual ? ' class="ed"' : '') + '>LAST YEAR</th><th>CHANGE</th></tr></thead><tbody>';
-  mrLykCap().forEach(function (x) {
-    h += '<tr data-c="' + x[0] + '"><td class="l">' + x[0] + '</td><td class="cy">' + x[1] + '</td><td' + (manual ? ' class="ed"' : '') + '>' + (manual ? '<input type="text" inputmode="numeric" autocomplete="off" class="mklk" data-c="' + x[0] + '" value="' + x[2] + '">' : '<span class="cl">' + x[2] + '</span>') + '</td><td class="cc"></td></tr>';
+  var L = MR.lk, W = L.r.ws, n = W.length, ty = L.d.slice(6), ly = String(L.r.ly || '').slice(0, 4);
+  if (!n) { $('mklkout').innerHTML = '<div class="msg info">No workshop has a started kitty on this date.</div>'; return; }
+  L.cy = W.map(function (w) { var m = {}; w.rows.forEach(function (x) { m[x[0]] = x[1]; }); return m; });
+  L.ly = W.map(function (w) { var m = {}; w.rows.forEach(function (x) { m[x[0]] = x[2]; }); return m; });
+  var canAny = W.some(function (w) { return w.edit; }), isAdm = !!ME && ME.role === 'admin';
+  var h = '<div class="lkw">';
+  /* 1. last year's kitty: type or paste here (all workshops together) */
+  if (isAdm) {
+  h += '<details class="lkd" id="mklkd"' + (MR.lkOpen ? ' open' : '') + '><summary>LAST YEAR KITTY ON ' + esc(mrDmy(L.r.ly)) + (canAny ? ' <span>- click to open, then paste or type (saved by itself)</span>' : ' <span>- click to open</span>') + '</summary>' +
+    '<div class="wrap"><table class="lkt xg" id="mklky" data-lyk="1"><thead><tr><th rowspan="2">SL</th><th rowspan="2">CAPACITY OF<br>TRANSFORMERS</th><th colspan="' + n + '" class="wn">NAME OF WORKSHOP</th><th rowspan="2">TOTAL</th></tr><tr>' +
+    W.map(function (w) { return '<th class="wn">' + esc(dwNm(w.ws)) + '<div class="yr">AVAILABILITY</div></th>'; }).join('') + '</tr></thead><tbody>';
+  KCAPS.forEach(function (c, j) {
+    h += '<tr data-c="' + c + '"><td class="sl">' + (j + 1) + '</td><td class="cp">' + c + ' KVA</td>';
+    W.forEach(function (w, i) { h += '<td class="lyc">' + (w.edit ? '<input type="text" inputmode="numeric" autocomplete="off" class="mklk" data-w="' + esc(w.ws) + '" data-i="' + i + '" value="' + (L.ly[i][c] || 0) + '">' : '<span class="cl">' + (L.ly[i][c] || 0) + '</span>') + '</td>'; });
+    h += '<td class="rt"></td></tr>';
   });
-  h += '<tr class="t" id="mklkT"><td class="l">TOTAL</td><td></td><td></td><td></td></tr></tbody></table></div>';
-  $('mklkout').innerHTML = h; $('mklkxl').classList.remove('hide'); mrLykPaint();
+  h += '<tr class="T"><td></td><td>TOTAL</td>' + W.map(function () { return '<td class="ct"></td>'; }).join('') + '<td class="rt gt"></td></tr></tbody></table></div>' +
+    '<div class="muted ins" style="font-size:12.5px;margin:6px 0 4px;font-family:Inter,system-ui,sans-serif">' + (canAny ? 'Copy the Excel block (rows = capacity, columns = workshops; a copied 800 KVA row is skipped) and paste it into the first cell.' : 'View only.') + '</div></details>';
+  }
+  /* 2. the comparison, like the Excel sheet */
+  h += '<div class="wrap" style="margin-top:' + (isAdm ? '12' : '0') + 'px"><table class="lkt" id="mklkt"><thead><tr><th rowspan="3">CAPACITY<br>IN KVA</th><th colspan="' + (n * 2) + '" class="wn">NAME OF WORKSHOP</th>' + (n > 1 ? '<th rowspan="3" class="tl">' + ly + ' TOTAL</th><th rowspan="3" class="tl">' + ty + ' TOTAL</th>' : '') + '<th rowspan="3" class="tl">DIFF</th></tr>' +
+    '<tr>' + W.map(function (w) { return '<th colspan="2" class="wn">' + esc(dwNm(w.ws)) + '</th>'; }).join('') + '</tr><tr>' + W.map(function () { return '<th class="yr">' + ly + '</th><th class="yr">' + ty + '</th>'; }).join('') + '</tr></thead><tbody>';
+  KCAPS.forEach(function (c, j) {
+    h += '<tr data-c="' + c + '"><td class="cp">' + c + '</td>';
+    W.forEach(function (w, i) { h += '<td class="vl" data-i="' + i + '"></td><td class="vy" data-i="' + i + '">' + (L.cy[i][c] || 0) + '</td>'; });
+    h += (n > 1 ? '<td class="lt"></td><td class="tt"></td>' : '') + '<td class="df"></td></tr>';
+  });
+  h += '<tr class="T"><td>TOTAL</td>' + W.map(function () { return '<td class="a"></td><td class="b"></td>'; }).join('') + (n > 1 ? '<td class="lt"></td><td class="tt"></td>' : '') + '<td class="df"></td></tr></tbody></table></div>';
+  var notes = W.filter(function (w) { return !w.auto && w.src && w.src !== L.r.ly; }).map(function (w) {
+    var d = Math.round((new Date(w.src) - new Date(L.r.ly)) / 86400000); return esc(dwNm(w.ws)) + ': figures of ' + mrDmy(w.src) + ' (' + Math.abs(d) + ' day' + (Math.abs(d) > 1 ? 's' : '') + (d < 0 ? ' before' : ' after') + ')';
+  });
+  h += '<div class="muted" style="font-size:12.5px;margin-top:8px;font-family:Inter,system-ui,sans-serif">' +
+    (notes.length ? '<br><span style="color:#c2410c">Same date not found - nearest date used: ' + notes.join(' &middot; ') + '.</span>' : '') +
+    (W.some(function (w) { return w.auto; }) ? '<br>Workshops whose kitty this app counted on that date last year use it automatically.' : '') + '</div></div>';
+  $('mklkout').innerHTML = h; $('mklkxl').classList.remove('hide'); $('mklkpr').classList.remove('hide'); mrLykPaint();
 }
 function mrLykPaint() {
-  var L = MR.lk, list = mrLykSel(), tw = '<table class="mkt xg"><thead><tr><th class="l">NAME OF WORKSHOP</th><th>THIS YEAR</th><th>LAST YEAR</th><th>CHANGE</th><th>%</th></tr></thead><tbody>', a = 0, b = 0;
-  L.r.ws.forEach(function (w) {
-    var cy = 0, ly = 0; w.rows.forEach(function (x) { cy += x[1]; ly += x[2]; }); a += cy; b += ly;
-    tw += '<tr><td class="l"><b>' + esc(w.ws) + '</b>' + (w.auto ? '' : ' <span class="muted" style="font-size:11px">(typed)</span>') + '</td><td>' + cy + '</td><td>' + ly + '</td><td>' + lkChg(cy - ly) + '</td><td>' + (ly ? Math.round((cy - ly) * 1000 / Math.abs(ly)) / 10 + '%' : '-') + '</td></tr>';
+  var L = MR.lk, t = $('mklkt'), e = $('mklky'); if (!t) return; var W = L.r.ws, n = W.length, i;
+  var ec = W.map(function () { return 0; }), gtot = 0;
+  if (e) {
+    [].forEach.call(e.querySelectorAll('tbody tr[data-c]'), function (tr) {
+      var c = +tr.dataset.c, a = 0; for (i = 0; i < n; i++) { var v = L.ly[i][c] || 0; a += v; ec[i] += v; }
+      tr.querySelector('.rt').innerHTML = '<b>' + a + '</b>'; gtot += a;
+    });
+    var eT = e.querySelector('tr.T'); [].forEach.call(eT.querySelectorAll('.ct'), function (td, k) { td.innerHTML = '<b>' + ec[k] + '</b>'; }); eT.querySelector('.gt').innerHTML = '<b>' + gtot + '</b>';
+  }
+  var cl = W.map(function () { return 0; }), cy = W.map(function () { return 0; }), gl = 0, gt = 0;
+  [].forEach.call(t.querySelectorAll('tbody tr[data-c]'), function (tr) {
+    var c = +tr.dataset.c, a = 0, b = 0;
+    for (i = 0; i < n; i++) { var x = L.ly[i][c] || 0, y = L.cy[i][c] || 0; tr.querySelector('.vl[data-i="' + i + '"]').textContent = x; a += x; b += y; cl[i] += x; cy[i] += y; }
+    if (tr.querySelector('.lt')) { tr.querySelector('.lt').innerHTML = '<b>' + a + '</b>'; tr.querySelector('.tt').innerHTML = '<b>' + b + '</b>'; } tr.querySelector('.df').innerHTML = '<b>' + (b - a) + '</b>'; gl += a; gt += b;
   });
-  tw += '<tr class="t"><td class="l">TOTAL</td><td><b>' + a + '</b></td><td><b>' + b + '</b></td><td>' + lkChg(a - b) + '</td><td>' + (b ? Math.round((a - b) * 1000 / Math.abs(b)) / 10 + '%' : '-') + '</td></tr></tbody></table>';
-  $('mklkws').innerHTML = tw;
-  var ct = 0, cl = 0;
-  document.querySelectorAll('#mklkt tbody tr[data-c]').forEach(function (tr) {
-    var cy = +tr.querySelector('.cy').textContent, i = tr.querySelector('.mklk'), ly = i ? (parseInt(i.value, 10) || 0) : +tr.querySelector('.cl').textContent;
-    tr.querySelector('.cc').innerHTML = lkChg(cy - ly); ct += cy; cl += ly;
-  });
-  var T = $('mklkT'); if (T) { T.children[1].innerHTML = '<b>' + ct + '</b>'; T.children[2].innerHTML = '<b>' + cl + '</b>'; T.children[3].innerHTML = lkChg(ct - cl); }
+  var T = t.querySelector('tr.T'), A = T.querySelectorAll('.a'), B = T.querySelectorAll('.b'); for (i = 0; i < n; i++) { A[i].innerHTML = '<b>' + cl[i] + '</b>'; B[i].innerHTML = '<b>' + cy[i] + '</b>'; }
+  if (T.querySelector('.lt')) { T.querySelector('.lt').innerHTML = '<b>' + gl + '</b>'; T.querySelector('.tt').innerHTML = '<b>' + gt + '</b>'; } T.querySelector('.df').innerHTML = '<b>' + (gt - gl) + '</b>';
 }
 function mrLykSave() {
-  var L = MR.lk; if (!L || L.ws === '__ALL__') return; var w = L.r.ws.filter(function (x) { return x.ws === L.ws; })[0]; if (!w || w.auto || !w.edit) return;
-  var ins = document.querySelectorAll('#mklkt .mklk'); if (!ins.length) return;
-  var rows = [].map.call(ins, function (i) { return { cap: +i.dataset.c, qty: Math.max(0, parseInt(i.value, 10) || 0) }; });
-  rows.forEach(function (r) { w.rows.forEach(function (x) { if (x[0] === r.cap) x[2] = r.qty; }); });
-  msg('mklkmsg', 'Saving...', 'info');
-  rpc('kitty_lyk_set', { p_ws: L.ws, p_day: L.r.ly, p_rows: rows }).then(function () { asMsg('mklkmsg', 'Saved', 'ok'); mrLykPaint(); }).catch(function (er) { msg('mklkmsg', esc(er.message), 'err'); });
+  var L = MR.lk; if (!L) return; var ws = Object.keys(L.dirty); if (!ws.length) return; L.dirty = {};
+  var k = Promise.resolve(); msg('mklkmsg', 'Saving...', 'info');
+  ws.forEach(function (w) {
+    var i = L.r.ws.map(function (x) { return x.ws; }).indexOf(w); if (i < 0) return;
+    var rows = KCAPS.map(function (c) { return { cap: c, qty: Math.max(0, L.ly[i][c] || 0) }; });
+    k = k.then(function () { return rpc('kitty_lyk_set', { p_ws: w, p_day: L.r.ly, p_rows: rows }); });
+  });
+  k.then(function () { asMsg('mklkmsg', 'Saved', 'ok'); }).catch(function (er) { msg('mklkmsg', esc(er.message), 'err'); });
 }
-document.addEventListener('input', function (e) { if (e.target.classList && e.target.classList.contains('mklk')) { var v = e.target.value.replace(/\D/g, ''); if (v !== e.target.value) e.target.value = v; mrLykPaint(); } });
+/* paste an Excel block into the last year table: by "10 KVA" labels when they are copied too, else row by row (a 800 KVA row is skipped) */
+function mrLykPaste(rows) {
+  var t = $('mklky'), L = MR.lk, b = xgBox(), g = xgGrid(t), st = g[b.r1] && g[b.r1][b.c1]; if (!st) return;
+  var trs = [].filter.call(t.tBodies[0].rows, function (tr) { return tr.dataset.c; }), inp0 = st.querySelector('input.mklk'), k0 = inp0 ? +inp0.dataset.i : 0, r0 = Math.max(0, trs.indexOf(st.closest('tr')));
+  var lab = rows.map(function (rw) { for (var m = 0; m < rw.length; m++) { var q = /^\s*(\d+)\s*kva\s*$/i.exec(rw[m]); if (q) return { cap: +q[1], vals: rw.slice(m + 1) }; } return null; });
+  var named = lab.filter(Boolean).length >= 5, put = function (tr, vals) { vals.forEach(function (v, j) { var inp = tr.querySelector('input.mklk[data-i="' + (k0 + j) + '"]'); if (inp) xgSet(inp.parentNode, String(v).trim()); }); };
+  if (named) { lab.forEach(function (x) { if (!x) return; var tr = t.querySelector('tbody tr[data-c="' + x.cap + '"]'); if (tr) put(tr, x.vals); }); return; }
+  if (rows.length === 11) rows = rows.slice(0, 9).concat(rows.slice(10));   // the Excel sheet has an 800 KVA row between 630 and 1000
+  rows.forEach(function (rw, i) { var tr = trs[r0 + i]; if (tr) put(tr, rw); });
+}
+document.addEventListener('toggle', function (e) { if (e.target && e.target.id === 'mklkd') MR.lkOpen = e.target.open; }, true);
+document.addEventListener('input', function (e) {
+  var t = e.target; if (!t.classList || !t.classList.contains('mklk') || !MR.lk) return;
+  var v = t.value.replace(/\D/g, ''); if (v !== t.value) t.value = v;
+  MR.lk.ly[+t.dataset.i][+t.closest('tr').dataset.c] = parseInt(v, 10) || 0; MR.lk.dirty[t.dataset.w] = 1; mrLykPaint();
+});
 document.addEventListener('click', function (e) {
   var t = e.target; if (!t.closest) return;
   if (t.closest('#mklkb')) { mrLykLoad(); return; }
   if (t.closest('#mklkxl') && MR.lk) {
-    var L = MR.lk, rows = [['Net kitty on ' + L.d + ' against ' + mrDmy(L.r.ly)], [], ['NAME OF WORKSHOP', 'THIS YEAR', 'LAST YEAR', 'CHANGE']];
-    L.r.ws.forEach(function (w) { var a = 0, b = 0; w.rows.forEach(function (x) { a += x[1]; b += x[2]; }); rows.push([w.ws, a, b, a - b]); });
-    rows.push([]); rows.push(['CAPACITY IN KVA - ' + (L.ws === '__ALL__' ? 'All workshops' : L.ws), 'THIS YEAR', 'LAST YEAR', 'CHANGE']);
-    mrLykCap().forEach(function (x) { var i = document.querySelector('#mklkt .mklk[data-c="' + x[0] + '"]'); var ly = i ? (parseInt(i.value, 10) || 0) : x[2]; rows.push([x[0], x[1], ly, x[1] - ly]); });
-    xlsxDownload('Kitty_vs_LastYear_' + mrFile(L.ws === '__ALL__' ? 'All' : L.ws) + '_' + mrFile(L.d) + '.xlsx', [{ name: 'Kitty vs LY', rows: rows }]);
+    var L = MR.lk, W = L.r.ws, n = W.length, ty = L.d.slice(6), ly = String(L.r.ly || '').slice(0, 4), rows = [], mg = [], i, T = 2 * n + 5;
+    var r0 = []; for (i = 0; i < T; i++) r0.push(''); r0[0] = { v: cmpTitle(), s: 1 }; r0[T - 1] = { v: 'DATE-' + L.d, s: 10 }; rows.push(r0);
+    var r1 = [], r2 = [], r3 = []; for (i = 0; i < T; i++) { r1.push({ v: '', s: 5 }); r2.push({ v: '', s: 5 }); r3.push({ v: '', s: 5 }); }
+    r1[0] = { v: 'SL', s: 5 }; r1[1] = { v: 'CAPACITY OF TRANSFORMERS', s: 5 }; r1[2] = { v: 'NAME OF WORKSHOP', s: 5 }; r1[2 * n + 2] = { v: ly + ' TOTAL', s: 5 }; r1[2 * n + 3] = { v: ty + ' TOTAL', s: 5 }; r1[2 * n + 4] = { v: 'DIFF', s: 5 };
+    W.forEach(function (w, k) { r2[2 + 2 * k] = { v: dwNm(w.ws), s: 5 }; r3[2 + 2 * k] = { v: ly, s: 5 }; r3[3 + 2 * k] = { v: ty, s: 5 }; mg.push([2, 2 + 2 * k, 2, 3 + 2 * k]); });
+    rows.push(r1); rows.push(r2); rows.push(r3); mg.push([1, 2, 1, 2 * n + 1]); [0, 1, 2 * n + 2, 2 * n + 3, 2 * n + 4].forEach(function (c) { mg.push([1, c, 3, c]); });
+    var tl = 0, tt = 0, cl = W.map(function () { return 0; }), cy = W.map(function () { return 0; });
+    KCAPS.forEach(function (c, ri) {
+      var line = [{ v: ri + 1, s: 4 }, { v: c + ' KVA', s: 4 }], a = 0, b = 0;
+      W.forEach(function (w, k) { var x = L.ly[k][c] || 0, y = L.cy[k][c] || 0; a += x; b += y; cl[k] += x; cy[k] += y; line.push({ v: x, s: 4 }); line.push({ v: y, s: 4 }); });
+      line.push({ v: a, s: 5 }); line.push({ v: b, s: 5 }); line.push({ v: b - a, s: 5 }); tl += a; tt += b; rows.push(line);
+    });
+    var last = [{ v: '', s: 5 }, { v: 'TOTAL', s: 5 }]; W.forEach(function (w, k) { last.push({ v: cl[k], s: 5 }); last.push({ v: cy[k], s: 5 }); }); last.push({ v: tl, s: 5 }); last.push({ v: tt, s: 5 }); last.push({ v: tt - tl, s: 5 }); rows.push(last);
+    var cw = [6, 17]; for (i = 0; i < n; i++) { cw.push(9); cw.push(9); } cw.push(11); cw.push(11); cw.push(9);
+    xlsxDownload('Kitty_vs_LastYear_' + mrFile(L.d) + '.xlsx', [{ name: 'Kitty vs LY', rows: rows, merges: mg, cw: cw }]);
   }
 });
 
-/* KITTY COMPARE: on top of the Kitty tab, for the date of the Kitty tab */
-function mrCmpLoad() {
-  var d = $('mkd').value.trim(); if (!validD(d)) return msg('mkmsg', 'Enter the date in DD.MM.YYYY format.', 'err');
-  var w = $('mkcmp'); w.classList.remove('hide'); w.innerHTML = '<div class="card"><div class="msg info">Loading...</div></div>';
-  rpc('kitty_cmp_json', { p_day: mrIso(d) }).then(function (r) { MR.cmp = { r: r, d: d }; mrCmpDraw(); }).catch(function (er) { w.innerHTML = '<div class="card"><div class="msg err">' + esc(er.message) + '</div></div>'; });
+/* ---- Print of the Kitty tables: same look as on the screen, A4 portrait for a narrow table / landscape for a wide one, one page ---- */
+function kitClone(t) {
+  var c = t.cloneNode(true); c.removeAttribute('id');
+  [].forEach.call(c.querySelectorAll('input'), function (i) { var sp = document.createElement('span'); sp.textContent = i.value; i.parentNode.replaceChild(sp, i); });
+  [].forEach.call(c.querySelectorAll('.csel,.dirty'), function (x) { x.classList.remove('csel'); x.classList.remove('dirty'); });
+  return c;
 }
-function mrCmpRows() {
-  var C = MR.cmp, r = C.r, ord = mrWs().filter(function (w) { return r.ws.indexOf(w) >= 0; }), idx = ord.map(function (w) { return r.ws.indexOf(w) + 1; });
-  return { ord: ord, idx: idx, rows: r.rows, nobase: r.nobase };
+function kitPrint(src, title, date) {
+  if (!src) return; var c = kitClone(src), lk = src.classList.contains('lkt');
+  var host = document.createElement('div'); host.className = lk ? 'lkw' : ''; host.style.cssText = 'position:fixed;left:-99999px;top:0;width:max-content'; host.appendChild(c); document.body.appendChild(host);
+  var r = c.getBoundingClientRect(), w0 = Math.max(200, r.width), h0 = Math.max(80, r.height); host.remove();
+  var land = w0 / (h0 + 50) > 1.3, pw = land ? 1000 : 670, ph = land ? 680 : 1010, z = Math.max(0.35, Math.min(1.7, pw / (w0 + 4), (ph - 70) / h0));
+  var st = document.getElementById('chmpgs'); if (st) st.remove(); st = document.createElement('style'); st.id = 'chmpgs';
+  st.textContent = '@media print{@page{size:A4 ' + (land ? 'landscape' : 'portrait') + ';margin:12mm 14mm}' +
+    '#pz .kpr{display:block;width:max-content;margin:0 auto;zoom:' + z.toFixed(3) + ';color:#000}' +
+    '#pz .kpr .kph{display:flex;justify-content:space-between;align-items:flex-end;gap:26px;margin:0 0 6px;font-family:"Times New Roman",Times,serif}#pz .kpr .kph b{font-size:17px}#pz .kpr .kph span{font-size:24px;font-weight:800;white-space:nowrap}' +
+    '#pz .kpr table{width:auto;border-collapse:collapse;background:#fff}' +
+    '#pz .kpr table.mkt th,#pz .kpr table.mkt td{border:1px solid #000;padding:5px 10px;font-size:13px;white-space:nowrap;background:#fff;color:#000;text-align:center}#pz .kpr table.mkt th{font-weight:700;white-space:normal}#pz .kpr table.mkt tr.t td,#pz .kpr table.mkt td b{font-weight:700}#pz .kpr table.mkt td.neg,#pz .kpr table.mkt td.neg b{color:#c00}' +
+    '#pz .kpr table.lkt th,#pz .kpr table.lkt td{border:1px solid #000!important;background:#fff!important;color:#000!important;padding:2px 10px;white-space:nowrap}#pz .kpr table.lkt th.wn{padding:3px 14px}' +
+    '#pz .kpr tr{break-inside:avoid}}';
+  document.head.appendChild(st);
+  $('pz').innerHTML = '<div class="kpr' + (lk ? ' lkw' : '') + '"><div class="kph"><b>' + esc(title) + '</b>' + (date ? '<span>DATE-' + esc(date) + '</span>' : '') + '</div>' + c.outerHTML + '</div>';
+  document.body.classList.add('printing');
+  setTimeout(function () { try { window.print(); } catch (e) { cleanPrint(); } }, 80); setTimeout(cleanPrint, 180000);
 }
-function mrCmpDraw() {
-  var C = MR.cmp, c = mrCmpRows(), tot = c.ord.map(function () { return 0; }), gt = 0;
-  var h = '<div class="card"><div class="bar" style="justify-content:space-between;align-items:center"><h3 style="margin:0">Kitty compare <span class="muted" style="text-transform:none;font-weight:600">- net kitty on ' + esc(C.d) + '</span></h3><span><button class="btn sec sm" id="mcxl" type="button">&#11015; Excel</button> <button class="btn sec sm" id="mcx" type="button">Close &#10005;</button></span></div>' +
-    '<div class="wrap"><table class="mkt xg" id="mckt"><thead><tr><th class="l">CAPACITY IN KVA</th>' + c.ord.map(function (w) { return '<th>' + esc(w) + '</th>'; }).join('') + '<th>TOTAL</th></tr></thead><tbody>';
-  c.rows.forEach(function (x) {
-    var s = 0; h += '<tr><td class="l">' + x[0] + '</td>' + c.idx.map(function (j, i) { var v = x[j]; if (v == null) return '<td class="muted">-</td>'; s += v; tot[i] += v; return '<td class="' + (v < 0 ? 'neg' : '') + '">' + v + '</td>'; }).join('') + '<td class="' + (s < 0 ? 'neg' : '') + '"><b>' + s + '</b></td></tr>'; gt += s;
+/* Excel of a plain table in the same look as the screen: black lines, centred, bold header and total row */
+function kitXlRows(tbl, headRows) {
+  var rows = [];
+  [].forEach.call(tbl.rows, function (tr, ri) {
+    var head = ri < headRows, tot = tr.classList.contains('t') || /^TOTAL$/i.test((tr.cells[0] || {}).textContent || '');
+    rows.push([].map.call(tr.cells, function (td, i) { var inp = td.querySelector('input'), v = (inp ? inp.value : td.textContent).trim(), num = v !== '' && !isNaN(+v) && (!head || i > 0);
+      var n = num ? +v : v; return { v: n, s: head || tot ? 5 : (num && +v < 0 ? 9 : 4) }; }));
   });
-  h += '<tr class="t"><td class="l">TOTAL</td>' + tot.map(function (v) { return '<td><b>' + v + '</b></td>'; }).join('') + '<td><b>' + gt + '</b></td></tr></tbody></table></div>';
-  if (c.nobase.length) h += '<div class="muted" style="font-size:12px;margin-top:6px">Kitty not started on this date for: ' + esc(c.nobase.join(', ')) + '.</div>';
-  $('mkcmp').innerHTML = h + '</div>';
+  return rows;
 }
-$('mkcmpb').onclick = function () { if (!$('mkcmp').classList.contains('hide')) { $('mkcmp').classList.add('hide'); return; } mrCmpLoad(); };
 document.addEventListener('click', function (e) {
   var t = e.target; if (!t.closest) return;
-  if (t.closest('#mcx')) { $('mkcmp').classList.add('hide'); return; }
-  if (t.closest('#mcxl')) {
-    var C = MR.cmp; if (!C) return; var c = mrCmpRows(), rows = [['CAPACITY IN KVA'].concat(c.ord, ['TOTAL'])], tot = c.ord.map(function () { return 0; }), gt = 0;
-    c.rows.forEach(function (x) { var s = 0; rows.push([x[0]].concat(c.idx.map(function (j, i) { var v = x[j]; if (v == null) return ''; s += v; tot[i] += v; return v; }), [s])); gt += s; });
-    rows.push(['TOTAL'].concat(tot, [gt])); xlsxDownload('Kitty_Compare_' + mrFile(C.d) + '.xlsx', [{ name: 'Kitty', rows: rows, hdr: 1 }]);
-  }
+  if (t.closest('#mkpr') && MR.kd) kitPrint(document.querySelector('#mkout .mkt'), 'KITTY - ' + (MR.kd.ws === '__ALL__' ? 'ALL WORKSHOPS' : MR.kd.ws), MR.kd.d);
+  else if (t.closest('#mklkpr') && MR.lk) kitPrint($('mklkt'), cmpTitle(), MR.lk.d);
 });
-// the compare follows the date of the Kitty tab
-var _mrKitLoad = mrKitLoad;
-mrKitLoad = function (force) { var x = _mrKitLoad(force); if (!$('mkcmp').classList.contains('hide')) mrCmpLoad(); return x; };
+
 
 
 /* ---- REPAIR tab: REPAIR / ASSEMBLY / OVEN, firm-wise and capacity-wise (typed by the M&R user, one day at a time) ---- */
@@ -5486,7 +6510,7 @@ document.addEventListener('keydown', function (e) {
 /* start figures (Admin, once) - inside the pop-up */
 function mrChmBaseHtml(ws, day, cur) {
   var o = mrWs().map(function (w) { return '<option' + (w === ws ? ' selected' : '') + '>' + esc(w) + '</option>'; }).join('');
-  var h = '<div class="card"><h3>Start figures <span class="muted" style="text-transform:none">(Admin, typed once)</span></h3><div class="muted" style="font-size:12.5px;margin-bottom:8px">Type how many transformers are in ASSEMBLY and in OVEN on the start date (in the morning). From that day the Repair tab entries move them: ASSEMBLY entries reduce Unrepaired and add to Assembly; OVEN entries reduce Assembly and add to Oven. The Kitty "unrepaired" start figure should not include these.</div>' +
+  var h = '<div class="card"><h3>Start figures <span class="muted" style="text-transform:none">(Admin, typed once)</span></h3><div class="muted ins" style="font-size:12.5px;margin-bottom:8px">Type how many transformers are in ASSEMBLY and in OVEN on the start date (in the morning). From that day the Repair tab entries move them: ASSEMBLY entries reduce Unrepaired and add to Assembly; OVEN entries reduce Assembly and add to Oven. The Kitty "unrepaired" start figure should not include these.</div>' +
     '<div class="bar"><div><label>Workshop</label><select id="mhbws">' + o + '</select></div><div><label>Start date</label>' + mrDt('mhbd', day) + '</div></div><div class="wrap"><table class="mkt xg"><thead><tr><th class="l">CAPACITY IN KVA</th><th class="ed">ASSEMBLY</th><th class="ed">OVEN</th></tr></thead><tbody>';
   CH_CAPS.forEach(function (c) { var x = cur[c] || [0, 0]; h += '<tr><td class="l">' + c + '</td><td class="ed"><input type="text" inputmode="numeric" autocomplete="off" class="mhb" data-c="' + c + '" data-k="a" value="' + (x[0] || 0) + '"></td><td class="ed"><input type="text" inputmode="numeric" autocomplete="off" class="mhb" data-c="' + c + '" data-k="o" value="' + (x[1] || 0) + '"></td></tr>'; });
   return h + '</tbody></table></div><div class="bar" style="margin-top:10px"><button class="btn" id="mhbsave" type="button">Save start figures</button></div><div id="mhbmsg"></div></div>';
@@ -5533,7 +6557,7 @@ function xgSelect(td, extend) {
 }
 function xgFocus(td) { var i = td.querySelector('input'); if (i) { i.focus(); try { i.select(); } catch (x) { } } else { td.tabIndex = -1; td.focus({ preventScroll: true }); } }
 function xgVal(td) { var i = td.querySelector('input'); return i ? i.value : td.textContent.trim(); }
-function xgSet(td, v) { var i = td.querySelector('input'); if (!i) return false; if (!i.classList.contains('rf')) v = String(v).replace(/[^0-9]/g, ''); i.value = v; i.dispatchEvent(new Event('input', { bubbles: true })); return true; }
+function xgSet(td, v) { var i = td.querySelector('input'); if (!i) return false; if (!i.classList.contains('rf') && !(td.closest && td.closest('#tstb'))) v = String(v).replace(/[^0-9]/g, ''); i.value = v; i.dispatchEvent(new Event('input', { bubbles: true })); return true; }
 document.addEventListener('mousedown', function (e) {
   var td = e.target.closest && e.target.closest('.xg td'); if (!td || td.classList.contains('x') || td.classList.contains('bl')) return;
   if (e.shiftKey && XG.t && td.closest('table') === XG.t) { e.preventDefault(); xgSelect(td, true); XG.t.tabIndex = -1; XG.t.focus({ preventScroll: true }); return; }
@@ -5551,7 +6575,7 @@ document.addEventListener('focusin', function (e) {
   if (!XG.drag) { var p = xgPos(td); if (p && !(XG.t === p.t && xgMulti())) xgSelect(td, false); }
   if (e.target.tagName === 'INPUT' && !e.target.classList.contains('rf')) { XG.fresh = e.target; try { e.target.select(); } catch (x) { } }
 });
-document.addEventListener('input', function (e) { var t = e.target; if (t.tagName === 'INPUT' && t.closest && t.closest('.xg') && !t.classList.contains('rf') && /[^0-9]/.test(t.value)) t.value = t.value.replace(/[^0-9]/g, ''); });
+document.addEventListener('input', function (e) { var t = e.target; if (t.tagName === 'INPUT' && t.closest && t.closest('.xg') && !t.closest('#tstb') && !t.classList.contains('rf') && /[^0-9]/.test(t.value)) t.value = t.value.replace(/[^0-9]/g, ''); });
 document.addEventListener('keydown', function (e) {
   var t = e.target.closest && e.target.closest('table.xg'); if (!t || XG.t !== t) return;
   var k = e.key, inp = e.target.tagName === 'INPUT' ? e.target : null, ctrl = e.ctrlKey || e.metaKey, g = xgGrid(t), b = xgBox();
@@ -5585,6 +6609,8 @@ document.addEventListener('paste', function (e) {
   var rows = tx.split('\n').map(function (x) { return x.split('\t'); });
   if (rows.length === 1 && rows[0].length === 1 && e.target.tagName === 'INPUT') return;   // a single value: the normal paste (digits only)
   e.preventDefault();
+  if (XG.t.dataset.lyk) { mrLykPaste(rows); return; }
+  if (XG.t.dataset.ts) { tsPaste(rows); return; }
   var b = xgBox(), key = XG.t.dataset.b, g = xgGrid(XG.t), r0 = b.r1, c0 = b.c1, need = r0 + rows.length - XG.t.querySelectorAll('tbody tr[data-b]').length;
   if (need > 0 && XG.t.dataset.grow === undefined && key && document.querySelector('#mpout table.rrt')) { mrRepGrow(need); var nt = document.querySelector('table.xg[data-b="' + key + '"]'); if (nt) { XG.t = nt; g = xgGrid(nt); } }
   rows.forEach(function (rw, i) { rw.forEach(function (v, j) { var td = g[r0 + i] && g[r0 + i][c0 + j]; if (td) xgSet(td, v.trim()); }); });
@@ -5613,7 +6639,7 @@ function mrScDraw() {
   });
   h += '<tr class="t" id="mstot"><td class="l">TOTAL</td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table></div>';
   if (r.nobase.length) h += '<div class="muted" style="font-size:12px;margin-top:6px">Opening scrap is not set for: ' + esc(r.nobase.join(', ')) + ' (it counts as 0; the Admin sets it once with "Opening scrap / standard").</div>';
-  h += '<div class="bar" style="margin-top:10px"><span class="muted" style="font-size:12px;flex:1">Receive = repaired T/F of the Repair tab (10 to 250 aluminium) &times; standard recovery. Remaining of a day becomes the opening scrap of the next day.</span>' +
+  h += '<div class="bar" style="margin-top:10px"><span class="muted ins" style="font-size:12px;flex:1">Receive = repaired T/F of the Repair tab (10 to 250 aluminium) &times; standard recovery. Remaining of a day becomes the opening scrap of the next day.</span>' +
     (can ? '<button class="btn" id="mssave" type="button" disabled>Save</button>' : '') + (adm ? '<button class="btn sec" id="msbase" type="button">Opening scrap / standard (Admin)</button>' : '') + '<button class="btn sec" id="msxl" type="button">&#11015; Excel</button></div></div>';
   $('msout').innerHTML = h; $('msbw').classList.add('hide'); $('msbw').innerHTML = '';
   mrScTotal();
@@ -5681,9 +6707,9 @@ document.addEventListener('change', function (e) { var t = e.target; if (t && t.
 function mrScBaseHtml() {
   var S = MR.sd, c = S.c, w = S.w, base = c && c.base, o = mrWs().map(function (x) { return '<option' + (x === w ? ' selected' : '') + '>' + esc(x) + '</option>'; }).join('');
   var h = '<div class="card"><h3>Opening scrap / standard <span class="muted" style="text-transform:none">(Admin)</span></h3>' +
-    '<div class="muted" style="font-size:12.5px;margin-bottom:8px">1) Type the scrap lying in the workshop in the MORNING of a start date (kg). After that the opening of every day is the remaining of the day before.</div>' +
+    '<div class="muted ins" style="font-size:12.5px;margin-bottom:8px">1) Type the scrap lying in the workshop in the MORNING of a start date (kg). After that the opening of every day is the remaining of the day before.</div>' +
     '<div class="bar" style="align-items:flex-end"><div><label>Workshop</label><select id="msbws">' + o + '</select></div><div><label>Start date</label>' + mrDt('msbd', base ? mrDmy(base.day) : S.d) + '</div><div><label>Opening scrap (kg)</label><input type="text" inputmode="decimal" class="msn0" id="msbo" value="' + (base ? scF(base.opening) : '0.00') + '" style="max-width:130px"></div><button class="btn" id="msbsave" type="button">Save opening scrap</button></div><div id="msbmsg"></div>' +
-    '<div class="muted" style="font-size:12.5px;margin:12px 0 8px">2) Standard (from the standard sheet): kg of scrap per transformer and the recovery %. Scrap receive = repaired T/F &times; standard qty &times; recovery %. (One standard for all workshops.)</div>' +
+    '<div class="muted ins" style="font-size:12.5px;margin:12px 0 8px">2) Standard (from the standard sheet): kg of scrap per transformer and the recovery %. Scrap receive = repaired T/F &times; standard qty &times; recovery %. (One standard for all workshops.)</div>' +
     '<div class="wrap"><table class="mkt"><thead><tr><th class="l">CAPACITY IN KVA</th><th class="ed">STANDARD QTY (kg)</th></tr></thead><tbody>';
   (c ? c.rows : []).forEach(function (x) { h += '<tr><td class="l">' + esc(String(x[0]).replace('250AL', '250 AL')) + '</td><td class="ed"><input type="text" inputmode="decimal" class="msn0 mssd" data-c="' + esc(x[0]) + '" value="' + scF(x[2]).replace(/\.00$/, '') + '"></td></tr>'; });
   return h + '</tbody></table></div><div class="bar" style="margin-top:10px;align-items:flex-end"><div><label>Recovery %</label><input type="text" inputmode="decimal" class="msn0" id="mspct" value="' + (+(c ? c.pct : 97)) + '" style="max-width:90px"></div><button class="btn" id="msssave" type="button">Save standard</button></div><div id="msbmsg2"></div></div>';
@@ -5767,8 +6793,8 @@ function sirCfgLoad() { return rpc('sir_cfg_get').then(function (a) { a = a || [
 /* ---- Admin panel ---- */
 function sirAdmInit() {
   var top = $('sirtop'); if (!top) return;
-  var on = ME.role === 'admin'; top.classList.toggle('hide', !on); if (!on) { $('sircfg').classList.add('hide'); return; }
-  sirCfgLoad().then(function (c) { $('sirurl').value = c ? c.url : ''; $('sircol').value = c ? c.col : 'INDENT NO'; $('sirst').textContent = c ? 'Linked' : 'Not linked'; $('sirst').className = 'tag ' + (c ? 'ok' : ''); }).catch(function () { });
+  var on = ME.role === 'admin'; top.classList.toggle('hide', !(on || arOn())); $('sirtg').classList.toggle('hide', !on); $('sircfg').classList.toggle('hide', !on); if (!on) { admChips(); return; }
+  sirCfgLoad().then(function (c) { $('sirurl').value = c ? c.url : ''; $('sircol').value = c ? c.col : 'INDENT NO'; $('sirst').textContent = c ? 'Linked' : 'Not linked'; $('sirst').className = 'tag ' + (c ? 'ok' : ''); admChips(); }).catch(function () { });
 }
 function sirSave(clear) {
   var u = clear ? '' : $('sirurl').value.trim(), c = $('sircol').value.trim() || 'INDENT NO';
@@ -5780,7 +6806,7 @@ function sirTest() {
   msg('sirmsg', 'Checking the sheet...', 'info');
   sirLoadSheet({ url: u, col: c }, true).then(function (r) { msg('sirmsg', 'Sheet opened. Column "' + esc(c) + '" found, ' + r.n + ' SIR entries read. Now press Save.', 'info'); }).catch(function (er) { msg('sirmsg', esc(er.message), 'err'); });
 }
-$('sirtg').onclick = function () { $('sircfg').classList.toggle('hide'); };
+$('sirtg').onclick = function () { ADM_SEL = 'sir'; admChips(); };
 $('sirsave').onclick = function () { sirSave(false); };
 $('sirrm').onclick = function () { if (confirm('Remove the SIR sheet link?')) sirSave(true); };
 $('sirtest').onclick = sirTest;
@@ -5913,6 +6939,17 @@ function dtcFlush() {
     });
   }, Promise.resolve()).then(function () { DTCBUSY = false; dstat(bad ? 'DTC: ' + bad + ' not saved' : (n ? 'DTC saved (' + n + ')' : ''), bad ? 'bad' : 'ok'); });
 }
+
+
+/* Data Sheet: the grid grows down to the bottom of the screen (no empty space under it) */
+function dataFit() {
+  var g = document.querySelector('#t-data .gwrap'); if (!g || g.offsetParent === null) return;
+  g.style.maxHeight = 'none'; g.style.height = 'auto'; var top = g.getBoundingClientRect().top, bar = window.innerWidth <= 900 ? 74 : 16;
+  var hh = Math.max(260, window.innerHeight - top - bar) + 'px'; g.style.maxHeight = hh; g.style.height = hh;
+}
+window.addEventListener('resize', function () { setTimeout(dataFit, 50); }); window.addEventListener('load', function () { setTimeout(dataFit, 300); });
+document.addEventListener('click', function (e) { if (e.target.closest && e.target.closest('nav button,.btn')) { setTimeout(dataFit, 150); setTimeout(dataFit, 700); } });
+(function () { var o = drawData; drawData = function () { var r = o.apply(this, arguments); dataFit(); return r; }; })();
 
 /* Home screen: grows with the screen (big monitors) - phones keep the normal size */
 function homeFit() {

@@ -4,34 +4,35 @@
 <style>body{font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;max-width:760px;margin:0 auto;padding:24px 18px;color:#1b2437}h1{color:#16306b}h2{margin-top:28px;color:#16306b}a{color:#3b5bdb}</style></head>
 <body>
 <h1>TF-Tracker - Privacy Policy</h1>
-<p>TF-Tracker ("Tracking of Transformer") is a web app that helps electricity distribution offices track transformer complaints, PRs, issue and replacement. Last updated: 16 October 2026.</p>
+<p>TF-Tracker ("Tracking of Transformer") is a web app that helps electricity distribution offices track transformer complaints, PRs, issue, replacement, repair and testing. Last updated: 10 November 2026.</p>
 
-<h2>What the app does with your Google account</h2>
-<p>Only a Division Head (Admin) setting up the app is asked to sign in with Google, once. The app asks for access to Google Drive and your email address, and uses it <b>only</b> to:</p>
-<ul>
-<li>change the sharing of the one Google Sheet that you paste into the app, so that the app can read and write it;</li>
-<li>read your email address, to show who is setting up the app and to keep a registry of Admins.</li>
-</ul>
-<p>The access token stays in your browser's memory, is used once, and is revoked right after setup. The app does not read, copy, change or delete any other file in your Google Drive. Staff and users who only log in with an ID and password never sign in with Google.</p>
+<h2>Who uses the app and how they log in</h2>
+<p>Only staff of the department (Admins, JEs, M&amp;R and other users created by an Admin) log in. Each person gets a User ID and a password from their Admin. The app does <b>not</b> ask for a Google or any other social account, and does not ask for your personal email address. Passwords are handled by the login service (Supabase Authentication); they are stored only in a protected (hashed) form and are never visible to anyone, including the Admin.</p>
 
 <h2>What data is stored</h2>
 <ul>
-<li><b>Your Google Sheet:</b> all transformer records (complaint numbers, PR numbers, places, JE and driver names and mobile numbers, dates) and user IDs with password hashes are stored in the Google Sheet owned by the Admin, in the Admin's own Google account.</li>
-<li><b>Registry:</b> the developer keeps a registry (a Google Sheet) with the Admin's email address, Profit Center ID, DISCOM, workshop names and the link of the Admin's sheet, so that users can log in and so that complaint status can be searched by DISCOM.</li>
-<li>The app does not use advertising, analytics or tracking cookies. Your browser stores only small preferences (for example the DISCOM you selected).</li>
+<li><b>Work records:</b> complaint numbers, PR numbers, places of damage, capacity, firm, workshop and division, dates of PR, issue, replacement and return, DTC, kitty, repair, scrap and testing-register entries, and remarks.</li>
+<li><b>People:</b> User ID, display name, role, division / workshops, tab access, and the names and mobile numbers of JEs and drivers that the offices enter for their work.</li>
+<li><b>Technical:</b> the date and time of changes and the User ID that made them, so that the Admin can see who entered what.</li>
 </ul>
+<p>The data is kept in a database hosted by <b>Supabase</b>. Access is controlled by database rules (row level security): every login sees only the data of its own workshops, division or DISCOM, as set by the Admin. Records older than the retention period set by the department (about 2 years and 2 months) are deleted automatically.</p>
 
 <h2>Complaint status page</h2>
-<p>Anyone can check the status of a complaint on the home page by selecting a DISCOM and typing a complaint or PR number. The result shows the complaint details stored by that DISCOM's offices, including the JE and driver name and mobile number.</p>
+<p>Anyone can check the status of a complaint on the home page by typing a complaint number, PR number or place. The result shows the complaint details stored by the offices, which can include the name and mobile number of the JE and driver.</p>
+
+<h2>Optional Google Sheet (SIR)</h2>
+<p>An Admin may link a Google Sheet (the SIR form sheet) to see which PRs have an SIR. If the sheet is public ("Anyone with the link" or published to the web), your browser reads it directly from Google to match PR numbers. Nothing is written to that sheet by the app.</p>
+
+<h2>What is stored on your device</h2>
+<p>The app keeps small preferences and a saved copy of the last answers in your browser (local storage) so that screens open quickly, and a cache of the app files so that it works as an installed app. The app does not use advertising, analytics or tracking cookies.</p>
 
 <h2>Sharing</h2>
-<p>We do not sell your data and do not share it with third parties, except as needed to run the app on Google (Google Sheets, Google Apps Script) and GitHub Pages.</p>
+<p>We do not sell your data and do not share it with third parties, except the services needed to run the app: Supabase (database and login) and GitHub Pages (hosting of the web pages).</p>
 
 <h2>Your choices</h2>
 <ul>
-<li>You can remove the app's access at any time at <a href="https://myaccount.google.com/permissions">myaccount.google.com/permissions</a>.</li>
-<li>You can delete your Google Sheet or stop sharing it at any time; the app then no longer has access to the data.</li>
-<li>To ask for your entry to be removed from the registry, contact the developer using the developer contact email shown on the Google sign-in screen.</li>
+<li>To correct or remove your data, or to change or remove your User ID, ask your Admin. An Admin can reset a password or delete a user at any time.</li>
+<li>You can clear the data stored on your device by clearing the site data of this app in your browser, or by logging out.</li>
 </ul>
 
 <p><a href="./">&larr; Back to TF-Tracker</a></p>
