@@ -4095,3 +4095,93 @@ exception when others then
   raise notice 'pg_cron is not available: the yearly purge jobs were NOT created (%). Enable pg_cron and run this file again.', sqlerrm;
 end $$;
 notify pgrst, 'reload schema';
+
+-- ================================================================================================================
+-- STEP 108 : MATERIAL MANAGEMENT (M&R tab): Wire & Strip Consumption + Oil Recovery Sheet, month wise, per workshop
+-- mat_cfg  = the STD of a workshop (material std per capacity for the Wire / Strip rows, oil std per capacity)
+-- mat_ws   = Wire & Strip Consumption of one month  {rows:{itemNo:{open,recv,tr,cons,old,store}}, rep:{capacity:qty typed instead of the Repair tab}}
+-- mat_oil  = Oil Recovery Sheet of one month        {o:{fresh|bc|rc|ou:{open,recv,trf,dist,other}}, rep:{..}, dtc:{..}}
+-- The repaired transformers of a month come from the Repair tab (rr_entry, block REPAIR): mat_rep().   Opening of a month = closing of the month before (worked out in the app).
+-- These are running balances: the 5-year keeping time never deletes them.   Safe to run again.
+-- ================================================================================================================
+create table if not exists public.mat_cfg (workshop text primary key, mstd jsonb, oilstd jsonb, by_login text, at timestamptz not null default now());
+create table if not exists public.mat_ws  (workshop text not null, month text not null check (month ~ '^\d{4}-(0[1-9]|1[0-2])$'), data jsonb not null, by_login text, at timestamptz not null default now(), primary key (workshop, month));
+create table if not exists public.mat_oil (workshop text not null, month text not null check (month ~ '^\d{4}-(0[1-9]|1[0-2])$'), data jsonb not null, by_login text, at timestamptz not null default now(), primary key (workshop, month));
+alter table public.mat_cfg enable row level security; alter table public.mat_ws enable row level security; alter table public.mat_oil enable row level security;
+revoke all on public.mat_cfg, public.mat_ws, public.mat_oil from public, anon, authenticated;
+
+create or replace function public.mat_get(p_ws text) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+begin
+  if not public.mr_ok() then raise exception 'No access to the M&R dashboard.'; end if;
+  if not (p_ws = any (public.my_workshops())) then raise exception 'This workshop is not yours.'; end if;
+  return jsonb_build_object('edit', public.mr_edit_ok(p_ws),
+    'mstd', (select mstd from public.mat_cfg where workshop = p_ws), 'oilstd', (select oilstd from public.mat_cfg where workshop = p_ws),
+    'ws',  coalesce((select jsonb_object_agg(month, data) from public.mat_ws  where workshop = p_ws), '{}'::jsonb),
+    'oil', coalesce((select jsonb_object_agg(month, data) from public.mat_oil where workshop = p_ws), '{}'::jsonb));
+end $$;
+
+-- transformers repaired per month and capacity (Repair tab, block REPAIR): [[month, capacity, qty], ...]
+create or replace function public.mat_rep(p_ws text, p_from text, p_to text) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare d0 date; d1 date;
+begin
+  if not public.mr_ok() then raise exception 'No access to the M&R dashboard.'; end if;
+  if not (p_ws = any (public.my_workshops())) then raise exception 'This workshop is not yours.'; end if;
+  if p_from !~ '^\d{4}-(0[1-9]|1[0-2])$' or p_to !~ '^\d{4}-(0[1-9]|1[0-2])$' or p_from > p_to then raise exception 'Wrong month.'; end if;
+  d0 := (p_from || '-01')::date; d1 := ((p_to || '-01')::date + interval '1 month')::date;
+  if d1 - d0 > 1900 then raise exception 'Choose at most 60 months.'; end if;
+  return coalesce((select jsonb_agg(jsonb_build_array(m, cap, q) order by m, cap)
+                     from (select to_char(day, 'YYYY-MM') m, cap, sum(qty)::int q from public.rr_entry
+                            where workshop = p_ws and block = 'REPAIR' and day >= d0 and day < d1 group by 1, 2) x), '[]'::jsonb);
+end $$;
+
+-- save (or, with null / empty data, delete) one month.  p_clear_open = this month is the first month and holds the opening: the openings typed in later months are removed (they are carried forward)
+create or replace function public.mat_save(p_ws text, p_kind text, p_month text, p_data jsonb, p_clear_open boolean default false) returns text
+language plpgsql security definer set search_path = public as $$
+declare me text;
+begin
+  if not public.mr_edit_ok(p_ws) then raise exception 'You cannot change the Material Management of this workshop.'; end if;
+  if p_kind not in ('ws', 'oil') then raise exception 'Wrong kind.'; end if;
+  if p_month !~ '^\d{4}-(0[1-9]|1[0-2])$' then raise exception 'Wrong month.'; end if;
+  if p_month > to_char(current_date, 'YYYY-MM') then raise exception 'Entries for future months are not allowed.'; end if;
+  if p_data is not null and length(p_data::text) > 60000 then raise exception 'Too much data.'; end if;
+  select login_id into me from public.profiles where user_id = auth.uid();
+  if p_kind = 'ws' then
+    if p_data is null or p_data = '{}'::jsonb then delete from public.mat_ws where workshop = p_ws and month = p_month;
+    else insert into public.mat_ws(workshop, month, data, by_login, at) values (p_ws, p_month, p_data, me, now())
+         on conflict (workshop, month) do update set data = excluded.data, by_login = excluded.by_login, at = now(); end if;
+    if p_clear_open then
+      update public.mat_ws w set data = jsonb_set(w.data, '{rows}', coalesce((select jsonb_object_agg(k, v - 'open') from jsonb_each(w.data->'rows') e(k, v)), '{}'::jsonb))
+       where w.workshop = p_ws and w.month <> p_month and jsonb_typeof(w.data->'rows') = 'object';
+    end if;
+  else
+    if p_data is null or p_data = '{}'::jsonb then delete from public.mat_oil where workshop = p_ws and month = p_month;
+    else insert into public.mat_oil(workshop, month, data, by_login, at) values (p_ws, p_month, p_data, me, now())
+         on conflict (workshop, month) do update set data = excluded.data, by_login = excluded.by_login, at = now(); end if;
+    if p_clear_open then
+      update public.mat_oil w set data = jsonb_set(w.data, '{o}', coalesce((select jsonb_object_agg(k, v - 'open') from jsonb_each(w.data->'o') e(k, v)), '{}'::jsonb))
+       where w.workshop = p_ws and w.month <> p_month and jsonb_typeof(w.data->'o') = 'object';
+    end if;
+  end if;
+  return 'saved';
+end $$;
+
+-- the STD of the workshop: p_kind 'mstd' = {itemNo:{capacity:qty per transformer}}   'oilstd' = {capacity: litre per transformer}
+create or replace function public.mat_std_save(p_ws text, p_kind text, p_data jsonb) returns text
+language plpgsql security definer set search_path = public as $$
+declare me text;
+begin
+  if not public.mr_edit_ok(p_ws) then raise exception 'You cannot change the STD of this workshop.'; end if;
+  if p_kind not in ('mstd', 'oilstd') then raise exception 'Wrong kind.'; end if;
+  if p_data is null or jsonb_typeof(p_data) <> 'object' or length(p_data::text) > 60000 then raise exception 'Wrong data.'; end if;
+  select login_id into me from public.profiles where user_id = auth.uid();
+  insert into public.mat_cfg(workshop, mstd, oilstd, by_login, at)
+    values (p_ws, case when p_kind = 'mstd' then p_data end, case when p_kind = 'oilstd' then p_data end, me, now())
+    on conflict (workshop) do update set mstd = case when p_kind = 'mstd' then p_data else public.mat_cfg.mstd end,
+      oilstd = case when p_kind = 'oilstd' then p_data else public.mat_cfg.oilstd end, by_login = me, at = now();
+  return 'saved';
+end $$;
+revoke all on function public.mat_get(text), public.mat_rep(text, text, text), public.mat_save(text, text, text, jsonb, boolean), public.mat_std_save(text, text, jsonb) from public, anon;
+grant execute on function public.mat_get(text), public.mat_rep(text, text, text), public.mat_save(text, text, text, jsonb, boolean), public.mat_std_save(text, text, jsonb) to authenticated;
+notify pgrst, 'reload schema';
