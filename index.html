@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html id="tt" lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -319,12 +319,12 @@ tr.done td{background:#eaf7f1!important}
   input[type=text].dtx{width:100%}
   .sbar .btn{flex:1 1 auto}
   :is(#sout,.soutp) th{min-width:40px;max-width:70px}
-  :is(#sout,.soutp) .tbl11d{font-size:11px}
-  :is(#sout,.soutp) .tbl11d th,:is(#sout,.soutp) .tbl11d td{padding:3px 5px}
+  :is(#sout,.soutp,#mrout) .tbl11d{font-size:11px}
+  :is(#sout,.soutp,#mrout) .tbl11d th,:is(#sout,.soutp,#mrout) .tbl11d td{padding:3px 5px}
   :is(#sout,.soutp) .tbl11d td.l,:is(#sout,.soutp) .tbl11d th.l{min-width:96px;max-width:110px;font-size:11px}
-  :is(#sout,.soutp) .capt th{min-width:0;max-width:none;font-size:9px;padding:3px 3px}
-  :is(#sout,.soutp) .capt td{padding:3px 3px}
-  :is(#sout,.soutp) .capt tr:nth-child(2) th{font-size:8px;padding:2px 2px}
+  :is(#sout,.soutp,#mrout) .capt th{min-width:0;max-width:none;font-size:9px;padding:3px 3px}
+  :is(#sout,.soutp,#mrout) .capt td{padding:3px 3px}
+  :is(#sout,.soutp,#mrout) .capt tr:nth-child(2) th{font-size:8px;padding:2px 2px}
   :is(#sout,.soutp) .capt{font-size:11px}
   :is(#sout,.soutp) .capt td.l,:is(#sout,.soutp) .capt th.l{min-width:38px;max-width:44px;font-size:9px}
   :is(#sout,.soutp) td.l,:is(#sout,.soutp) th.l{min-width:80px;max-width:120px}
@@ -2100,6 +2100,28 @@ table.tst td.rx button:hover{background:#fee2e2}
 #mkout table.mkt tbody td.ed{background:#fffaf4!important}
 #mkout table.mkt tr.t td{background:linear-gradient(180deg,#d6edaa,#c2de8a)!important;font-weight:800!important;color:#1a3d0a!important}
 #mkout table.mkt tbody tr:hover td{filter:brightness(.97)}
+#rlkout .card>.wrap>table.mkt{border-collapse:separate;border-spacing:0;border-radius:12px;overflow:hidden;width:100%}
+#rlkout table.mkt thead th{background:linear-gradient(180deg,#eef2ff,#dfe7ff)!important;color:#1e3a8a!important;border:1px solid #c7d2fe!important;font-weight:800!important;padding:9px 8px!important}
+#rlkout table.mkt thead th.ed{background:linear-gradient(180deg,#fff4e6,#ffe4c7)!important;color:#c2410c!important;border-color:#f6cfa8!important}
+#rlkout table.mkt tbody td{border:1px solid #e3e8f5!important;padding:7px 8px!important;background:#fff!important;color:#1f2937!important;font-size:14px!important}
+#rlkout table.mkt tbody tr:nth-child(even) td{background:#f7f9ff!important}
+#rlkout table.mkt tbody td.l{font-weight:800!important;color:#1e3a8a!important;background:#eef2ff!important}
+#rlkout table.mkt td.repair{color:#15803d!important}
+#rlkout table.mkt td.n{font-weight:800!important;background:#f0fdf4!important;color:#166534!important}#rlkout table.mkt td.n.neg{background:#fef2f2!important;color:#b91c1c!important}
+#rlkout table.mkt tbody td.ed{background:#fffaf4!important}
+#rlkout table.mkt tr.t td{background:linear-gradient(180deg,#d6edaa,#c2de8a)!important;font-weight:800!important;color:#1a3d0a!important}
+#rlkout table.mkt tbody tr:hover td{filter:brightness(.97)}
+#ksout .card>.wrap>table.mkt{border-collapse:separate;border-spacing:0;border-radius:12px;overflow:hidden;width:100%}
+#ksout table.mkt thead th{background:linear-gradient(180deg,#eef2ff,#dfe7ff)!important;color:#1e3a8a!important;border:1px solid #c7d2fe!important;font-weight:800!important;padding:9px 8px!important}
+#ksout table.mkt thead th.ed{background:linear-gradient(180deg,#fff4e6,#ffe4c7)!important;color:#c2410c!important;border-color:#f6cfa8!important}
+#ksout table.mkt tbody td{border:1px solid #e3e8f5!important;padding:7px 8px!important;background:#fff!important;color:#1f2937!important;font-size:14px!important}
+#ksout table.mkt tbody tr:nth-child(even) td{background:#f7f9ff!important}
+#ksout table.mkt tbody td.l{font-weight:800!important;color:#1e3a8a!important;background:#eef2ff!important}
+#ksout table.mkt td.repair{color:#15803d!important}
+#ksout table.mkt td.n{font-weight:800!important;background:#f0fdf4!important;color:#166534!important}#ksout table.mkt td.n.neg{background:#fef2f2!important;color:#b91c1c!important}
+#ksout table.mkt tbody td.ed{background:#fffaf4!important}
+#ksout table.mkt tr.t td{background:linear-gradient(180deg,#d6edaa,#c2de8a)!important;font-weight:800!important;color:#1a3d0a!important}
+#ksout table.mkt tbody tr:hover td{filter:brightness(.97)}
 /* M&R Summary on one page */
 @media screen{body:not(.printing) #t-mrsum{zoom:var(--mz,1)}}
 nav button#tmr{margin-top:auto}
@@ -2134,10 +2156,10 @@ nav button#tmr{margin-top:auto}
 .ins{display:none!important}
 /* ---- phones: bigger numbers in the M&R summary, Kitty and Testing Register as cards ---- */
 @media (max-width:700px){
-  #mrout td,#mrout td.l{font-size:12px!important;font-weight:700!important;padding:7px 0!important;line-height:1.2;white-space:nowrap!important;word-break:normal!important;letter-spacing:-.2px}
-  #mrout th{font-size:8.5px!important;padding:4px 1px!important;line-height:1.15}
+  #mrout td,#mrout td.l{font-size:11px!important;font-weight:400!important;padding:5px 0!important;line-height:1.2;white-space:nowrap!important;word-break:normal!important;letter-spacing:-.2px}
+  #mrout th{font-size:9px!important;padding:3px 1px!important;line-height:1.15}
   #mrout th.l,#mrout td.l{width:14%;font-size:11px!important}
-  #mrout .capt td{font-size:11.5px!important}
+  #mrout .capt td{font-size:11px!important}
   #mrout td.l[data-sh]::after,#mrout th[data-sh]::after,#mrout a[data-sh]::after{font-size:11px!important}
   #mrout .card{padding:8px!important}#mrout .card h3{font-size:12px!important}#mrout .card h3 .muted{font-size:9.5px!important}
   #mrout a.n{font-size:inherit!important}
@@ -2177,6 +2199,34 @@ nav button#tmr{margin-top:auto}
 #mkout table.lkt td.lyc input{width:100%;min-width:0;font:600 14px Inter,system-ui,sans-serif;border:1px solid #e8a672;border-radius:6px}
 #mkout details.lkd>summary{font:700 13px Inter,system-ui,sans-serif}
 .gc.sirD input{color:#0f7a4e!important;font-weight:700}.gc.sirP input{color:#b45309!important;font-weight:700}
+
+/* Reports (the old Comparison tab) */
+.rph{display:flex;align-items:baseline;gap:10px;margin:2px 2px 10px}.rph h2{margin:0;font-size:20px}
+.rpbk{align-items:center}.rpbk>b{font-size:15px;margin-right:6px}
+#rpcmpw[data-m="dw"] #cbtn,#rpcmpw[data-m="dw"] #cxl,#rpcmpw[data-m="dw"] #cpr,#rpcmpw[data-m="dw"] #cwsw,#rpcmpw[data-m="dw"] #cmpout{display:none!important}
+#rpcmpw[data-m="cmp"] #cdw{display:none!important}
+.plt{border-collapse:collapse;width:100%;font-size:12.5px}
+.plt th{background:#fff200;color:#1f1b16;border:1px solid #444;padding:6px 6px;text-align:center;font-size:11.5px;line-height:1.25}
+.plt td{border:1px solid #b9ad9c;padding:5px 6px;vertical-align:middle;background:#fff}
+.plt td.c{text-align:center}.plt td small{display:block;color:#7a6a58;font-size:10.5px}
+.plt textarea,.plt input{width:100%;min-width:150px;font:inherit;font-size:12.5px;border:1px solid #d9cdbb;border-radius:6px;padding:4px 6px;background:#fffdf8;box-sizing:border-box}
+.plt textarea{min-height:44px;resize:vertical}.plt td.u input{min-width:110px}
+.plt tr.pl-ok td{background:#effbea}.plt tr.pl-er td{background:#fdecec}
+.plt input:disabled,.plt textarea:disabled{background:#f4efe6;color:#5c5044}
+@media(max-width:700px){.plt{font-size:11.5px}.plt textarea,.plt input{min-width:120px}.rph h2{font-size:18px}}
+/* short workshop names on a phone (display only) */
+@media screen and (max-width:700px){
+  #tt#tt [data-ws]{font-size:0!important}
+  #tt#tt [data-ws]::after{content:attr(data-ws);font-size:var(--wf,12px);font-weight:inherit;line-height:inherit;letter-spacing:inherit}
+  #mrout .capt tr:nth-child(2) th{font-size:7px!important;white-space:nowrap!important;padding:2px 0!important;letter-spacing:-.2px}
+  #mrout .capt td{padding:5px 0!important;font-size:10.5px!important}
+  #mrout #mrkit th,#mrout #mrkit td{padding-left:1px!important;padding-right:1px!important;font-size:10px!important}
+  #mrout #mrkit th{font-size:8px!important;white-space:nowrap!important;padding:4px 0!important;letter-spacing:-.2px}
+  #mrout #mrkit th,#mrout #mrkit td{padding-left:0!important;padding-right:0!important}
+  #mrout #mrkit th.l,#mrout #mrkit td.l{width:auto;min-width:0;padding-left:2px!important;padding-right:2px!important}
+  #mrout th.l{font-size:8px!important}
+  #mrout #mrkit td.l{font-size:9px!important}
+}
 </style>
 </head>
 <body class="on-home">
@@ -2216,7 +2266,7 @@ nav button#tmr{margin-top:auto}
     <button data-t="sum" id="tsum" class="on">Summary</button>
     <button data-t="data" id="tdata">Data Sheet</button>
     <button data-t="drv" id="tdrv">Drivers</button>
-    <button data-t="cmp" id="tcmp">Comparison</button>
+    <button data-t="cmp" id="tcmp">Reports</button>
     <button data-t="emg" id="temg">Emergency<b class="ebadge hide"></b></button>
     <button data-t="adm" id="tadm">Admin</button>
     <button data-t="mr" id="tmr" class="hide" type="button">M&amp;R</button>
@@ -2297,16 +2347,57 @@ nav button#tmr{margin-top:auto}
 
     <!-- COMPARISON (Admin only) -->
     <section id="t-cmp" class="hide">
+      <div id="rpmenu"><div class="rph"><h2>Reports</h2><span class="muted">Tap a report</span></div><div id="rpchips" class="achips"></div></div>
+      <div id="rpcmpw" class="hide" data-m="cmp">
+        <div class="bar rpbk"><button class="btn sec sm" type="button" data-rpback>&#8249; Reports</button><b id="rpcmpt"></b></div>
       <div class="card">
         <div class="bar sbar">
           <div><label>From</label><div class="dt"><input type="text" class="dtx" id="cf" inputmode="numeric" placeholder="DD.MM.YYYY"><span class="calw">&#128197;<input type="date" data-c="cf"></span></div></div>
           <div><label>To</label><div class="dt"><input type="text" class="dtx" id="cto" inputmode="numeric" placeholder="DD.MM.YYYY"><span class="calw">&#128197;<input type="date" data-c="cto"></span></div></div>
-          <div><label>Workshop</label><select id="cws"><option value="">All workshops</option></select></div>
+          <div id="cwsw"><label>Workshop</label><select id="cws"><option value="">All workshops</option></select></div>
           <button class="btn" id="cbtn">Show Comparison</button><button class="btn sec" id="cxl">&#11015; Excel</button><button class="btn sec" id="cpr">Print</button><button class="btn sec" id="cdw" type="button" title="Day-wise PR &amp; Repair comparison"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:5px"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 10h18M8 2v4M16 2v4M8 14h2M12 14h2M16 14h.01M8 18h2M12 18h2"/></svg>Day-wise PR &amp; Repair</button>
         </div>
       </div>
       <div id="cmsg"></div>
       <div id="cmpout"></div>
+    
+      </div>
+      <div id="rpkitw" class="hide">
+        <div class="card"><div class="bar sbar rpbk"><button class="btn sec sm" type="button" data-rpback>&#8249; Reports</button><b>Kitty</b>
+          <div><label>Date</label><div class="dt"><input type="text" class="dtx" id="rkd" inputmode="numeric" placeholder="DD.MM.YYYY"><span class="calw">&#128197;<input type="date" data-c="rkd"></span></div></div>
+          <button class="btn" id="rkgo" type="button">Show Kitty</button></div></div>
+        <div id="rkmsg"></div><div class="card k-kit" id="rkout" style="display:none"></div>
+      </div>
+      <div id="rpchmw" class="hide">
+        <div class="card"><div class="bar sbar rpbk"><button class="btn sec sm" type="button" data-rpback>&#8249; Reports</button><b>Chamber Assembly Report</b>
+          <div><label>Date</label><div class="dt"><input type="text" class="dtx" id="rhd" inputmode="numeric" placeholder="DD.MM.YYYY"><span class="calw">&#128197;<input type="date" data-c="rhd"></span></div></div>
+          <button class="btn" id="rhgo" type="button">Open report</button></div></div>
+        <div id="rhmsg"></div><div class="muted" style="font-size:12.5px;padding:2px 4px">The same report is also in the Repair tab (M&amp;R).</div>
+      </div>
+      <div id="rpksw" class="hide">
+        <div class="card"><div class="bar sbar rpbk"><button class="btn sec sm" type="button" data-rpback>&#8249; Reports</button><b>Kitty Summary</b>
+          <div><label>From</label><div class="dt"><input type="text" class="dtx" id="ksf" inputmode="numeric" placeholder="DD.MM.YYYY"><span class="calw">&#128197;<input type="date" data-c="ksf"></span></div></div>
+          <div><label>To</label><div class="dt"><input type="text" class="dtx" id="kst" inputmode="numeric" placeholder="DD.MM.YYYY"><span class="calw">&#128197;<input type="date" data-c="kst"></span></div></div>
+          <div><label>Workshop</label><select id="ksw"><option value="">All workshops</option></select></div>
+          <button class="btn" id="ksgo" type="button">Show</button><button class="btn sec" id="ksxl" type="button">&#11015; Excel</button><button class="btn sec" id="kspr" type="button">Print</button></div></div>
+        <div id="ksmsg"></div><div id="ksout"></div>
+      </div>
+      <div id="rplykw" class="hide">
+        <div class="card"><div class="bar sbar rpbk"><button class="btn sec sm" type="button" data-rpback>&#8249; Reports</button><b>Kitty Comparison</b>
+          <div><label>Date (this year)</label><div class="dt"><input type="text" class="dtx" id="rld" inputmode="numeric" placeholder="DD.MM.YYYY"><span class="calw">&#128197;<input type="date" data-c="rld"></span></div></div>
+          <button class="btn" id="rlgo" type="button">Show</button><button class="btn sec hide" id="rlpr" type="button">Print</button><button class="btn sec hide" id="rlxl" type="button">&#11015; Excel</button></div></div>
+        <div id="rlkmsg"></div><div id="rlkout"></div>
+      </div>
+      <div id="rppw" class="hide">
+        <div class="card"><div class="bar sbar rpbk"><button class="btn sec sm" type="button" data-rpback>&#8249; Reports</button><b>Same Plinth Damage</b>
+          <div><label>From</label><div class="dt"><input type="text" class="dtx" id="rpf" inputmode="numeric" placeholder="DD.MM.YYYY"><span class="calw">&#128197;<input type="date" data-c="rpf"></span></div></div>
+          <div><label>To</label><div class="dt"><input type="text" class="dtx" id="rpt" inputmode="numeric" placeholder="DD.MM.YYYY"><span class="calw">&#128197;<input type="date" data-c="rpt"></span></div></div>
+          <div><label>Workshop</label><select id="rpw"><option value="">All workshops</option></select></div>
+          <div><label>Damaged</label><select id="rpn"><option value="2">2 or more times</option><option value="3" selected>3 or more times</option><option value="4">4 or more times</option><option value="5">5 or more times</option></select></div>
+          <button class="btn" id="rpgo" type="button">Show</button><button class="btn sec" id="rpxl" type="button">&#11015; Excel</button><button class="btn sec" id="rppr" type="button">Print</button></div></div>
+        <div id="rpmsg"></div>
+        <div id="rpout"></div>
+      </div>
     </section>
 
     <!-- ADMIN -->
@@ -2324,7 +2415,7 @@ nav button#tmr{margin-top:auto}
         <div class="bar" style="margin-top:10px"><button class="btn" id="sirtest">Test</button><button class="btn" id="sirsave">Save</button><button class="btn" id="sirrm">Remove link</button></div>
       </div>
       <div class="card acard" id="wscard"><h3>Workshops</h3>
-        <div class="muted" style="font-size:12px;margin-bottom:6px">Write the names of your own workshops here. Then give each user the workshops he works for.</div>
+        <div class="muted" style="font-size:12px;margin-bottom:6px">Write the names of your own workshops here. Then give each user the workshops he works for. <b>Short name (phone)</b>: what the phone screen shows in the tables instead of the long name (e.g. AZM for AZAMGARH). Leave it empty for the automatic short name.</div>
         <div class="bar"><input type="text" id="wn" placeholder="New workshop name" style="max-width:240px"><span id="wdw" class="hide"><input type="text" id="wd" list="dvl" placeholder="Division name" style="max-width:240px"></span><button class="btn" id="wadd">Add workshop</button></div>
         <div class="wrap"><table id="wlt" class="mt"></table></div>
       </div>
@@ -2436,10 +2527,18 @@ nav button#tmr{margin-top:auto}
       <div class="card">
         <div class="bar sbar">
           <div class="ptitle"><b>Repair</b><span>repair, assembly and oven - firm-wise</span></div>
-          <div class="mpchm"><button class="btn sec" id="mpchmb" type="button" title="Open the Chamber Assembly Report">&#128295; Chamber Assembly Report</button> <button class="btn sec" id="mprs" type="button" title="Repair summary from date to date">&#128202; Repair summary</button></div>
+          <div class="mpchm"><button class="btn sec" id="mpchmb" type="button" title="Open the Chamber Assembly Report">&#128295; Chamber Assembly Report</button> <button class="btn sec" id="mprs" type="button" title="Repair summary from date to date">&#128202; Repair summary</button> <button class="btn sec" id="mply" type="button" title="Last year's repair, day by day">&#128736;&#65039; LY Repair</button></div>
           <div><label>Workshop</label><select id="mpw"></select></div>
           <div><label>Date</label><div class="tg"><button class="ib" id="mpprev" title="Previous day">&#9664;</button><div class="dt"><input type="text" class="dtx" id="mpd" inputmode="numeric" placeholder="DD.MM.YYYY"><span class="calw">&#128197;<input type="date" data-c="mpd"></span></div><button class="ib" id="mpnext" title="Next day">&#9654;</button><button class="btn sec sm" id="mptoday" type="button">Today</button></div></div>
         </div>
+      </div>
+      <div class="card hide" id="mplyc">
+        <div class="bar sbar"><b>LY Repair (day by day)</b>
+          <div><label>Workshop</label><select id="rlw"></select></div>
+          <div><label>Month (last year)</label><input type="month" id="rlm"></div>
+          <button class="btn sec sm" type="button" id="mplyx">Close</button></div>
+        <div id="rlmsg"></div>
+        <div class="muted ins" style="font-size:12.5px;margin:6px 0 8px">How many transformers were repaired on each day of last year, capacity wise. Type or paste from Excel (saved by itself). Used by "Next month need" and by the Daywise PR &amp; Repair report, until the Repair tab has its own figures for those days.</div><div id="rlt"></div>
       </div>
       <div id="mpmsg"></div>
       <div id="mpout"></div>
@@ -2459,10 +2558,10 @@ nav button#tmr{margin-top:auto}
       <div id="mkout"></div>
       <div id="mklyo" class="ov hide" style="z-index:80"><div class="md" style="max-width:460px">
         <div class="bar" style="justify-content:space-between;align-items:center"><h2 style="margin:0">Last year repair</h2><button class="btn sec" id="mklyx" type="button">Close &#10005;</button></div>
-        <div class="muted ins" style="font-size:12.5px;margin:6px 0">How many transformers were repaired in each capacity in the month (total). Used for "Next month need". This button goes away by itself once the kitty has its own repair figures for that time.</div>
+        <div class="muted ins" style="font-size:12.5px;margin:6px 0">How many transformers were repaired on each day of last year, capacity wise (saved by itself). Used for "Next month need". This button goes away by itself once the kitty has its own repair figures for that time.</div>
         <div class="bar"><div><label>Month</label><input type="month" id="mklym"></div></div>
         <div id="mklyt"></div>
-        <div class="bar" style="margin-top:8px"><button class="btn" id="mklys" type="button">Save last year repair</button></div>
+        <button id="mklys" type="button" class="hide"></button>
         <div id="mklymsg"></div>
       </div></div>
     </section>
@@ -2602,7 +2701,7 @@ function xlsxDownload(name, sheets) {
   var styles = X + '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="4"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><color rgb="FFC00000"/><name val="Calibri"/></font><font><b/><sz val="13"/><name val="Calibri"/></font></fonts>' +
     '<fills count="5"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFE3E9FB"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFCFE89A"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFFFF200"/><bgColor indexed="64"/></patternFill></fill></fills>' +
     '<borders count="3"><border><left/><right/><top/><bottom/><diagonal/></border>' + bd + bk + '</borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>' +
-    '<cellXfs count="12"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>' +
+    '<cellXfs count="15"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>' +
     '<xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>' +
     '<xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyAlignment="1"><alignment horizontal="center"/></xf>' +
     '<xf numFmtId="0" fontId="1" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center"/></xf>' +
@@ -2613,7 +2712,10 @@ function xlsxDownload(name, sheets) {
     '<xf numFmtId="0" fontId="3" fillId="4" borderId="2" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>' +
     '<xf numFmtId="0" fontId="2" fillId="0" borderId="2" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>' +
     '<xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment horizontal="right"/></xf>' +
-    '<xf numFmtId="0" fontId="0" fillId="0" borderId="2" xfId="0" applyBorder="1" applyAlignment="1"><alignment horizontal="left" vertical="center"/></xf></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>';
+    '<xf numFmtId="0" fontId="0" fillId="0" borderId="2" xfId="0" applyBorder="1" applyAlignment="1"><alignment horizontal="left" vertical="center"/></xf>' +
+    '<xf numFmtId="0" fontId="1" fillId="4" borderId="2" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>' +
+    '<xf numFmtId="0" fontId="0" fillId="0" borderId="2" xfId="0" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>' +
+    '<xf numFmtId="0" fontId="0" fillId="0" borderId="2" xfId="0" applyBorder="1" applyAlignment="1"><alignment horizontal="left" vertical="center" wrapText="1"/></xf></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>';
   files.unshift({ n: '[Content_Types].xml', d: ct + '</Types>' }, { n: '_rels/.rels', d: X + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>' },
     { n: 'xl/workbook.xml', d: wb + '</sheets></workbook>' }, { n: 'xl/_rels/workbook.xml.rels', d: rl }, { n: 'xl/styles.xml', d: styles });
   saveBlob(zipBlob(files), name);
@@ -2652,7 +2754,7 @@ window.addEventListener('afterprint', cleanPrint);
  * ================================================================= */
 var $ = function (id) { return document.getElementById(id); };
 var SB = null, ME = null, WSL = [], DIVLIST = [], SUM = null, LIST = null, LSPEC = null, LROWS = [], LVIS = [];
-var STD_CAPS = [10, 16, 25, 63, 100, 160, 250, 400, 630], NM = 15, TTL = 300000;   // saved answers are reused for 5 minutes (saves data transfer)
+var STD_CAPS = [10, 16, 25, 63, 100, 160, 250, 400, 630, 1000], NM = 15, TTL = 300000;   // saved answers are reused for 5 minutes (saves data transfer)
 var MONS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
 
 /* ---------- small helpers ---------- */
@@ -2712,9 +2814,9 @@ function enter(user) {
     }
     if (r.error || !p || !p.active) { return SB.auth.signOut().then(function () { showLogin(r.error ? friendly(r.error) : 'This ID is not active. Please contact your Admin.'); }); }
     ME = { id: user.id, login: p.login_id, name: p.display || p.login_id, role: p.role, div: sp(p.org_division), scope: p.scope || [], edit: !!p.can_edit, must: !!p.must_change, tabs: p.tabs || null };
-    return SB.from('workshops').select('name,org_division').order('name').then(function (w) {
+    return wsSelect().then(function (w) {
       return structLoad().then(function () {
-      WSDIV = {}; (w.data || []).forEach(function (x) { WSDIV[x.name] = sp(x.org_division); });
+      wsShortSet(w.data); WSDIV = {}; (w.data || []).forEach(function (x) { WSDIV[x.name] = sp(x.org_division); });
       WSL = (w.data || []).map(function (x) { return x.name; });
       if (ME.role === 'je' && ME.scope.length) WSL = WSL.filter(function (x) { return ME.scope.indexOf(x) >= 0; });
       $('who').textContent = ME.name + ' · ' + (ROLE[ME.role] || ME.role) + (ME.div ? ' · ' + ME.div : '');
@@ -2831,7 +2933,7 @@ function showTab(t) {
   ['sum', 'data', 'drv', 'cmp', 'emg', 'adm'].forEach(function (k) { $('t-' + k).classList.toggle('hide', k !== t); });
 }
 document.querySelectorAll('nav button').forEach(function (b) {
-  b.onclick = function () { var t = b.dataset.t; showTab(t); if (t === 'sum') loadSummary(); else if (t === 'adm') admLoad(); else if (t === 'drv') drvLoad(); else if (t === 'cmp') cmpLoad(); else if (t === 'emg') emgLoad(); else if (!dirtyN()) loadData(); };
+  b.onclick = function () { var t = b.dataset.t; showTab(t); if (t === 'sum') loadSummary(); else if (t === 'adm') admLoad(); else if (t === 'drv') drvLoad(); else if (t === 'cmp') rpHome(); else if (t === 'emg') emgLoad(); else if (!dirtyN()) loadData(); };
 });
 
 /* =====================  SUMMARY  ===================== */
@@ -2956,7 +3058,7 @@ function capAll(s) {
       cells += row.map(function (v, i) { return tdx([i === 0 ? 'gs' : '', heat(v, mxG[gi], g.c === 'g1' ? 'hA' : 'hG')], g.avg ? (v / s.days).toFixed(2) : N(v, S({ metric: g.metric, ws: cols[i], caps: [cp] }), g.name + ' - ' + cols[i] + ' - ' + capLbl(cp) + ' KVA')); }).join('') +
         (multi ? tdx(['sub'], '<b>' + (g.avg ? (sum / s.days).toFixed(2) : N(sum, S({ metric: g.metric, caps: [cp] }), g.name + ' - ' + capLbl(cp) + ' KVA')) + '</b>') : '');
     });
-    if (!any && !(cp && [10, 16, 25, 63, 100, 160, 250, 400, 630].indexOf(cp) >= 0)) { G.forEach(function (g, gi) { idx.forEach(function (i, k) { tot[gi][k] -= g.m[cp][i]; }); }); return; }
+    if (!any && !(cp && [10, 16, 25, 63, 100, 160, 250, 400, 630, 1000].indexOf(cp) >= 0)) { G.forEach(function (g, gi) { idx.forEach(function (i, k) { tot[gi][k] -= g.m[cp][i]; }); }); return; }
     h += '<tr><td class="l"><b>' + capLbl(cp) + '</b></td>' + cells + '</tr>';
   });
   h += '<tr class="t"><td class="l">TOTAL</td>' + G.map(function (g, gi) {
@@ -3657,12 +3759,20 @@ function drvAuto(inp, r, i, tr) {               // after a firm / driver is chos
 }
 
 /* =====================  ADMIN PANEL  ===================== */
+var WSSH = {};      // workshop -> short name typed by the Admin (phones)
+function wsSelect() {
+  return SB.from('workshops').select('name,org_division,short_name').order('name').then(function (w) {
+    if (!w.error) return w;
+    return SB.from('workshops').select('name,org_division').order('name');       // older database: column not there yet
+  });
+}
+function wsShortSet(rows) { WSSH = {}; (rows || []).forEach(function (x) { if (x.short_name) WSSH[x.name] = String(x.short_name).trim(); }); }
 var ADM = [], ADM_EDIT = null;
 function roleName(r) { return { creator: 'App Creator', discom: 'DISCOM head', admin: 'Admin', je: 'User' }[r] || r; }
 function reloadWs() {
-  return SB.from('workshops').select('name,org_division').order('name').then(function (w) {
-    WSDIV = {}; (w.data || []).forEach(function (x) { WSDIV[x.name] = sp(x.org_division); }); WSL = (w.data || []).map(function (x) { return x.name; });
-    fillWs(); cclear();
+  return wsSelect().then(function (w) {
+    WSDIV = {}; (w.data || []).forEach(function (x) { WSDIV[x.name] = sp(x.org_division); }); WSL = (w.data || []).map(function (x) { return x.name; }); wsShortSet(w.data);
+    fillWs(); cclear(); if (typeof mrFillWs === 'function') mrFillWs(); wsTagLater();
   });
 }
 function divOf() { return ME.role === 'admin' ? ME.div : sp($('nv').value); }
@@ -3685,13 +3795,22 @@ function admLoad() {
 function admWsDraw() {
   var list = ME.role === 'admin' ? WSL : Object.keys(WSDIV).sort(), h = '';
   list.forEach(function (w, i) {
-    h += '<tr><td><b>' + esc(w) + '</b></td>' + (ME.role === 'creator' ? '<td>' + esc(WSDIV[w] || '') + '</td>' : '') + '<td><button class="btn sec sm" data-wr="' + i + '">Rename</button> <button class="btn sec sm" data-wd="' + i + '">Delete</button></td></tr>';
+    h += '<tr><td><b>' + esc(w) + '</b></td>' + (ME.role === 'creator' ? '<td>' + esc(WSDIV[w] || '') + '</td>' : '') + '<td style="white-space:nowrap"><input type="text" class="wsh" data-wi="' + i + '" maxlength="8" value="' + esc(WSSH[w] || '') + '" placeholder="' + esc(wsAbbr(w)) + '" style="width:84px;text-transform:uppercase"> <button class="btn sec sm" data-wsv="' + i + '">Save</button></td><td><button class="btn sec sm" data-wr="' + i + '">Rename</button> <button class="btn sec sm" data-wd="' + i + '">Delete</button></td></tr>';
   });
-  $('wlt').innerHTML = '<thead><tr><th>Workshop</th>' + (ME.role === 'creator' ? '<th>Division</th>' : '') + '<th></th></tr></thead><tbody>' + (h || '<tr><td colspan="3" class="muted">No workshop yet. Add your first workshop above.</td></tr>') + '</tbody>';
+  $('wlt').innerHTML = '<thead><tr><th>Workshop</th>' + (ME.role === 'creator' ? '<th>Division</th>' : '') + '<th>Short name (phone)</th><th></th></tr></thead><tbody>' + (h || '<tr><td colspan="4" class="muted">No workshop yet. Add your first workshop above.</td></tr>') + '</tbody>';
   $('wlt')._list = list; mlabel($('wlt'));
 }
 $('wlt').addEventListener('click', function (e) {
   var b = e.target.closest('button'); if (!b) return; var list = $('wlt')._list;
+  if (b.dataset.wsv !== undefined) {
+    var wn = list[+b.dataset.wsv], inp = $('wlt').querySelector('input[data-wi="' + b.dataset.wsv + '"]'), sv = inp ? inp.value.trim() : '';
+    busy(b, true, 'Saving...');
+    rpc('ws_set_short', { p_name: wn, p_short: sv }).then(function (r) {
+      busy(b, false); var v = typeof r === 'string' ? r : sv.toUpperCase(); if (v) WSSH[wn] = v; else delete WSSH[wn];
+      admWsDraw(); wsTagLater(); msg('amsg', v ? 'Short name of ' + esc(wn) + ' is now ' + esc(v) + '. Phones show it in the tables.' : 'Short name removed; phones show the automatic short name.', 'info');
+    }).catch(function (er) { busy(b, false); msg('amsg', /ws_set_short|function/i.test(er.message || '') ? 'Run the new setup.sql in Supabase once (the short name is not switched on in your database yet).' : esc(er.message), 'err'); });
+    return;
+  }
   if (b.dataset.wr !== undefined) {
     var o = list[+b.dataset.wr], n = prompt('New name for workshop ' + o + ':', o); if (!n || n.trim().toUpperCase() === o) return;
     rpc('ws_rename', { p_old: o, p_new: n }).then(function () { return reloadWs(); }).then(admLoad).then(function () { msg('amsg', 'Workshop renamed. All its PRs, users and drivers moved to the new name.', 'info'); }).catch(function (er) { msg('amsg', esc(er.message), 'err'); });
@@ -3699,6 +3818,10 @@ $('wlt').addEventListener('click', function (e) {
     var w = list[+b.dataset.wd]; if (!confirm('Delete workshop ' + w + '? (Only possible when it has no PR data.)')) return;
     rpc('ws_delete', { p_name: w }).then(function () { return reloadWs(); }).then(admLoad).then(function () { msg('amsg', 'Workshop deleted.', 'info'); }).catch(function (er) { msg('amsg', esc(er.message), 'err'); });
   }
+});
+$('wlt').addEventListener('change', function (e) {
+  var t = e.target; if (!t || !t.classList || !t.classList.contains('wsh')) return;
+  var b = $('wlt').querySelector('button[data-wsv="' + t.dataset.wi + '"]'); if (b && !b.disabled) b.click();
 });
 $('wadd').onclick = function () {
   var n = $('wn').value.trim(); if (!n) return msg('amsg', 'Type the workshop name.', 'err');
@@ -4465,18 +4588,52 @@ window.addEventListener('load', function () { var on = ''; try { on = localStora
     if (!r.dup) h += call(r.je, 'JE', r.je_mob) + (r.issue ? call(r.drv, 'Driver' + (r.firm ? ' · ' + esc(r.firm) : ''), r.drv_mob) : '');
     return h + '</div>';
   }
+  /* ---- which projects are searched: a device linked to one Admin searches only his data; a fresh app searches every approved Admin (directory) ---- */
+  var PJ = null, PJK = '';
+  function pjList() {
+    var C = ttConn(), key = C.own ? C.u : 'default';
+    if (PJ && PJK === key) return Promise.resolve(PJ);
+    var base = [{ u: C.u, k: C.k, l: '', main: true, c: null }];
+    if (!window.supabase) return Promise.resolve(base);
+    if (C.own) { PJ = base; PJK = key; return Promise.resolve(base); }
+    return wcDefault().rpc('ud_public_list').then(function (r) {
+      var L = !r.error && Array.isArray(r.data) ? r.data : [], seen = {}, P = base.slice(); seen[String(C.u).toLowerCase()] = 1;
+      L.forEach(function (x) { var u = String(x && x.u || '').toLowerCase(); if (u && !seen[u] && wcOk(x.u, x.k)) { seen[u] = 1; P.push({ u: x.u, k: x.k, l: x.l || '', main: false, c: null }); } });
+      PJ = P; PJK = key; return P;
+    }).catch(function () { PJ = base; PJK = key; return base; });
+  }
+  function pjClient(p) {
+    if (p.main) return SB;
+    if (!p.c) p.c = window.supabase.createClient(p.u, p.k, { auth: { persistSession: false, autoRefreshToken: false } });
+    return p.c;
+  }
+  function withTimeout(pr, ms) { return Promise.race([pr, new Promise(function (_, no) { setTimeout(function () { no(new Error('timeout')); }, ms); })]); }
+  function findAll(q) {                                    // -> { rows, tried, failed, first } : the list from every project, 6 at a time
+    return pjList().then(function (P) {
+      var rows = [], failed = 0, firstErr = null, i = 0;
+      function one(p) {
+        return withTimeout(pjClient(p).rpc('pr_find', { p_q: q }), 9000).then(function (r) {
+          if (r.error || (r.data && r.data.error)) { failed++; if (!firstErr) firstErr = r.error ? r.error.message : r.data.error; return; }
+          ((r.data && r.data.rows) || []).forEach(function (x) { x._p = p; rows.push(x); });
+        }).catch(function (e) { failed++; if (!firstErr) firstErr = (e && e.message) || 'Failed'; });
+      }
+      function worker() { if (i >= P.length) return Promise.resolve(); return one(P[i++]).then(worker); }
+      var w = []; for (var n = 0; n < Math.min(6, P.length); n++) w.push(worker());
+      return Promise.all(w).then(function () { return { rows: rows.slice(0, 40), tried: P.length, failed: failed, first: firstErr }; });
+    });
+  }
   /* ---- short list (no mobile numbers) -> tap one -> full card with Call buttons ---- */
-  var timer = null, runId = 0, LIST = [], lastQ = '';
+  var timer = null, runId = 0, LIST = [], lastQ = '', MULTI = false;
   var CH = { R: ['Installed', 'gn'], I: ['Issued', 'am'], P: ['Not issued', 'bl'], D: ['Wrong / duplicate', 'gr'] };
   function listHtml(rows, q) {
     return '<div class="psm ok">' + rows.length + (rows.length >= 15 ? '+' : '') + ' found for "' + esc(q) + '" - tap one</div>' + rows.map(function (r, i) {
       var c = CH[r.st] || CH.P;
-      return '<button type="button" class="psl" data-i="' + i + '"><span class="pslm"><b>' + esc(r.place || '-') + '</b><small>PR ' + esc(r.pr) + (r.complain ? ' · ' + esc(r.complain) : '') + '</small><small>' + esc(r.workshop) + (r.substation ? ' · ' + esc(r.substation) : '') + (r.cap ? ' · ' + esc(r.cap) + ' kVA' : '') + ' · ' + esc(r.pr_date || '') + '</small></span><span class="psch ' + c[1] + '">' + c[0] + '</span></button>';
+      return '<button type="button" class="psl" data-i="' + i + '"><span class="pslm"><b>' + esc(r.place || '-') + '</b><small>PR ' + esc(r.pr) + (r.complain ? ' · ' + esc(r.complain) : '') + '</small><small>' + esc(r.workshop) + (r.substation ? ' · ' + esc(r.substation) : '') + (r.cap ? ' · ' + esc(r.cap) + ' kVA' : '') + ' · ' + esc(r.pr_date || '') + (r._p && r._p.l && MULTI ? ' · ' + esc(r._p.l) : '') + '</small></span><span class="psch ' + c[1] + '">' + c[0] + '</span></button>';
     }).join('');
   }
   function openOne(row) {
     out.innerHTML = '<div class="psm">Opening...</div>';
-    SB.rpc('pr_lookup', { p_q: row.pr }).then(function (r) {
+    (row._p ? pjClient(row._p) : SB).rpc('pr_lookup', { p_q: row.pr }).then(function (r) {
       var d = (r && r.data) || {}, rows = (d.rows || []).filter(function (x) { return !row.workshop || x.workshop === row.workshop; });
       if (!rows.length) rows = d.rows || [];
       out.innerHTML = (LIST.length > 1 ? '<button type="button" class="psback" id="psback">&larr; Back to list</button>' : '') + (rows.length ? rows.map(card).join('') : '<div class="psm err">Could not open this record.</div>');
@@ -4488,18 +4645,21 @@ window.addEventListener('load', function () { var on = ''; try { on = localStora
     if (q.length < 4) { out.innerHTML = quiet ? '' : '<div class="psm">Type at least 4 letters or digits of the PR number, complaint number or place of damage.</div>'; return; }
     if (!SB) { out.innerHTML = '<div class="psm err">Search is not ready. Check your internet.</div>'; return; }
     btn.disabled = true; if (!quiet || !out.innerHTML) out.innerHTML = '<div class="psm">Searching...</div>';
-    SB.rpc('pr_find', { p_q: q }).then(function (r) {
+    findAll(q).then(function (R) {
       if (my !== runId) return; btn.disabled = false;
-      if (r.error) { out.innerHTML = '<div class="psm err">' + esc(/pr_find/.test(r.error.message) ? 'Search is not switched on yet (the admin must run SQL step 32).' : r.error.message) + '</div>'; return; }
-      var d = r.data || {}; if (d.error) { out.innerHTML = '<div class="psm err">' + esc(d.error) + '</div>'; return; }
-      var rows = d.rows || []; LIST = rows; lastQ = q;
-      if (!rows.length) { out.innerHTML = '<div class="psm err">No record found for "' + esc(q) + '". Try another part of the number or the place name.</div>'; return; }
+      MULTI = R.tried > 1;
+      var rows = R.rows; LIST = rows; lastQ = q;
+      if (!rows.length) {
+        if (R.failed >= R.tried) { out.innerHTML = '<div class="psm err">' + esc(/pr_find/.test(R.first || '') ? 'Search is not switched on yet (the admin must run setup.sql).' : (R.first || 'Search failed')) + '</div>'; return; }
+        out.innerHTML = '<div class="psm err">No record found for "' + esc(q) + '"' + (MULTI ? ' (searched ' + (R.tried - R.failed) + ' of ' + R.tried + ' Admins)' : '') + '. Try another part of the number or the place name.</div>'; return;
+      }
       if (rows.length === 1) { openOne(rows[0]); return; }
       out.innerHTML = listHtml(rows, q);
     }).catch(function (e) { if (my !== runId) return; btn.disabled = false; out.innerHTML = '<div class="psm err">' + esc(e.message || 'Search failed') + '</div>'; });
   }
+  window.addEventListener('load', function () { pjList().then(function (P) { MULTI = P.length > 1; }); });
   btn.addEventListener('click', function () { go(false); });
-  inp.addEventListener('input', function () { clearTimeout(timer); timer = setTimeout(function () { go(true); }, 400); });
+  inp.addEventListener('input', function () { clearTimeout(timer); if (MULTI) return; timer = setTimeout(function () { go(true); }, 400); });   // many Admins: only the Search button / Enter (one request per Admin)
   inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { clearTimeout(timer); go(false); } });
   out.addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('.psl'); if (b) openOne(LIST[+b.dataset.i]); });
 })();
@@ -4909,7 +5069,7 @@ function arLoad() {
 }
 function arDraw() {
   var s = AR.st, c = AR.cfg, ok = c.url && c.token, h = '', i;
-  h += '<div class="muted" style="font-size:12.5px;line-height:1.55;margin-bottom:8px">R&amp;R PRs are deleted by themselves (oldest 12 months at a time, only when the storage is 90% full) and the <b>last 3 years always stay</b>. Repair and Testing Register are never deleted by themselves. When R&amp;R is down to 3 years and the storage is still full, save the <b>oldest month</b> to <b>your own Google Drive</b> (steps below). It is deleted from Supabase only after Drive has confirmed every row. A month is never saved twice.</div>';
+  h += '<div class="muted" style="font-size:12.5px;line-height:1.55;margin-bottom:8px"><b>Keeping time (automatic, every Sunday night):</b> R&amp;R PRs: the <b>last 3 years stay</b>; when the 4th year begins, the oldest 12 months are deleted (their daily counts stay in the Comparison for <b>10 years</b>). Repair and Testing Register: the <b>last 5 years stay</b>; when the 6th year begins, the oldest 12 months are deleted. If the storage is still full, save the <b>oldest month</b> to <b>your own Google Drive</b> (steps below). It is deleted from Supabase only after Drive has confirmed every row. A month is never saved twice.</div>';
   h += '<details' + (ok ? '' : ' open') + ' class="drg" style="margin-bottom:10px"><summary style="cursor:pointer;font-weight:700">First time? How to set up your Google Drive (one time, about 5 minutes)</summary>' +
     '<div class="muted" style="font-size:12.5px;margin:6px 0">You need your <b>own Google (Gmail) account</b>. Your data goes only to <b>your</b> Drive. Nobody else can see it.</div>' +
     '<div class="bar" style="margin:6px 0"><button class="btn sm" type="button" data-sgc="drive-archive.gs">&#128203; Copy script (.gs)</button><button class="btn sm sec" type="button" data-sgd="drive-archive.gs">&#11015; Download file (drive-archive.gs)</button></div>' +
@@ -5264,7 +5424,7 @@ function mrLeave() {
   MR.on = false; document.body.classList.remove('mr-on');
   Object.keys(MR_SECT).forEach(function (k) { $(MR_SECT[k]).classList.add('hide'); });
   var ok = allowedTabs(), t = ok.indexOf('sum') >= 0 ? 'sum' : ok[0];
-  showTab(t); if (t === 'sum') loadSummary(); else if (t === 'adm') admLoad(); else if (t === 'drv') drvLoad(); else if (t === 'cmp') cmpLoad(); else if (t === 'emg') emgLoad(); else loadData();
+  showTab(t); if (t === 'sum') loadSummary(); else if (t === 'adm') admLoad(); else if (t === 'drv') drvLoad(); else if (t === 'cmp') rpHome(); else if (t === 'emg') emgLoad(); else loadData();
 }
 function mrShow(t) {
   MR.tab = t;
@@ -5284,6 +5444,49 @@ function mrAfterLogin() {
   $('mrout').innerHTML = ''; $('mrdt').innerHTML = ''; $('mkout').innerHTML = '';
   $('msd').value = td; $('msw').innerHTML = o; MR.sd = null; $('msout').innerHTML = ''; $('msbw').classList.add('hide'); 
   if (mrOnly()) mrEnter('msum');
+}
+/* the Admin adds / renames / deletes a workshop while logged in -> the M&R lists (Kitty, Repair, Scrap, Dtc) follow at once, no new login needed */
+/* phone: short workshop names (AZA, MAU, BAL ...), unique inside the list; the real name stays in the text (desktop, Excel, Print) */
+function wsAbbr(w) {
+  if (WSSH[w]) return WSSH[w];
+  var all = mrWs(), s = String(w || '').replace(/[^A-Za-z0-9]/g, '').toUpperCase(), n;
+  for (n = Math.min(3, s.length); n <= s.length; n++) {
+    var c = s.slice(0, n);
+    if (!all.some(function (o) { return o !== w && String(o).replace(/[^A-Za-z0-9]/g, '').toUpperCase().slice(0, n) === c; })) return c;
+  }
+  return s;
+}
+/* phone: EVERY table cell that is only a workshop name gets the short name (display only; the full name stays in the text) */
+var _wsT = 0;
+function wsTagAll() {
+  if (!window.matchMedia || !window.matchMedia('(max-width:700px)').matches || !WSL || !WSL.length) return;
+  var S = {}; WSL.forEach(function (w) { var a = wsAbbr(w); if (a && a !== w) S[w] = a; });
+  [].forEach.call(document.querySelectorAll('td,th'), function (c) {
+    if (c.children.length) return;
+    var t = c.textContent.replace(/\s+/g, ' ').trim(), s = t && S[t], cur = c.getAttribute('data-ws');
+    if (!s && cur === 'TOT') s = 'TOT';
+    if (!s) { if (cur) { c.removeAttribute('data-ws'); c.style.removeProperty('--wf'); } return; }
+    if (cur) c.removeAttribute('data-ws');                        // read the size the cell really has (the same as a name that is already short, e.g. MAU)
+    c.style.setProperty('--wf', getComputedStyle(c).fontSize);
+    c.setAttribute('data-ws', s);
+  });
+}
+function wsTagLater() { clearTimeout(_wsT); _wsT = setTimeout(wsTagAll, 150); }
+if (window.MutationObserver) new MutationObserver(wsTagLater).observe(document.body, { childList: true, subtree: true });
+window.addEventListener('resize', wsTagLater);
+function wsAttr(w) { return ' data-ws="' + esc(wsAbbr(w)) + '"'; }
+function mrFillWs() {
+  if (typeof MR === 'undefined' || !MR || !$('mkw')) return;
+  var ws = mrWs(), o = ws.map(function (w) { return '<option>' + esc(w) + '</option>'; }).join(''),
+      oa = (ME && ME.role === 'admin' && ws.length > 1) ? '<option value="__ALL__">All workshops</option>' : '',
+      keep = { mrw: $('mrw').value, mkw: $('mkw').value, mpw: $('mpw').value, msw: $('msw').value };
+  $('mrw').innerHTML = '<option value="">All workshops</option>' + o; $('mkw').innerHTML = oa + o; $('mpw').innerHTML = oa + o; $('msw').innerHTML = o;
+  Object.keys(keep).forEach(function (id) {
+    var el = $(id), v = keep[id];
+    if (v && [].some.call(el.options, function (x) { return x.value === v; })) el.value = v; else if (id !== 'mrw' && ws[0]) el.value = ws[0]; else if (id === 'mrw') el.value = '';
+  });
+  MR.kws = $('mkw').value || ''; MR.pws = $('mpw').value || ''; MR.ws = $('mrw').value || '';
+  if (MR.on && MR.tab && MR.tab !== 'msum') { try { mrShow(MR.tab); } catch (e) { } }
 }
 var _mrShowLogin = showLogin;
 showLogin = function (n) { document.body.classList.remove('mr-on'); MR.on = false; return _mrShowLogin(n); };
@@ -5314,7 +5517,7 @@ function mrSumDraw() {
   $('mrsub').textContent = S.d + ' · from ' + S.f + ' to ' + S.t;
   h += '<div class="card k-ws"><h3>Workshop wise summary</h3><div class="wrap tbl11d"><table><thead><tr><th class="l" rowspan="2">WORKSHOP NAME</th><th class="g1" colspan="3">TODAY (' + esc(S.d) + ')</th><th class="g2" colspan="4">TILL TODAY (' + esc(S.f) + ' - ' + esc(S.t) + ')</th></tr>' +
     '<tr><th class="g1">TODAY PR</th><th class="g1">TODAY DTC</th><th class="g1">TODAY REPAIR</th><th class="g2">TOTAL PR</th><th class="g2">TOTAL DTC</th><th class="g2">TOTAL REPAIR</th><th class="g2 pe">PENDING FOR DTC</th></tr></thead><tbody>';
-  ws.forEach(function (w) { var x = W[w]; var q = RW[w] || [w, 0, 0]; h += '<tr><td class="l">' + esc(w) + '</td><td>' + x[1] + '</td><td>' + x[2] + '</td><td>' + q[1] + '</td><td>' + x[3] + '</td><td>' + x[4] + '</td><td>' + q[2] + '</td><td class="pe' + (x[5] ? ' pdk' : '') + '" data-w="' + esc(w) + '" data-c="">' + x[5] + '</td></tr>'; });
+  ws.forEach(function (w) { var x = W[w]; var q = RW[w] || [w, 0, 0]; h += '<tr><td class="l"' + wsAttr(w) + '>' + esc(w) + '</td><td>' + x[1] + '</td><td>' + x[2] + '</td><td>' + q[1] + '</td><td>' + x[3] + '</td><td>' + x[4] + '</td><td>' + q[2] + '</td><td class="pe' + (x[5] ? ' pdk' : '') + '" data-w="' + esc(w) + '" data-c="">' + x[5] + '</td></tr>'; });
   if (ws.length > 1) h += '<tr class="t"><td class="l">TOTAL</td><td>' + tot[0] + '</td><td>' + tot[1] + '</td><td>' + rt[0] + '</td><td>' + tot[2] + '</td><td>' + tot[3] + '</td><td>' + rt[1] + '</td><td class="pe' + (tot[4] ? ' pdk' : '') + '" data-w="" data-c="">' + tot[4] + '</td></tr>';
   h += '</tbody></table></div></div>';
   h += '<div class="card k-kit" id="mrkit"><div class="msg info">Loading kitty...</div></div>';
@@ -5326,7 +5529,7 @@ function mrSumDraw() {
   var G = [['PR RECEIVED', 2, 'g2', ''], ['DTC DONE', 3, 'g2', ''], ['REPAIR', -1, 'g2', ''], ['PENDING FOR DTC', 4, 'g1', 'pe']], nw = ws.length, span = nw + (nw > 1 ? 1 : 0), GT = G.map(function () { return zero(nw); });
   h += '<div class="card k-cap"><h3>Capacity wise summary <span class="muted" style="text-transform:none">(PR date ' + esc(S.f) + ' to ' + esc(S.t) + ')</span></h3><div class="wrap tbl11d capt"><table><tbody><tr><th class="l" rowspan="2">CAPACITY IN KVA</th>' +
     G.map(function (g) { return '<th class="' + g[2] + '" colspan="' + span + '">' + g[0] + '</th>'; }).join('') + '</tr><tr>' +
-    G.map(function () { return ws.map(function (w) { return '<th>' + esc(w) + '</th>'; }).join('') + (nw > 1 ? '<th>TOTAL</th>' : ''); }).join('') + '</tr>';
+    G.map(function () { return ws.map(function (w) { return '<th' + wsAttr(w) + '>' + esc(w) + '</th>'; }).join('') + (nw > 1 ? '<th data-ws="TOT">TOTAL</th>' : ''); }).join('') + '</tr>';
   caps.forEach(function (c) {
     h += '<tr><td class="l"><b>' + c + '</b></td>';
     G.forEach(function (g, gi) {
@@ -5665,26 +5868,338 @@ function mrSumKit() {
   rpc('kitty_cmp_json', { p_day: mrIso(S.d) }).then(function (r) { if (seq !== MR.kseq2 || !$('mrkit')) return; MR.sk = { r: r, d: S.d }; mrSumKitDraw(); })
     .catch(function (er) { if ($('mrkit')) $('mrkit').innerHTML = '<h3>Kitty</h3><div class="msg err">' + esc(er.message) + '</div>'; });
 }
-function mrSumKitDraw() {
-  var K = MR.sk, r = K.r, ord = mrWs().filter(function (w) { return r.ws.indexOf(w) >= 0; }), V = {}, tot = KCAPS.map(function () { return 0; }), gt = 0;
+function mrSumKitDraw(K0, el0, p0) {
+  var P = p0 || 'mrk', EL = el0 || $('mrkit'), K = K0 || MR.sk, r = K.r, ord = mrWs().filter(function (w) { return r.ws.indexOf(w) >= 0; }), V = {}, tot = KCAPS.map(function () { return 0; }), gt = 0;
   (r.rows || []).forEach(function (x) { V[x[0]] = x; });
-  var h = '<div class="bar" style="justify-content:space-between;align-items:center"><h3 style="margin:0">Kitty <span class="muted" style="text-transform:none;font-weight:600">- net kitty on ' + esc(K.d) + '</span></h3><span><button class="btn sec sm" id="mrkpr" type="button">&#128424; Print</button> <button class="btn sec sm" id="mrkxl" type="button">&#11015; Excel</button></span></div>' +
-    '<div class="wrap"><table class="mkt" id="mrkitt"><thead><tr><th class="l">KITTY</th>' + KCAPS.map(function (c) { return '<th>' + c + '</th>'; }).join('') + '<th>TOTAL</th></tr></thead><tbody>';
+  var h = '<div class="bar" style="justify-content:space-between;align-items:center"><h3 style="margin:0">Kitty <span class="muted" style="text-transform:none;font-weight:600">- net kitty on ' + esc(K.d) + '</span></h3><span><button class="btn sec sm" id="' + P + 'pr" type="button">&#128424; Print</button> <button class="btn sec sm" id="' + P + 'xl" type="button">&#11015; Excel</button></span></div>' +
+    '<div class="wrap"><table class="mkt" id="' + P + 'itt"><thead><tr><th class="l">KITTY</th>' + KCAPS.map(function (c) { return '<th>' + c + '</th>'; }).join('') + '<th>TOTAL</th></tr></thead><tbody>';
   ord.forEach(function (w) {
     var j = r.ws.indexOf(w) + 1, s2 = 0;
-    h += '<tr><td class="l">' + esc(w) + '</td>' + KCAPS.map(function (c, i) { var v = V[c] ? V[c][j] : null; if (v == null) return '<td class="muted">-</td>'; s2 += v; tot[i] += v; return '<td class="' + (v < 0 ? 'neg' : '') + '">' + v + '</td>'; }).join('') + '<td class="' + (s2 < 0 ? 'neg' : '') + '"><b>' + s2 + '</b></td></tr>'; gt += s2;
+    h += '<tr><td class="l"' + wsAttr(w) + '>' + esc(w) + '</td>' + KCAPS.map(function (c, i) { var v = V[c] ? V[c][j] : null; if (v == null) return '<td class="muted">-</td>'; s2 += v; tot[i] += v; return '<td class="' + (v < 0 ? 'neg' : '') + '">' + v + '</td>'; }).join('') + '<td class="' + (s2 < 0 ? 'neg' : '') + '"><b>' + s2 + '</b></td></tr>'; gt += s2;
   });
   h += '<tr class="t"><td class="l">TOTAL</td>' + tot.map(function (v) { return '<td class="' + (v < 0 ? 'neg' : '') + '"><b>' + v + '</b></td>'; }).join('') + '<td class="' + (gt < 0 ? 'neg' : '') + '"><b>' + gt + '</b></td></tr></tbody></table></div>';
   if ((r.nobase || []).length) h += '<div class="muted" style="font-size:12px;margin-top:6px">Kitty not started on this date for: ' + esc(r.nobase.join(', ')) + '.</div>';
-  $('mrkit').innerHTML = h; setTimeout(sumFit, 30);
+  EL.innerHTML = h; if (P === 'mrk') setTimeout(sumFit, 30);
 }
 document.addEventListener('click', function (e) {
   var t = e.target; if (!t.closest) return;
-  if (t.closest('#mrkpr') && MR.sk) kitPrint($('mrkitt'), 'KITTY - NET KITTY', MR.sk.d);
-  else if (t.closest('#mrkxl') && MR.sk) { var rows = kitXlRows($('mrkitt'), 1), cw = [14]; for (var q = 1; q < rows[0].length; q++) cw.push(9); cw[cw.length - 1] = 11; xlsxDownload('Kitty_' + mrFile(MR.sk.d) + '.xlsx', [{ name: 'Kitty', rows: rows, cw: cw }]); }
+  var kb = t.closest('#mrkpr,#mrkxl,#rpkpr,#rpkxl'); if (!kb) return;
+  var KK = /^rpk/.test(kb.id) ? RPK : MR.sk, tb = $(/^rpk/.test(kb.id) ? 'rpkitt' : 'mrkitt'); if (!KK || !tb) return;
+  if (/pr$/.test(kb.id)) kitPrint(tb, 'KITTY - NET KITTY', KK.d);
+  else { var rows = kitXlRows(tb, 1), cw = [14]; for (var q = 1; q < rows[0].length; q++) cw.push(9); cw[cw.length - 1] = 11; xlsxDownload('Kitty_' + mrFile(KK.d) + '.xlsx', [{ name: 'Kitty', rows: rows, cw: cw }]); }
 });
 
 
+/* ---- KITTY SUMMARY (Reports): opening kitty on the From date, issue / repair / other workshop of the days From..To, net kitty on the To date ---- */
+var KSM = null, KSS = 0;
+function ksInit() {
+  if (!validD($('kst').value.trim())) $('kst').value = fmt(new Date());
+  if (!validD($('ksf').value.trim())) { var t = new Date(); $('ksf').value = fmt(new Date(t.getFullYear(), t.getMonth(), 1)); }
+  var s = $('ksw'), cur = s.value; s.innerHTML = '<option value="">All workshops</option>' + mrWs().map(function (w) { return '<option>' + esc(w) + '</option>'; }).join(''); s.value = cur; ksLoad();
+}
+function ksLoad() {
+  var f = $('ksf').value.trim(), t = $('kst').value.trim();
+  if (!validD(f) || !validD(t)) return msg('ksmsg', 'Enter both dates in DD.MM.YYYY format.', 'err');
+  if (parseD(f) > parseD(t)) return msg('ksmsg', 'The "From" date cannot be later than the "To" date.', 'err');
+  var seq = ++KSS; msg('ksmsg', '<span class="sp" style="border-color:#3b5bdb55;border-top-color:#3b5bdb"></span>Loading...', 'info'); $('ksout').innerHTML = '';
+  rpc('kitty_range_json', { p_from: d2i(f), p_to: d2i(t), p_ws: $('ksw').value || null }).then(function (r) {
+    if (seq !== KSS) return; msg('ksmsg', ''); KSM = { f: f, t: t, r: r }; ksDraw();
+  }).catch(function (e) { if (seq === KSS) { KSM = null; msg('ksmsg', /kitty_range_json|function/i.test(e.message || '') ? 'Run the new setup.sql in Supabase once (the Kitty Summary is not switched on in your database yet).' : esc(e.message), 'err'); } });
+}
+function ksBlocks() {
+  var W = KSM.r.ws || [], out = [];
+  if (W.length > 1) { var T = KCAPS.map(function (c) { return [c, 0, 0, 0, 0, 0, 0]; }); W.forEach(function (w) { w.rows.forEach(function (x, i) { for (var k = 1; k <= 6; k++) T[i][k] += x[k]; }); }); out.push({ ws: 'ALL WORKSHOPS', rows: T }); }
+  return out.concat(W);
+}
+function ksTable(b) {
+  var tot = [0, 0, 0, 0, 0, 0], h = '<div class="card"><h3 style="margin:0 0 8px"' + (b.ws === 'ALL WORKSHOPS' ? '' : wsAttr(b.ws)) + '>' + esc(b.ws) + '</h3><div class="wrap"><table class="mkt ksx"><thead><tr><th class="l">CAPACITY IN KVA</th><th>OPENING KITTY<br><small>' + esc(KSM.f) + '</small></th><th>ISSUE</th><th>REPAIR</th><th class="ed">ISSUE TO OTHER WORKSHOP</th><th class="ed">RECEIVE FROM OTHER W/S</th><th>NET KITTY<br><small>' + esc(KSM.t) + '</small></th></tr></thead><tbody>';
+  b.rows.forEach(function (x) { for (var k = 0; k < 6; k++) tot[k] += x[k + 1]; h += '<tr><td class="l">' + x[0] + '</td><td>' + x[1] + '</td><td>' + x[2] + '</td><td>' + x[3] + '</td><td class="ed">' + x[4] + '</td><td class="ed">' + x[5] + '</td><td class="n' + (x[6] < 0 ? ' neg' : '') + '"><b>' + x[6] + '</b></td></tr>'; });
+  return h + '<tr class="t"><td class="l">TOTAL</td>' + tot.map(function (q) { return '<td><b>' + q + '</b></td>'; }).join('') + '</tr></tbody></table></div></div>';
+}
+function ksDraw() {
+  var B = ksBlocks(), nb = KSM.r.nobase || [], h = '';
+  if (nb.length) h += '<div class="msg info" style="margin-bottom:8px">Kitty not started on ' + esc(KSM.f) + ' for: <b>' + nb.map(esc).join(', ') + '</b> (choose a later From date).</div>';
+  if (!B.length) { $('ksout').innerHTML = h + '<div class="card"><div class="msg info">No workshop has a started kitty on the From date.</div></div>'; return; }
+  $('ksout').innerHTML = h + B.map(ksTable).join('');
+}
+$('ksgo').onclick = ksLoad; $('ksw').onchange = ksLoad;
+document.addEventListener('change', function (e) { var t = e.target; if (t && t.matches && t.matches('.calw input[data-c="ksf"],.calw input[data-c="kst"]')) setTimeout(ksLoad, 50); });
+$('ksxl').onclick = function () {
+  if (!KSM) return msg('ksmsg', 'Show the summary first.', 'err'); var used = {};
+  var sh = ksBlocks().map(function (b) {
+    var nm = b.ws.replace(/[\\\/\?\*\[\]:]/g, ' ').slice(0, 28) || 'Sheet', q = nm, k = 1; while (used[q]) q = nm.slice(0, 26) + ' ' + (++k); used[q] = 1; var tot = [0, 0, 0, 0, 0, 0];
+    var rows = [[{ v: 'KITTY SUMMARY - ' + b.ws + ' - ' + KSM.f + ' to ' + KSM.t, s: 3 }], [], ['CAPACITY IN KVA', 'OPENING KITTY (' + KSM.f + ')', 'ISSUE', 'REPAIR', 'ISSUE TO OTHER WORKSHOP', 'RECEIVE FROM OTHER W/S', 'NET KITTY (' + KSM.t + ')'].map(function (x) { return { v: x, s: 5 }; })];
+    b.rows.forEach(function (x) { for (var j = 0; j < 6; j++) tot[j] += x[j + 1]; rows.push(x.map(function (v, j) { return { v: v, s: j === 0 ? 4 : (v < 0 ? 9 : 4) }; })); });
+    rows.push([{ v: 'TOTAL', s: 5 }].concat(tot.map(function (v) { return { v: v, s: 5 }; })));
+    return { name: q, rows: rows, cw: [16, 20, 10, 10, 18, 18, 20] };
+  });
+  xlsxDownload('Kitty_Summary_' + fileSafe(KSM.f) + '_to_' + fileSafe(KSM.t) + '.xlsx', sh);
+};
+$('kspr').onclick = function () {
+  if (!KSM) return msg('ksmsg', 'Show the summary first.', 'err');
+  var h = '<div class="ksp">' + ksBlocks().map(function (b) {
+    var tot = [0, 0, 0, 0, 0, 0], t = '<h3>KITTY SUMMARY - ' + esc(b.ws) + '</h3><table><thead><tr><th>CAPACITY IN KVA</th><th>OPENING KITTY<br>' + esc(KSM.f) + '</th><th>ISSUE</th><th>REPAIR</th><th>ISSUE TO OTHER WORKSHOP</th><th>RECEIVE FROM OTHER W/S</th><th>NET KITTY<br>' + esc(KSM.t) + '</th></tr></thead><tbody>';
+    b.rows.forEach(function (x) { for (var j = 0; j < 6; j++) tot[j] += x[j + 1]; t += '<tr>' + x.map(function (v) { return '<td>' + v + '</td>'; }).join('') + '</tr>'; });
+    return '<div class="ksb">' + t + '<tr class="t"><td>TOTAL</td>' + tot.map(function (v) { return '<td>' + v + '</td>'; }).join('') + '</tr></tbody></table></div>';
+  }).join('') + '</div>';
+  var st = document.getElementById('chmpgs'); if (st) st.remove(); st = document.createElement('style'); st.id = 'chmpgs';
+  st.textContent = '@media print{@page{size:A4 portrait;margin:12mm}#pz .ksb{break-inside:avoid;page-break-inside:avoid;margin-bottom:14px}#pz .ksb h3{font:700 14px "Times New Roman",serif;margin:0 0 4px}#pz .ksb table{border-collapse:collapse;width:100%;font-size:12px}#pz .ksb th,#pz .ksb td{border:1px solid #000;padding:3px 6px;text-align:center;color:#000}#pz .ksb th{background:#eee!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}#pz .ksb tr.t td{font-weight:700}}';
+  document.head.appendChild(st); printHtml('Kitty Summary ' + KSM.f + ' to ' + KSM.t, h);
+};
+/* ---- LY REPAIR, DAY BY DAY: one table for a workshop and a month of last year (rows = days, columns = capacities) ---- */
+var LYG = {};
+function lyGrid(host, msgId, ws, m) {
+  var g = LYG[host] = { ws: ws, m: m, dirty: {}, msgId: msgId, seq: ((LYG[host] || {}).seq || 0) + 1 }, seq = g.seq;
+  msg(msgId, ''); $(host).innerHTML = '<div class="msg info">Loading...</div>';
+  rpc('kitty_lyd_json', { p_ws: ws, p_month: m + '-01' }).then(function (r) {
+    if (LYG[host].seq !== seq) return; var y = +m.slice(0, 4), mo = +m.slice(5), nd = new Date(y, mo, 0).getDate(), v = {}, today = mrIso(fmt(new Date()));
+    (r.rows || []).forEach(function (x) { v[x[0] + '|' + x[1]] = x[2]; }); g.ed = !!r.edit;
+    var h = '<div class="wrap"><table class="mkt xg" data-lyd="1"><thead><tr><th class="l">DAY</th>' + STD_CAPS.map(function (c) { return '<th>' + c + '</th>'; }).join('') + '<th class="ed">TOTAL</th></tr></thead><tbody>';
+    for (var d = 1; d <= nd; d++) {
+      var iso = y + '-' + p2(mo) + '-' + p2(d), tot = 0, past = iso < today;
+      h += '<tr data-d="' + iso + '"><td class="l x">' + p2(d) + '.' + p2(mo) + '.' + y + '</td>';
+      STD_CAPS.forEach(function (c) { var q = v[iso + '|' + c] || 0; tot += q; h += '<td class="ed">' + (g.ed && past ? '<input type="text" inputmode="numeric" autocomplete="off" class="lyd" data-c="' + c + '" value="' + (q || '') + '">' : '<span>' + (q || '') + '</span>') + '</td>'; });
+      h += '<td class="x"><b>' + (tot || '') + '</b></td></tr>';
+    }
+    h += '<tr class="t"><td class="l x">TOTAL</td>' + STD_CAPS.map(function () { return '<td class="x ct"></td>'; }).join('') + '<td class="x gt"></td></tr></tbody></table></div>';
+    $(host).innerHTML = h; lyTot(host);
+    if (!g.ed) msg(msgId, 'View only: only the Admin (or a user with edit right) can fill this.', 'info');
+  }).catch(function (er) { if (LYG[host].seq === seq) { $(host).innerHTML = ''; msg(msgId, esc(er.message), 'err'); } });
+}
+function lyTot(host) {
+  var t = $(host).querySelector('table'); if (!t) return; var ct = STD_CAPS.map(function () { return 0; }), gt = 0;
+  [].forEach.call(t.tBodies[0].rows, function (tr) {
+    if (!tr.dataset.d) return; var s = 0;
+    [].forEach.call(tr.querySelectorAll('td.ed'), function (td, i) { var i2 = td.querySelector('input'), q = parseInt(i2 ? i2.value : td.textContent, 10) || 0; s += q; ct[i] += q; });
+    tr.lastChild.innerHTML = s ? '<b>' + s + '</b>' : ''; gt += s;
+  });
+  [].forEach.call(t.querySelectorAll('tr.t .ct'), function (td, i) { td.innerHTML = '<b>' + ct[i] + '</b>'; }); t.querySelector('tr.t .gt').innerHTML = '<b>' + gt + '</b>';
+}
+function lySave(host) {
+  var g = LYG[host]; if (!g) return; var rows = [], k;
+  for (k in g.dirty) { var x = k.split('|'); rows.push({ day: x[0], cap: +x[1], repair: g.dirty[k] }); }
+  if (!rows.length) return; var sent = g.dirty; g.dirty = {}; msg(g.msgId, 'Saving...', 'info');
+  rpc('kitty_lyd_set', { p_ws: g.ws, p_rows: rows }).then(function () {
+    asMsg(g.msgId, 'Saved', 'ok'); if ($('mkneedout') && $('mkneedout').innerHTML && MR.kd && host === 'mklyt') mrNeedLoad();
+  }).catch(function (er) { for (var q in sent) if (!(q in g.dirty)) g.dirty[q] = sent[q]; msg(g.msgId, esc(er.message), 'err'); });
+}
+document.addEventListener('input', function (e) {
+  var t = e.target; if (!t.classList || !t.classList.contains('lyd')) return;
+  var host = t.closest('#rlt') ? 'rlt' : 'mklyt', g = LYG[host]; if (!g) return;
+  var v = t.value.replace(/\D/g, ''); if (v !== t.value) t.value = v;
+  g.dirty[t.closest('tr').dataset.d + '|' + t.dataset.c] = parseInt(v, 10) || 0; lyTot(host); asRun('lyd_' + host, function () { lySave(host); }, 900);
+});
+function rlyInit() {
+  var s = $('rlw'), cur = s.value || $('mpw').value; s.innerHTML = mrWs().map(function (w) { return '<option' + wsAttr(w) + '>' + esc(w) + '</option>'; }).join(''); if (cur) s.value = cur;
+  if (!$('rlm').value) { var t = new Date(); $('rlm').value = (t.getFullYear() - 1) + '-' + p2(t.getMonth() + 1); }
+  rlyLoad();
+}
+function rlyLoad() { var m = $('rlm').value; if (!$('rlw').value || !/^\d{4}-\d{2}$/.test(m)) return; asFlushAll(); lyGrid('rlt', 'rlmsg', $('rlw').value, m); }
+$('mply').onclick = function () { var c = $('mplyc'); c.classList.toggle('hide'); if (!c.classList.contains('hide')) { rlyInit(); c.scrollIntoView({ block: 'nearest' }); } };
+$('mplyx').onclick = function () { asFlushAll(); $('mplyc').classList.add('hide'); };
+$('rlw').onchange = rlyLoad; $('rlm').addEventListener('change', rlyLoad);
+
+/* ---- LY KITTY (Reports): last year's kitty of the same date, typed or pasted, next to this year's kitty ---- */
+var RLK = null, RLKS = 0;
+function rlkLoad() {
+  var d = $('rld').value.trim(); if (!validD(d)) return msg('rlkmsg', 'Enter the date in DD.MM.YYYY format.', 'err');
+  asFlushAll(); var seq = ++RLKS; msg('rlkmsg', '<span class="sp" style="border-color:#3b5bdb55;border-top-color:#3b5bdb"></span>Loading...', 'info');
+  rpc('kitty_lyk_json', { p_day: mrIso(d) }).then(function (r) { if (seq !== RLKS) return; msg('rlkmsg', ''); RLK = { r: r, d: d, dirty: {} }; rlkDraw(); })
+    .catch(function (er) { if (seq === RLKS) { RLK = null; $('rlkout').innerHTML = ''; msg('rlkmsg', esc(er.message), 'err'); } });
+}
+function rlkDraw() {
+  var L = RLK, W = L.r.ws, n = W.length, ty = L.d.slice(6), ly = String(L.r.ly || '').slice(0, 4);
+  $('rlxl').classList.toggle('hide', !n); $('rlpr').classList.toggle('hide', !n);
+  if (!n) { $('rlkout').innerHTML = '<div class="card"><div class="msg info">No workshop has a started kitty on this date.</div></div>'; return; }
+  L.ly = W.map(function (w) { var m = {}; w.rows.forEach(function (x) { m[x[0]] = x[2]; }); return m; });
+  L.cy = W.map(function (w) { var m = {}; w.rows.forEach(function (x) { m[x[0]] = x[1]; }); return m; });
+  var h = '<div class="card"><div class="muted ins" style="font-size:12.5px;margin-bottom:8px">Kitty of <b>' + esc(L.d) + '</b> against the kitty of <b>' + esc(mrDmy(L.r.ly)) + '</b> (last year). Last year figures are taken from the Kitty tab (&quot;Kitty compared with last year&quot;): fill them there.</div>' +
+    '<div class="wrap"><table class="mkt" id="rlkt"><thead><tr><th class="l" rowspan="2">CAPACITY IN KVA</th>' + W.map(function (w) { return '<th colspan="2"' + wsAttr(w.ws) + '>' + esc(w.ws) + '</th>'; }).join('') + (n > 1 ? '<th rowspan="2">' + ly + ' TOTAL</th><th class="ed" rowspan="2">' + ty + ' TOTAL</th>' : '') + '<th rowspan="2">DIFF</th></tr><tr>' + W.map(function () { return '<th>' + ly + '</th><th class="ed">' + ty + '</th>'; }).join('') + '</tr></thead><tbody>';
+  KCAPS.forEach(function (c) {
+    h += '<tr data-c="' + c + '"><td class="l">' + c + '</td>';
+    W.forEach(function (w, i) { h += '<td>' + (L.ly[i][c] || 0) + '</td><td class="ed">' + (L.cy[i][c] || 0) + '</td>'; });
+    h += (n > 1 ? '<td class="lt"></td><td class="ed tt"></td>' : '') + '<td class="df n"></td></tr>';
+  });
+  h += '<tr class="t"><td class="l">TOTAL</td>' + W.map(function () { return '<td class="a"></td><td class="b"></td>'; }).join('') + (n > 1 ? '<td class="lt"></td><td class="tt"></td>' : '') + '<td class="df"></td></tr></tbody></table></div></div>';
+  $('rlkout').innerHTML = h; rlkPaint();
+}
+function rlkPaint() {
+  var L = RLK, t = $('rlkt'); if (!t) return; var n = L.r.ws.length, cl = [], cy = [], gl = 0, gt = 0, i; for (i = 0; i < n; i++) { cl.push(0); cy.push(0); }
+  [].forEach.call(t.querySelectorAll('tbody tr[data-c]'), function (tr) {
+    var c = +tr.dataset.c, a = 0, b = 0; for (i = 0; i < n; i++) { var x = L.ly[i][c] || 0, y = L.cy[i][c] || 0; a += x; b += y; cl[i] += x; cy[i] += y; }
+    if (n > 1) { tr.querySelector('.lt').innerHTML = '<b>' + a + '</b>'; tr.querySelector('.tt').innerHTML = '<b>' + b + '</b>'; } tr.querySelector('.df').innerHTML = '<b>' + (b - a) + '</b>'; tr.querySelector('.df').classList.toggle('neg', b - a < 0); gl += a; gt += b;
+  });
+  var T = t.querySelector('tr.t'), A = T.querySelectorAll('.a'), B = T.querySelectorAll('.b'); for (i = 0; i < n; i++) { A[i].innerHTML = '<b>' + cl[i] + '</b>'; B[i].innerHTML = '<b>' + cy[i] + '</b>'; }
+  if (n > 1) { T.querySelector('.lt').innerHTML = '<b>' + gl + '</b>'; T.querySelector('.tt').innerHTML = '<b>' + gt + '</b>'; } T.querySelector('.df').innerHTML = '<b>' + (gt - gl) + '</b>';
+}
+function rlkSave() {
+  var L = RLK; if (!L) return; var ws = Object.keys(L.dirty); if (!ws.length) return; L.dirty = {}; var k = Promise.resolve(); msg('rlkmsg', 'Saving...', 'info');
+  ws.forEach(function (w) {
+    var i = L.r.ws.map(function (x) { return x.ws; }).indexOf(w); if (i < 0) return;
+    var rows = KCAPS.map(function (c) { return { cap: c, qty: Math.max(0, L.ly[i][c] || 0) }; });
+    k = k.then(function () { return rpc('kitty_lyk_set', { p_ws: w, p_day: L.r.ly, p_rows: rows }); });
+  });
+  k.then(function () { asMsg('rlkmsg', 'Saved', 'ok'); }).catch(function (er) { msg('rlkmsg', esc(er.message), 'err'); });
+}
+document.addEventListener('input', function (e) {
+  var t = e.target; if (!t.classList || !t.classList.contains('rlk') || !RLK) return;
+  var v = t.value.replace(/\D/g, ''); if (v !== t.value) t.value = v;
+  var i = +t.dataset.i; RLK.ly[i][+t.closest('tr').dataset.c] = parseInt(v, 10) || 0; RLK.dirty[RLK.r.ws[i].ws] = 1; rlkPaint(); asRun('rlk', rlkSave, 800);
+});
+function rlkPaste(rows) {
+  var t = $('rlkt'), b = xgBox(), g = xgGrid(t), st = g[b.r1] && g[b.r1][b.c1]; if (!st) return;
+  var trs = [].filter.call(t.tBodies[0].rows, function (tr) { return tr.dataset.c; }), inp0 = st.querySelector('input.rlk'), k0 = inp0 ? +inp0.dataset.i : 0, r0 = Math.max(0, trs.indexOf(st.closest('tr')));
+  var lab = rows.map(function (rw) { for (var m = 0; m < rw.length; m++) { var q = /^\s*(\d+)\s*kva\s*$/i.exec(rw[m]); if (q) return { cap: +q[1], vals: rw.slice(m + 1) }; } return null; });
+  var put = function (tr, vals) { vals.forEach(function (v, j) { var inp = tr.querySelector('input.rlk[data-i="' + (k0 + j) + '"]'); if (inp) xgSet(inp.parentNode, String(v).trim()); }); };
+  if (lab.filter(Boolean).length >= 5) { lab.forEach(function (x) { if (!x) return; var tr = t.querySelector('tbody tr[data-c="' + x.cap + '"]'); if (tr) put(tr, x.vals); }); return; }
+  if (rows.length === 11) rows = rows.slice(0, 9).concat(rows.slice(10));   // the Excel sheet has an 800 KVA row between 630 and 1000
+  rows.forEach(function (rw, i) { var tr = trs[r0 + i]; if (tr) put(tr, rw); });
+}
+$('rlgo').onclick = rlkLoad;
+$('rlxl').onclick = function () {
+  var L = RLK; if (!L) return; var W = L.r.ws, n = W.length, ty = L.d.slice(6), ly = String(L.r.ly || '').slice(0, 4), rows = [], mg = [], i, T = 2 * n + 4;
+  var r1 = [], r2 = []; for (i = 0; i < T; i++) { r1.push({ v: '', s: 5 }); r2.push({ v: '', s: 5 }); }
+  r1[0] = { v: 'CAPACITY IN KVA', s: 5 }; r1[2 * n + 1] = { v: ly + ' TOTAL', s: 5 }; r1[2 * n + 2] = { v: ty + ' TOTAL', s: 5 }; r1[2 * n + 3] = { v: 'DIFF', s: 5 };
+  W.forEach(function (w, k) { r1[1 + 2 * k] = { v: dwNm(w.ws), s: 5 }; r2[1 + 2 * k] = { v: ly, s: 5 }; r2[2 + 2 * k] = { v: ty, s: 5 }; mg.push([0, 1 + 2 * k, 0, 2 + 2 * k]); });
+  rows.push(r1, r2); [0, 2 * n + 1, 2 * n + 2, 2 * n + 3].forEach(function (c) { mg.push([0, c, 1, c]); });
+  var tl = 0, tt = 0, cl = W.map(function () { return 0; }), cy = W.map(function () { return 0; });
+  KCAPS.forEach(function (c) {
+    var line = [{ v: c, s: 4 }], a = 0, b = 0; W.forEach(function (w, k) { var x = L.ly[k][c] || 0, y = L.cy[k][c] || 0; a += x; b += y; cl[k] += x; cy[k] += y; line.push({ v: x, s: 4 }, { v: y, s: 4 }); });
+    line.push({ v: a, s: 5 }, { v: b, s: 5 }, { v: b - a, s: 5 }); tl += a; tt += b; rows.push(line);
+  });
+  var last = [{ v: 'TOTAL', s: 5 }]; W.forEach(function (w, k) { last.push({ v: cl[k], s: 5 }, { v: cy[k], s: 5 }); }); last.push({ v: tl, s: 5 }, { v: tt, s: 5 }, { v: tt - tl, s: 5 }); rows.push(last);
+  var cw = [16]; for (i = 0; i < n; i++) cw.push(9, 9); cw.push(11, 11, 9);
+  xlsxDownload('Kitty_Comparison_' + mrFile(L.d) + '.xlsx', [{ name: 'Kitty Comparison', rows: rows, merges: mg, cw: cw }]);
+};
+$('rlpr').onclick = function () { if (RLK && $('rlkt')) kitPrint($('rlkt'), 'KITTY COMPARISON', RLK.d); };
+/* ======================= REPORTS (the old Comparison tab): one icon for every report ======================= */
+var RP_DEFS = [
+  { k: 'cmp', t: 'PR Comparative', s: 'Dates against last year', i: '\u{1F4CA}', c: '#e6f0ff' },
+  { k: 'dw', t: 'Daywise PR & Repair', s: 'Day by day against last year', i: '\u{1F4C5}', c: '#e4f6e8' },
+  { k: 'kit', t: 'Kitty', s: 'Net kitty, capacity wise', i: '\u{1F4E6}', c: '#fdebd8', mr: 1 },
+  { k: 'ks', t: 'Kitty Summary', s: 'From date to date, workshop wise', i: '\u{1F9FE}', c: '#e8eaff', mr: 1 },
+  { k: 'lyk', t: 'Kitty Comparison', s: 'This year against last year', i: '\u{1F5C2}\uFE0F', c: '#fff4cc', mr: 1 },
+  { k: 'chm', t: 'Chamber Assembly', s: 'Report of a date', i: '\u{1F527}', c: '#efe6ff', mr: 1 },
+  { k: 'pl', t: 'Same Plinth Damage', s: 'Damaged again and again at one place', i: '⚠️', c: '#ffe8e8' }
+];
+var RP_PANEL = { cmp: 'rpcmpw', dw: 'rpcmpw', kit: 'rpkitw', ks: 'rpksw', lyk: 'rplykw', chm: 'rpchmw', pl: 'rppw' }, RPK = null, RPKS = 0, PLM = null, PLS = 0;
+function rpShow(k) {
+  ['rpcmpw', 'rpkitw', 'rpksw', 'rplykw', 'rpchmw', 'rppw'].forEach(function (id) { $(id).classList.add('hide'); });
+  $('rpmenu').classList.toggle('hide', !!k);
+  if (k) $(RP_PANEL[k]).classList.remove('hide');
+}
+function rpHome() {
+  if (!ME || ['admin', 'je', 'discom'].indexOf(ME.role) < 0) return;
+  var mr = typeof mrAccess === 'function' && mrAccess(), h = '';
+  RP_DEFS.forEach(function (d) { if (d.mr && !mr) return; h += '<button type="button" class="achip" data-rp="' + d.k + '"><span class="ic" style="--c:' + d.c + '">' + d.i + '</span><span><b>' + esc(d.t) + '</b><small>' + esc(d.s) + '</small></span></button>'; });
+  $('rpchips').innerHTML = h; rpShow('');
+}
+function rpOpen(k) {
+  rpShow(k);
+  if (k === 'cmp' || k === 'dw') { $('rpcmpw').dataset.m = k; $('rpcmpt').textContent = k === 'cmp' ? 'PR Comparative' : 'Daywise PR & Repair'; if (k === 'cmp') cmpLoad(); else dwOpen(); }
+  else if (k === 'kit') { if (!validD($('rkd').value.trim())) $('rkd').value = fmt(new Date()); rpKitLoad(); }
+  else if (k === 'ks') ksInit();
+  else if (k === 'lyk') { if (!validD($('rld').value.trim())) $('rld').value = fmt(new Date()); rlkLoad(); }
+  else if (k === 'chm') { if (!validD($('rhd').value.trim())) $('rhd').value = fmt(new Date()); msg('rhmsg', ''); }
+  else if (k === 'pl') plInit();
+}
+document.addEventListener('click', function (e) {
+  var t = e.target; if (!t.closest) return;
+  var b = t.closest('[data-rp]'); if (b && $('rpchips').contains(b)) return rpOpen(b.dataset.rp);
+  if (t.closest('[data-rpback]')) rpHome();
+});
+/* Kitty (the same card as in the M&R Summary) */
+function rpKitLoad() {
+  var d = $('rkd').value.trim(); if (!validD(d)) return msg('rkmsg', 'Enter the date in DD.MM.YYYY format.', 'err');
+  var seq = ++RPKS; msg('rkmsg', '<span class="sp" style="border-color:#3b5bdb55;border-top-color:#3b5bdb"></span>Loading...', 'info');
+  rpc('kitty_cmp_json', { p_day: mrIso(d) }).then(function (r) { if (seq !== RPKS) return; msg('rkmsg', ''); RPK = { r: r, d: d }; $('rkout').style.display = ''; mrSumKitDraw(RPK, $('rkout'), 'rpk'); })
+    .catch(function (er) { if (seq === RPKS) { $('rkout').style.display = 'none'; msg('rkmsg', esc(er.message), 'err'); } });
+}
+$('rkgo').onclick = rpKitLoad;
+/* Chamber Assembly Report (also in the Repair tab): the same pop-up, for the date written here */
+$('rhgo').onclick = function () {
+  var d = $('rhd').value.trim(); if (!validD(d)) return msg('rhmsg', 'Enter the date in DD.MM.YYYY format.', 'err');
+  msg('rhmsg', ''); $('mpd').value = d; mrRepChm();
+};
+document.addEventListener('change', function (e) { var t = e.target; if (t && t.matches && t.matches('.calw input[data-c="rkd"]')) setTimeout(rpKitLoad, 50); });
+/* Same Plinth Damage: a place where a transformer of one capacity was damaged again and again (see plinth_json in setup.sql) */
+function plInit() {
+  if (!$('rpf').value.trim()) { var t = new Date(), y = t.getMonth() >= 3 ? t.getFullYear() : t.getFullYear() - 1; $('rpf').value = '01.04.' + y; $('rpt').value = '31.03.' + (y + 1); }
+  var sel = $('rpw'), cur = sel.value; sel.innerHTML = '<option value="">All workshops</option>' + mrWs().map(function (w) { return '<option>' + esc(w) + '</option>'; }).join(''); sel.value = cur;
+  plLoad();
+}
+function plLoad() {
+  var f = $('rpf').value.trim(), t = $('rpt').value.trim();
+  if (!validD(f) || !validD(t)) return msg('rpmsg', 'Enter both dates in DD.MM.YYYY format.', 'err');
+  if (parseD(f) > parseD(t)) return msg('rpmsg', 'The "From" date cannot be later than the "To" date.', 'err');
+  var seq = ++PLS, n = +$('rpn').value; msg('rpmsg', '<span class="sp" style="border-color:#3b5bdb55;border-top-color:#3b5bdb"></span>Loading...', 'info'); $('rpout').innerHTML = '';
+  rpc('plinth_json', { p_from: d2i(f), p_to: d2i(t), p_min: n, p_ws: $('rpw').value || null }).then(function (r) {
+    if (seq !== PLS) return; msg('rpmsg', ''); PLM = { f: f, t: t, n: n, rows: (r && r.rows) || [] }; plDraw();
+  }).catch(function (e) { if (seq === PLS) { PLM = null; msg('rpmsg', /plinth_json|function/i.test(e.message || '') ? 'Run the new setup.sql in Supabase once (the Same Plinth report is not switched on in your database yet).' : esc(e.message), 'err'); } });
+}
+var PL_ORD = ['First', 'Second', 'Third', 'Fourth', 'Fifth', 'Sixth', 'Seventh', 'Eighth', 'Ninth', 'Tenth'];
+function plTimeHead(i) { return i === 3 ? 'FOURTH TIME' : (PL_ORD[i] || (i + 1) + 'th') + ' time'; }
+function plDraw() {
+  var R = PLM.rows, mx = 4, h = '';
+  R.forEach(function (r) { if (r.n > mx) mx = r.n; }); PLM.mx = mx;
+  if (!R.length) { $('rpout').innerHTML = '<div class="card"><div class="msg info">No place was damaged ' + PLM.n + ' or more times between <b>' + esc(PLM.f) + '</b> and <b>' + esc(PLM.t) + '</b>.</div></div>'; return; }
+  h = '<div class="card"><div class="muted" style="font-size:12.5px;margin-bottom:8px"><b>' + R.length + '</b> plinth(s): same place (the number in the place is part of the name) and same capacity, ' + PLM.n + ' or more PR dates. Write the Unique No, the reason and the action in the boxes: they are saved by themselves.</div><div class="wrap"><table class="plt"><thead><tr>' +
+    ['SL NO', 'NAME OF WORKSHOP', 'NAME OF DISTRIBUTION DIVISION', 'NAME OF SUBSTAION', 'NAME OF VILLEGE', 'NAME OF J.E.', 'UNIQUE NO', 'capacit in KVA'].map(function (x) { return '<th rowspan="2">' + x + '</th>'; }).join('') +
+    '<th colspan="' + mx + '">Description of Repeatedly Failed/Damaged Transformers at the Same Plinth<br>From ' + esc(PLM.f) + ' to ' + esc(PLM.t) + '</th><th rowspan="2">REASON OF DAMAGE</th><th rowspan="2">ACTION TAKEN</th></tr><tr>';
+  for (var i = 0; i < mx; i++) h += '<th>' + plTimeHead(i) + '</th>';
+  h += '</tr></thead><tbody>';
+  R.forEach(function (r, ri) {
+    var dis = r.ed ? '' : ' disabled';
+    h += '<tr data-i="' + ri + '"><td class="c">' + (ri + 1) + '</td><td class="c"' + wsAttr(r.ws) + '>' + esc(r.ws) + '</td><td>' + esc(r.dv || '') + '</td><td>' + esc(r.ss || '') + '</td><td><b>' + esc(r.pl || '') + '</b></td><td>' + esc(r.je || '') + '</td>' +
+      '<td class="u"><input type="text" class="pli" data-f="u" maxlength="40" value="' + esc(r.u) + '"' + dis + '></td><td class="c"><b>' + r.cap + '</b></td>';
+    for (var j = 0; j < mx; j++) { var x = r.t[j]; h += '<td class="c">' + (x ? esc(mrDmy(x[0])) + '<small>PR ' + esc(x[1]) + '</small>' : '') + '</td>'; }
+    h += '<td><textarea class="pli" data-f="r" rows="2" maxlength="400"' + dis + '>' + esc(r.r) + '</textarea></td><td><textarea class="pli" data-f="a" rows="2" maxlength="400"' + dis + '>' + esc(r.a) + '</textarea></td></tr>';
+  });
+  $('rpout').innerHTML = h + '</tbody></table></div></div>';
+}
+document.addEventListener('change', function (e) {
+  var t = e.target; if (!t.classList || !t.classList.contains('pli') || !PLM) return;
+  var tr = t.closest('tr'), r = PLM.rows[+tr.dataset.i]; if (!r) return;
+  var g = function (f) { return tr.querySelector('[data-f="' + f + '"]').value.trim(); };
+  tr.classList.remove('pl-ok', 'pl-er');
+  rpc('plinth_save', { p_ws: r.ws, p_key: r.k, p_cap: r.cap, p_uno: g('u'), p_reason: g('r'), p_action: g('a') }).then(function () {
+    r.u = g('u'); r.r = g('r'); r.a = g('a'); tr.classList.add('pl-ok'); msg('rpmsg', ''); setTimeout(function () { tr.classList.remove('pl-ok'); }, 1500);
+  }).catch(function (er) {
+    tr.classList.add('pl-er'); t.value = r[t.dataset.f]; msg('rpmsg', esc(er.message), 'err'); setTimeout(function () { tr.classList.remove('pl-er'); }, 2500);
+  });
+});
+$('rpgo').onclick = plLoad;
+$('rpxl').onclick = function () {
+  if (!PLM || !PLM.rows.length) return msg('rpmsg', 'Show the report first (nothing to download).', 'err');
+  var mx = PLM.mx, W = 8, T = W + mx + 2, rows = [], mg = [], r0 = [], r1 = [], i, j;
+  ['SL NO', 'NAME OF WORKSHOP', 'NAME OF DISTRIBUTION DIVISION', 'NAME OF SUBSTAION', 'NAME OF VILLEGE', 'NAME OF J.E.', 'UNIQUE NO', 'capacit in KVA'].forEach(function (x) { r0.push({ v: x, s: 12 }); r1.push({ v: '', s: 12 }); });
+  r0.push({ v: 'Description of Repeatedly Failed/Damaged Transformers at the Same Plinth\nFrom ' + PLM.f + ' to ' + PLM.t, s: 12 }); r1.push({ v: plTimeHead(0), s: 12 });
+  for (i = 1; i < mx; i++) { r0.push({ v: '', s: 12 }); r1.push({ v: plTimeHead(i), s: 12 }); }
+  r0.push({ v: 'REASON OF DAMAGE', s: 12 }); r1.push({ v: '', s: 12 }); r0.push({ v: 'ACTION TAKEN', s: 12 }); r1.push({ v: '', s: 12 });
+  rows.push(r0, r1); for (i = 0; i < W; i++) mg.push([0, i, 1, i]); mg.push([0, W, 0, W + mx - 1]); mg.push([0, W + mx, 1, W + mx]); mg.push([0, W + mx + 1, 1, W + mx + 1]);
+  PLM.rows.forEach(function (r, k) {
+    var line = [{ v: k + 1, s: 4 }, { v: r.ws, s: 14 }, { v: r.dv || '', s: 14 }, { v: r.ss || '', s: 14 }, { v: r.pl || '', s: 14 }, { v: r.je || '', s: 14 }, { v: r.u || '', s: 13 }, { v: r.cap, s: 4 }];
+    for (j = 0; j < mx; j++) { var x = r.t[j]; line.push({ v: x ? mrDmy(x[0]) + '\nPR ' + x[1] : '', s: 13 }); }
+    line.push({ v: r.r || '', s: 14 }, { v: r.a || '', s: 14 }); rows.push(line);
+  });
+  var cw = [8, 16, 26, 18, 26, 26, 20, 12]; for (j = 0; j < mx; j++) cw.push(18); cw.push(30, 30);
+  xlsxDownload('Same_Plinth_Damage_' + fileSafe(PLM.f) + '_to_' + fileSafe(PLM.t) + '.xlsx', [{ name: 'Same Plinth Damage', rows: rows, merges: mg, cw: cw }]);
+};
+$('rppr').onclick = function () {
+  if (!PLM || !PLM.rows.length) return msg('rpmsg', 'Show the report first (nothing to print).', 'err');
+  var mx = PLM.mx, h = '<table class="plp"><thead><tr>' + ['SL NO', 'NAME OF WORKSHOP', 'NAME OF DISTRIBUTION DIVISION', 'NAME OF SUBSTAION', 'NAME OF VILLEGE', 'NAME OF J.E.', 'UNIQUE NO', 'capacit in KVA'].map(function (x) { return '<th rowspan="2">' + x + '</th>'; }).join('') +
+    '<th colspan="' + mx + '">Description of Repeatedly Failed/Damaged Transformers at the Same Plinth<br>From ' + esc(PLM.f) + ' to ' + esc(PLM.t) + '</th><th rowspan="2">REASON OF DAMAGE</th><th rowspan="2">ACTION TAKEN</th></tr><tr>';
+  for (var i = 0; i < mx; i++) h += '<th>' + plTimeHead(i) + '</th>';
+  h += '</tr></thead><tbody>';
+  PLM.rows.forEach(function (r, k) {
+    h += '<tr><td>' + (k + 1) + '</td><td>' + esc(r.ws) + '</td><td>' + esc(r.dv || '') + '</td><td>' + esc(r.ss || '') + '</td><td>' + esc(r.pl || '') + '</td><td>' + esc(r.je || '') + '</td><td>' + esc(r.u || '') + '</td><td>' + r.cap + '</td>';
+    for (var j = 0; j < mx; j++) { var x = r.t[j]; h += '<td>' + (x ? esc(mrDmy(x[0])) + '<br>PR ' + esc(x[1]) : '') + '</td>'; }
+    h += '<td>' + esc(r.r || '') + '</td><td>' + esc(r.a || '') + '</td></tr>';
+  });
+  var st = document.getElementById('chmpgs'); if (st) st.remove(); st = document.createElement('style'); st.id = 'chmpgs';
+  st.textContent = '@media print{@page{size:A4 landscape;margin:8mm}#pz table.plp{border-collapse:collapse;width:100%;font-size:9px}#pz table.plp th{background:#fff200!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}#pz table.plp th,#pz table.plp td{border:1px solid #222;padding:2px 3px;vertical-align:top;text-align:center}}';
+  document.head.appendChild(st); printHtml('Same Plinth Damage - ' + PLM.f + ' to ' + PLM.t, h + '</tbody></table>');
+};
 /* ---- Repair tab: shrink the rows so that all firms of the three blocks are seen on one screen (desktop) ---- */
 function repFit() {
   var o = $('mpout'); if (!o) return; o.classList.add('cmp');
@@ -5898,7 +6413,7 @@ $('mrdxl').onclick = function () {
 };
 
 /* ---- KITTY ---- */
-var KCAPS = STD_CAPS.concat([1000]);
+var KCAPS = STD_CAPS.slice();
 function mrKitLoad(force) {
   MR.kws = $('mkw').value || MR.kws; var d = $('mkd').value.trim();
   if (force !== true && MR.kd && MR.kd.d === d && MR.kd.ws === MR.kws && !MR.kloading) return;
@@ -5916,20 +6431,31 @@ function mrKitFetch(ws, day) {
     if (ch) (ch.rows || []).forEach(function (x) { U[x[0] + '|' + x[1]] = x[2]; });
     var out = { base: null, first: null, rows: [], edit: false, admin: false };
     if (!all) { out = ks[0]; }
-    var okc = 0, T = {}; KCAPS.forEach(function (c) { T[c] = [c, 0, 0, 0, 0, 0, 0, 0]; });
+    var okc = 0, T = {}, per = []; KCAPS.forEach(function (c) { T[c] = [c, 0, 0, 0, 0, 0, 0, 0]; });
     list.forEach(function (w, wi) {
       var r = ks[wi]; if (!r || !r.base) return; okc++;
-      var R = {}; (r.rows || []).forEach(function (x) { R[x[0]] = x; });
+      var R = {}, pw = { ws: w, rows: [] }; (r.rows || []).forEach(function (x) { R[x[0]] = x; }); per.push(pw);
       KCAPS.forEach(function (c) {
         var x = R[c] || [c, 0, 0, 0, 0, 0, 0, 0], raw = x[2], u = (U[w + '|' + c] !== undefined) ? U[w + '|' + c] : raw;
         if (!all) { x[8] = raw; x[2] = u; if (!R[c]) r.rows.push(x); }
-        else { for (var i = 1; i <= 7; i++) T[c][i] += (i === 2 ? u : x[i]); }
+        else { for (var i = 1; i <= 7; i++) T[c][i] += (i === 2 ? u : x[i]); var xs = x.slice(); xs[2] = u; pw.rows.push(xs); }
       });
     });
-    if (all) { if (okc) { out.base = 'all'; out.rows = KCAPS.map(function (c) { return T[c]; }); } }
+    if (all) { if (okc) { out.base = 'all'; out.rows = KCAPS.map(function (c) { return T[c]; }); out.per = per; } }
     else if (out.base) out.rows.sort(function (x, y) { return x[0] - y[0]; });
     return out;
   });
+}
+/* All workshops: below the total, every workshop has its own table (view only) */
+function mrKitPerHtml(per) {
+  return per.map(function (pw) {
+    var tot = [0, 0, 0, 0, 0, 0], h = '<div class="card"><h3 style="margin:0 0 8px"' + wsAttr(pw.ws) + '>' + esc(pw.ws) + '</h3><div class="wrap"><table class="mkt"><thead><tr><th class="l">CAPACITY IN KVA</th><th>OPENING KITTY</th><th>ISSUE</th><th>REPAIR</th><th class="ed">ISSUE TO OTHER WORKSHOP</th><th class="ed">RECEIVE FROM OTHER W/S</th><th>NET KITTY</th></tr></thead><tbody>';
+    pw.rows.forEach(function (x) {
+      var v = [x[1], x[3], x[4], x[5], x[6], x[7]]; v.forEach(function (q, i) { tot[i] += q; });
+      h += '<tr><td class="l">' + x[0] + '</td><td>' + v[0] + '</td><td>' + v[1] + '</td><td>' + v[2] + '</td><td class="ed">' + v[3] + '</td><td class="ed">' + v[4] + '</td><td class="n' + (v[5] < 0 ? ' neg' : '') + '"><b>' + v[5] + '</b></td></tr>';
+    });
+    return h + '<tr class="t"><td class="l">TOTAL</td>' + tot.map(function (q) { return '<td><b>' + q + '</b></td>'; }).join('') + '</tr></tbody></table></div></div>';
+  }).join('');
 }
 function mrKitInp(c, k, v, can) { return can ? '<input type="text" inputmode="numeric" autocomplete="off" class="mkn" data-c="' + c + '" data-k="' + k + '" value="' + (v || 0) + '">' : String(v || 0); }
 function mrKitDraw() {
@@ -5949,8 +6475,9 @@ function mrKitDraw() {
   h += '<tr class="t" id="mktot"><td class="l">TOTAL</td><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table></div>';
   h += '<div class="bar" style="margin-top:10px"><span class="muted ins" style="font-size:12px;flex:1">Issue comes from the Data Sheet. <b>Repair comes from the Repair tab</b> (all firms, every day); here type only the issue to / receive from other workshop. Unrepaired T/F is shown only in the Chamber Assembly report. Typing is saved by itself. Net kitty = opening + repair + receive &minus; issue &minus; issue to other workshop.</span>' +
     (can ? '<button class="btn" id="mksave" type="button" disabled>Save kitty</button>' : '') + (adm ? '<button class="btn sec" id="mkbase" type="button">Start figures (Admin)</button>' : '') + '<button class="btn sec" id="mkpr" type="button">&#128424; Print</button><button class="btn sec" id="mkxl" type="button">&#11015; Excel</button></div></div>';
+  if (isAll && r.per) h += mrKitPerHtml(r.per);
   h += mrLykHtml();
-  h += (isAll ? '<div class="muted ins" style="font-size:12.5px">All workshops together (view only). Choose one workshop to type, save or check the need.</div>' : mrNeedHtml());
+  h += (isAll ? '<div class="muted ins" style="font-size:12.5px">The first table is all workshops together; below it every workshop is shown separately (view only). Choose one workshop to type, save or check the need.</div>' : mrNeedHtml());
   $('mkout').innerHTML = h + (adm ? '<div id="mkbw" class="hide"></div>' : ''); mrKitTotal(); if (MR.lkOn !== false) mrLykLoad();
 }
 function mrKitTotal() {
@@ -6041,23 +6568,11 @@ function mrLyOpen() {
   var o = $('mklyo'); o.classList.remove('hide'); $('mklym').value = MR.lym || m; mrLyLoad();
 }
 function mrLyLoad() {
-  var m = $('mklym').value; if (!/^\d{4}-\d{2}$/.test(m)) return; MR.lym = m; msg('mklymsg', ''); $('mklyt').innerHTML = '<div class="msg info">Loading...</div>';
-  rpc('kitty_ly_json', { p_ws: MR.kd.ws, p_month: m + '-01' }).then(function (r) {
-    if ($('mklym').value !== m) return;
-    var h = '<div class="wrap"><table class="mkt xg"><thead><tr><th class="l">CAPACITY IN KVA</th><th class="ed">REPAIR IN THE MONTH</th></tr></thead><tbody>';
-    r.rows.forEach(function (x) { h += '<tr><td class="l">' + x[0] + '</td><td class="ed"><input type="text" inputmode="numeric" autocomplete="off" class="mkly" data-c="' + x[0] + '" value="' + (x[1] || 0) + '"></td></tr>'; });
-    $('mklyt').innerHTML = h + '</tbody></table></div>';
-  }).catch(function (er) { $('mklyt').innerHTML = ''; msg('mklymsg', esc(er.message), 'err'); });
+  var m = $('mklym').value; if (!/^\d{4}-\d{2}$/.test(m)) return; MR.lym = m; lyGrid('mklyt', 'mklymsg', MR.kd.ws, m);
 }
 $('mklyb').onclick = mrLyOpen;
 $('mklym').addEventListener('change', mrLyLoad);
 $('mklyx').onclick = function () { $('mklyo').classList.add('hide'); };
-$('mklys').onclick = function () {
-  var b = this, rows = [].map.call(document.querySelectorAll('#mklyt .mkly'), function (i) { return { cap: +i.dataset.c, repair: Math.max(0, parseInt(i.value, 10) || 0) }; });
-  if (!rows.length) return; busy(b, true, 'Saving...');
-  rpc('kitty_ly_set', { p_ws: MR.kd.ws, p_month: MR.lym + '-01', p_rows: rows }).then(function () { busy(b, false); msg('mklymsg', 'Saved.', 'ok'); if ($('mkneedout') && $('mkneedout').innerHTML) mrNeedLoad(); })
-    .catch(function (er) { busy(b, false); msg('mklymsg', esc(er.message), 'err'); });
-};
 document.addEventListener('click', function (e) { var t = e.target; if (t.closest && t.closest('#mkneedb')) mrNeedLoad(); });
 document.addEventListener('keydown', function (e) { if (e.key === 'Enter' && e.target && e.target.id === 'mkdays') mrNeedLoad(); });
 
@@ -6092,7 +6607,6 @@ document.addEventListener('input', function (e) {
   if (t.classList.contains('mkn')) asRun('kit', mrKitAuto);
   else if (t.classList.contains('rq') || t.classList.contains('rf')) asRun('rep', mrRepAuto);
   else if (t.classList.contains('msn')) asRun('sc', mrScAuto);
-  else if (t.classList.contains('mkly')) asRun('ly', function () { var b = $('mklys'); if (b && !b.disabled) b.click(); });
   else if (t.classList.contains('mklk')) asRun('lyk', mrLykSave, 800);
 });
 (function () {
@@ -6610,6 +7124,7 @@ document.addEventListener('paste', function (e) {
   if (rows.length === 1 && rows[0].length === 1 && e.target.tagName === 'INPUT') return;   // a single value: the normal paste (digits only)
   e.preventDefault();
   if (XG.t.dataset.lyk) { mrLykPaste(rows); return; }
+  if (XG.t.dataset.rlk) { rlkPaste(rows); return; }
   if (XG.t.dataset.ts) { tsPaste(rows); return; }
   var b = xgBox(), key = XG.t.dataset.b, g = xgGrid(XG.t), r0 = b.r1, c0 = b.c1, need = r0 + rows.length - XG.t.querySelectorAll('tbody tr[data-b]').length;
   if (need > 0 && XG.t.dataset.grow === undefined && key && document.querySelector('#mpout table.rrt')) { mrRepGrow(need); var nt = document.querySelector('table.xg[data-b="' + key + '"]'); if (nt) { XG.t = nt; g = xgGrid(nt); } }

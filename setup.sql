@@ -58,6 +58,9 @@ create table if not exists public.workshops (
   org_division text not null                -- which Admin's division owns this workshop
 );
 
+-- the short name of a workshop for phones (Admin > Workshops), e.g. AZAMGARH -> AZM
+alter table public.workshops add column if not exists short_name text;
+
 create table if not exists public.profiles (
   user_id      uuid primary key references auth.users(id) on delete cascade,
   login_id     text not null unique,         -- what the person types as User ID
@@ -846,6 +849,23 @@ begin
   update public.profiles set scope = array_replace(scope, p_old, n) where p_old = any(scope);
   return n;
 end $$;
+
+create or replace function public.ws_set_short(p_name text, p_short text) returns text
+language plpgsql security definer set search_path = public as
+$$
+declare c public.profiles := public.tf_caller(); w public.workshops; sh text := upper(regexp_replace(btrim(coalesce(p_short,'')), '\s+', ' ', 'g'));
+begin
+  if c.user_id is null or c.role not in ('admin','creator') then raise exception 'Only an Admin can set a short name.'; end if;
+  select * into w from public.workshops where name = p_name;
+  if w.name is null or (c.role = 'admin' and w.org_division is distinct from c.org_division) then raise exception 'Workshop not found in your division.'; end if;
+  if sh = '' then update public.workshops set short_name = null where name = p_name; return ''; end if;
+  if sh !~ '^[A-Z0-9][A-Z0-9 ._&()/-]{0,7}$' then raise exception 'Short name: 1-8 characters (letters, numbers, space . - & ( ) /).'; end if;
+  if exists (select 1 from public.workshops x where x.org_division = w.org_division and x.name <> p_name and upper(coalesce(x.short_name, '')) = sh) then raise exception 'The short name % is already used by another workshop.', sh; end if;
+  update public.workshops set short_name = sh where name = p_name;
+  return sh;
+end $$;
+revoke all on function public.ws_set_short(text,text) from public, anon;
+grant execute on function public.ws_set_short(text,text) to authenticated;
 
 create or replace function public.ws_delete(p_name text) returns text
 language plpgsql security definer set search_path = public as
@@ -3733,6 +3753,14 @@ begin
 end $$;
 revoke all on function public.ud_status(text, text) from public, anon, authenticated;
 grant execute on function public.ud_status(text, text) to anon, authenticated;
+
+-- (default project) the PR / Complaint search on the login page (no login) asks which approved projects exist, so a person with a fresh
+-- app is searched in ALL approved Admins' projects.  Only the publishable key + the division part of the label leave the database (never an e-mail).
+create or replace function public.ud_public_list() returns jsonb language sql stable security definer set search_path = public as $$
+  select coalesce(jsonb_agg(jsonb_build_object('u', p.url, 'k', p.key, 'l', btrim(split_part(p.label, ' · ', 2))) order by p.created_at), '[]'::jsonb)
+  from (select * from public.ud_project where status = 'approved' order by created_at limit 200) p $$;
+revoke all on function public.ud_public_list() from public, anon, authenticated;
+grant execute on function public.ud_public_list() to anon, authenticated;
 notify pgrst, 'reload schema';
 
 -- ################ STEP 39 : WORKSHOP CODE (registry).  Only needed in the DEFAULT project; it is created only if it is not there yet ################
@@ -3770,4 +3798,300 @@ begin
     grant execute on function public.registry_lookup(text), public.registry_add(text, text, text) to anon, authenticated;
   end if;
 end $reg$;
+notify pgrst, 'reload schema';
+
+
+-- ================================================================================================================
+-- STEP 104 : Reports > Same Plinth Damage - places where a transformer was damaged 3 (or more) times.
+-- A "plinth" = same workshop + same place of damage (the number written in the place is part of the name) + same capacity.
+-- The JE / workshop user writes the Unique No, the Reason of damage and the Action taken in the report; they are kept here.
+-- Safe to run again.
+-- ================================================================================================================
+create table if not exists public.plinth_info (
+  workshop text not null, pkey text not null, cap int not null,
+  unique_no text, reason text, action_taken text,
+  by_login text, at timestamptz not null default now(),
+  primary key (workshop, pkey, cap)
+);
+alter table public.plinth_info enable row level security;
+revoke all on public.plinth_info from public, anon, authenticated;
+
+-- the place of damage in one spelling: capital letters, every other sign = one space, digits kept (RAIPUR 2 and RAIPUR 3 are two plinths)
+create or replace function public.plinth_key(p text) returns text language sql immutable set search_path = public as $$
+  select btrim(regexp_replace(upper(coalesce(p, '')), '[^[:alnum:]]+', ' ', 'g')) $$;
+
+-- may the caller write the Unique No / reason / action of this workshop?  (an Admin of the division, or a user who may edit)
+create or replace function public.plinth_edit_ok(p_ws text) returns boolean language sql stable security definer set search_path = public as $$
+  select coalesce((select p.active and p_ws = any (public.my_workshops()) and (p.role = 'admin' or (p.role = 'je' and coalesce(p.can_edit, false)))
+                     from public.profiles p where p.user_id = auth.uid()), false)
+$$;
+
+-- rows: every plinth with p_min or more damages (different PR dates) between p_from and p_to
+create or replace function public.plinth_json(p_from date, p_to date, p_min int default 3, p_ws text default null) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare c public.profiles := public.tf_caller(); ws text[]; r jsonb; m int := greatest(2, least(coalesce(p_min, 3), 20));
+begin
+  if c.user_id is null or not c.active or c.role not in ('admin', 'je', 'discom', 'creator') then raise exception 'Not allowed.'; end if;
+  if p_from is null or p_to is null or p_from > p_to then raise exception 'Choose the From and To dates.'; end if;
+  if p_to - p_from > 800 then raise exception 'Choose a period of up to 2 years.'; end if;
+  ws := coalesce(public.my_workshops(), '{}');
+  with b as (
+    select d.workshop, d.division, d.substation, d.place_of_damage, d.je_name, d.capacity, d.pr_no, d.pr_date, public.plinth_key(d.place_of_damage) as k
+      from public.data d
+     where not d.dup and d.workshop = any (ws) and (p_ws is null or d.workshop = p_ws)
+       and d.pr_date between p_from and p_to and d.capacity is not null and public.plinth_key(d.place_of_damage) <> ''),
+  e as (select distinct on (workshop, k, capacity, pr_date) * from b order by workshop, k, capacity, pr_date, pr_no collate "C"),
+  g as (select workshop, k, capacity, count(*) as n,
+               jsonb_agg(jsonb_build_array(pr_date, pr_no) order by pr_date) as t,
+               (array_agg(division order by pr_date desc))[1] as dv,
+               (array_agg(nullif(btrim(substation), '') order by pr_date desc) filter (where nullif(btrim(substation), '') is not null))[1] as ss,
+               (array_agg(btrim(place_of_damage) order by pr_date desc))[1] as pl,
+               (array_agg(nullif(btrim(je_name), '') order by pr_date desc) filter (where nullif(btrim(je_name), '') is not null))[1] as je
+          from e group by workshop, k, capacity having count(*) >= m)
+  select jsonb_build_object('min', m, 'from', p_from, 'to', p_to,
+    'rows', coalesce(jsonb_agg(jsonb_build_object('ws', g.workshop, 'dv', g.dv, 'ss', g.ss, 'pl', g.pl, 'je', g.je, 'cap', g.capacity, 'n', g.n, 't', g.t,
+        'k', g.k, 'u', coalesce(i.unique_no, ''), 'r', coalesce(i.reason, ''), 'a', coalesce(i.action_taken, ''), 'ed', public.plinth_edit_ok(g.workshop))
+        order by g.workshop, g.dv, g.pl, g.capacity), '[]'::jsonb)) into r
+    from g left join public.plinth_info i on i.workshop = g.workshop and i.pkey = g.k and i.cap = g.capacity;
+  return r;
+end $$;
+
+-- save the three texts of one plinth (all empty = the note is removed)
+create or replace function public.plinth_save(p_ws text, p_key text, p_cap int, p_uno text, p_reason text, p_action text) returns text
+language plpgsql security definer set search_path = public as $$
+declare c public.profiles := public.tf_caller(); u text := btrim(coalesce(p_uno, '')); rs text := btrim(coalesce(p_reason, '')); ac text := btrim(coalesce(p_action, ''));
+begin
+  if not public.plinth_edit_ok(p_ws) then raise exception 'You cannot change the notes of this workshop.'; end if;
+  if p_key is null or btrim(p_key) = '' or p_cap is null then raise exception 'Plinth not found.'; end if;
+  if length(u) > 40 then raise exception 'Unique No: at most 40 characters.'; end if;
+  if length(rs) > 400 or length(ac) > 400 then raise exception 'Reason / Action: at most 400 characters.'; end if;
+  if u <> '' and exists (select 1 from public.plinth_info x where x.workshop = p_ws and upper(btrim(x.unique_no)) = upper(u) and not (x.pkey = p_key and x.cap = p_cap)) then
+    raise exception 'The Unique No % is already used for another plinth of this workshop.', u;
+  end if;
+  if u = '' and rs = '' and ac = '' then
+    delete from public.plinth_info where workshop = p_ws and pkey = p_key and cap = p_cap; return 'removed';
+  end if;
+  insert into public.plinth_info(workshop, pkey, cap, unique_no, reason, action_taken, by_login, at)
+    values (p_ws, p_key, p_cap, nullif(u, ''), nullif(rs, ''), nullif(ac, ''), c.login_id, now())
+    on conflict (workshop, pkey, cap) do update set unique_no = excluded.unique_no, reason = excluded.reason, action_taken = excluded.action_taken, by_login = excluded.by_login, at = now();
+  return 'saved';
+end $$;
+
+revoke all on function public.plinth_key(text), public.plinth_edit_ok(text), public.plinth_json(date, date, int, text), public.plinth_save(text, text, int, text, text, text) from public, anon;
+grant execute on function public.plinth_key(text), public.plinth_edit_ok(text), public.plinth_json(date, date, int, text), public.plinth_save(text, text, int, text, text, text) to authenticated;
+notify pgrst, 'reload schema';
+
+-- ================================================================================================================
+-- STEP 105 : LAST YEAR REPAIR DAY BY DAY (instead of the month total) + Reports tab
+-- kitty_lyd = last year's repair of one workshop, one DAY and one capacity.  "Next month need" and the Day-wise report use it
+-- (the old month totals in kitty_ly are still used for days that have no daily figure).  Safe to run again.
+-- ================================================================================================================
+create table if not exists public.kitty_lyd (
+  workshop text not null, day date not null, cap int not null,
+  repair int not null default 0 check (repair >= 0 and repair <= 100000),
+  by_login text, at timestamptz not null default now(),
+  primary key (workshop, day, cap)
+);
+alter table public.kitty_lyd enable row level security;
+revoke all on public.kitty_lyd from public, anon, authenticated;
+
+create or replace function public.kitty_lyd_json(p_ws text, p_month date) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare m date := date_trunc('month', p_month)::date;
+begin
+  if not public.mr_ok() then raise exception 'No access to the M&R dashboard.'; end if;
+  if not (p_ws = any (public.my_workshops())) then raise exception 'This workshop is not yours.'; end if;
+  return jsonb_build_object('month', m, 'edit', public.mr_edit_ok(p_ws),
+    'rows', coalesce((select jsonb_agg(jsonb_build_array(l.day, l.cap, l.repair) order by l.day, l.cap) from public.kitty_lyd l
+                       where l.workshop = p_ws and l.day >= m and l.day < (m + interval '1 month')::date and l.repair > 0), '[]'::jsonb));
+end $$;
+
+create or replace function public.kitty_lyd_set(p_ws text, p_rows jsonb) returns text
+language plpgsql security definer set search_path = public as $$
+declare e jsonb; c public.profiles := public.tf_caller(); n int := 0; d date; cp int; q int;
+begin
+  if not public.mr_edit_ok(p_ws) then raise exception 'You cannot change the repair of this workshop.'; end if;
+  if jsonb_array_length(coalesce(p_rows, '[]')) > 400 then raise exception 'Too many rows at once.'; end if;
+  for e in select * from jsonb_array_elements(coalesce(p_rows, '[]')) loop
+    d := (e->>'day')::date; cp := (e->>'cap')::int; q := coalesce((e->>'repair')::int, 0);
+    if cp not in (10, 16, 25, 63, 100, 160, 250, 400, 630, 1000) then continue; end if;
+    if d >= current_date then raise exception 'Choose a day of the past.'; end if;
+    if q < 0 or q > 100000 then raise exception 'Numbers must be 0 or more.'; end if;
+    if q = 0 then delete from public.kitty_lyd where workshop = p_ws and day = d and cap = cp;
+    else insert into public.kitty_lyd(workshop, day, cap, repair, by_login, at) values (p_ws, d, cp, q, c.login_id, now())
+      on conflict (workshop, day, cap) do update set repair = excluded.repair, by_login = excluded.by_login, at = now();
+    end if;
+    n := n + 1;
+  end loop;
+  return 'saved ' || n;
+end $$;
+revoke all on function public.kitty_lyd_json(text, date), public.kitty_lyd_set(text, jsonb) from public, anon;
+grant execute on function public.kitty_lyd_json(text, date), public.kitty_lyd_set(text, jsonb) to authenticated;
+
+create or replace function public.kitty_need_json(p_ws text, p_day date, p_days int default 30, p_pct numeric default 5) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare k jsonb; n int := least(greatest(coalesce(p_days, 30), 1), 120); pc numeric := least(greatest(coalesce(p_pct, 5), 0), 5); w1 date := (p_day - interval '1 year')::date; w2 date; bmin date; manual boolean; rows jsonb; any_rep boolean;
+begin
+  if not public.mr_ok() then raise exception 'No access to the M&R dashboard.'; end if;
+  if not (p_ws = any (public.my_workshops())) then raise exception 'This workshop is not yours.'; end if;
+  w2 := w1 + n - 1;
+  k := public.kitty_json(p_ws, p_day);
+  if k->>'base' is null then raise exception 'The Admin must first set the start figures of the kitty (see Start figures).'; end if;
+  select min(day) into bmin from public.kitty_base where workshop = p_ws;
+  manual := (bmin is null or w1 < bmin);
+  with caps as (select unnest(array[10, 16, 25, 63, 100, 160, 250, 400, 630, 1000]) cap),
+  kit as (select (e->>0)::int cap, (e->>7)::int net from jsonb_array_elements(k->'rows') e),
+  pr as (select capacity cap, count(*) n from public.data where not dup and workshop = p_ws and pr_date between w1 and w2 group by 1),
+  own as (select cap, sum(repair) n from public.kitty_day where workshop = p_ws and day between w1 and w2 group by 1),
+  man as (select l.cap, sum(l.repair::numeric * (least(w2, (l.month + interval '1 month - 1 day')::date) - greatest(w1, l.month) + 1) / extract(day from (l.month + interval '1 month - 1 day'))) n
+            from public.kitty_ly l where l.workshop = p_ws and l.month <= w2 and (l.month + interval '1 month - 1 day')::date >= w1 group by 1),
+  lyd as (select l.cap, sum(l.repair)::numeric n from public.kitty_lyd l where l.workshop = p_ws and l.day between w1 and w2 group by 1),
+  x as (select caps.cap, coalesce(kit.net, 0) kitty, round(case when manual then coalesce(lyd.n, man.n, 0) else coalesce(own.n, 0) end)::int rep, coalesce(pr.n, 0)::int prn,
+               ceil(coalesce(pr.n, 0) * (1 + pc / 100))::int pr2
+          from caps left join kit using (cap) left join pr using (cap) left join own using (cap) left join man using (cap) left join lyd using (cap))
+  select jsonb_agg(jsonb_build_array(cap, kitty, rep, prn, pr2, kitty + rep - pr2, greatest(0, pr2 - kitty - rep)) order by cap), coalesce(bool_or(rep > 0), false) into rows, any_rep from x;
+  return jsonb_build_object('rows', rows, 'w1', w1, 'w2', w2, 'days', n, 'pct', pc, 'manual', manual, 'ly_any', any_rep);
+end $$;
+grant execute on function public.kitty_need_json(text, date, int, numeric) to authenticated;
+
+create or replace function public.daywise_json(p_from date, p_to date) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare c public.profiles := public.tf_caller(); pf date := (p_from - interval '1 year')::date; pt date := (p_to - interval '1 year')::date; ws text[]; a jsonb; b jsonb;
+begin
+  if c.user_id is null or not c.active or c.role not in ('admin', 'je', 'discom', 'creator') then raise exception 'Not allowed.'; end if;
+  if p_from is null or p_to is null or p_from > p_to then raise exception 'Choose the From and To dates.'; end if;
+  if p_to - p_from > 400 then raise exception 'Choose a period of up to 13 months.'; end if;
+  select coalesce(array_agg(w.name), '{}') into ws from public.workshops w
+   where c.role in ('discom', 'creator') or c.org_division is null or w.org_division = c.org_division;
+  select coalesce(jsonb_agg(jsonb_build_array(q.per, q.wsn, q.dy, q.n)), '[]'::jsonb) into a from (
+    select 'c'::text as per, d.workshop as wsn, d.pr_date as dy, count(*) as n from public.data d
+     where not d.dup and d.workshop = any (ws) and d.pr_date between p_from and p_to group by d.workshop, d.pr_date
+    union all
+    select 'p'::text as per, d.workshop as wsn, d.pr_date as dy, count(*) as n from public.data d
+     where not d.dup and d.workshop = any (ws) and d.pr_date between pf and pt group by d.workshop, d.pr_date) q;
+  select coalesce(jsonb_agg(jsonb_build_array(q.per, q.wsn, q.dy, q.n)), '[]'::jsonb) into b from (
+    select 'c'::text as per, e.workshop as wsn, e.day as dy, sum(e.qty)::int as n from public.rr_entry e
+     where e.block = 'REPAIR' and e.workshop = any (ws) and e.day between p_from and p_to group by e.workshop, e.day
+    union all
+    select 'p'::text as per, e.workshop as wsn, e.day as dy, sum(e.qty)::int as n from public.rr_entry e
+     where e.block = 'REPAIR' and e.workshop = any (ws) and e.day between pf and pt group by e.workshop, e.day
+    union all
+    select 'p'::text as per, l.workshop as wsn, l.day as dy, sum(l.repair)::int as n from public.kitty_lyd l          -- last year's repair typed day by day (only where the Repair tab has nothing)
+     where l.workshop = any (ws) and l.day between pf and pt
+       and not exists (select 1 from public.rr_entry e where e.block = 'REPAIR' and e.workshop = l.workshop and e.day = l.day)
+     group by l.workshop, l.day) q;
+  return jsonb_build_object('pr', a, 'rp', b);
+end $$;
+revoke all on function public.daywise_json(date, date) from public, anon;
+grant execute on function public.daywise_json(date, date) to authenticated;
+notify pgrst, 'reload schema';
+
+-- ================================================================================================================
+-- STEP 106 : KITTY SUMMARY from date to date (Reports tab)
+-- rows per workshop and capacity: [cap, opening kitty on the From date, issue, repair, issue to other w/s, receive from other w/s, net kitty on the To date]
+-- issue / repair / to other / from other are the totals of the days From..To.  p_ws = one workshop (or null = all of yours).
+-- A workshop whose kitty is not started on the From date is listed in "nobase".  Safe to run again.
+-- ================================================================================================================
+create or replace function public.kitty_range_json(p_from date, p_to date, p_ws text default null) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare w text; a jsonb; b jsonb; rws jsonb; outj jsonb := '[]'::jsonb; nob jsonb := '[]'::jsonb; caps int[] := array[10, 16, 25, 63, 100, 160, 250, 400, 630, 1000]; lst text[];
+begin
+  if not public.mr_ok() then raise exception 'No access to the M&R dashboard.'; end if;
+  if p_from is null or p_to is null or p_from > p_to then raise exception 'Choose the From and To dates (From must not be after To).'; end if;
+  if p_to - p_from > 400 then raise exception 'Choose a period of up to 13 months.'; end if;
+  if coalesce(p_ws, '') <> '' and not (p_ws = any (public.my_workshops())) then raise exception 'This workshop is not yours.'; end if;
+  lst := case when coalesce(p_ws, '') = '' then public.my_workshops() else array[p_ws] end;
+  foreach w in array coalesce(lst, '{}') loop
+    a := public.kitty_json(w, p_from);
+    if (a->>'base') is null then nob := nob || to_jsonb(w); continue; end if;
+    b := public.kitty_json(w, p_to);
+    select jsonb_agg(jsonb_build_array(c,
+             coalesce((select (x->>1)::int from jsonb_array_elements(a->'rows') x where (x->>0)::int = c), 0),
+             (select count(*)::int from public.data d where not d.dup and d.workshop = w and d.capacity = c and d.issue_date between p_from and p_to),
+             coalesce((select sum(k.repair)::int from public.kitty_day k where k.workshop = w and k.cap = c and k.day between p_from and p_to), 0),
+             coalesce((select sum(k.to_other)::int from public.kitty_day k where k.workshop = w and k.cap = c and k.day between p_from and p_to), 0),
+             coalesce((select sum(k.from_other)::int from public.kitty_day k where k.workshop = w and k.cap = c and k.day between p_from and p_to), 0),
+             coalesce((select (x->>7)::int from jsonb_array_elements(b->'rows') x where (x->>0)::int = c), 0)) order by c)
+      into rws from unnest(caps) c;
+    outj := outj || jsonb_build_array(jsonb_build_object('ws', w, 'rows', rws));
+  end loop;
+  return jsonb_build_object('ws', outj, 'nobase', nob);
+end $$;
+revoke all on function public.kitty_range_json(date, date, text) from public, anon;
+grant execute on function public.kitty_range_json(date, date, text) to authenticated;
+notify pgrst, 'reload schema';
+
+-- ================================================================================================================
+-- STEP 107 : AUTOMATIC KEEPING TIME (no storage condition any more)
+--   R&R (the PRs in table "data") : the LAST 3 YEARS stay.  When data older than 3 years exists (the 4th year has begun), the OLDEST 12 MONTHS of it are deleted.
+--                                    The daily counts of the deleted PRs go to cmp_hist first, so the Comparison keeps working.
+--   Comparison history (cmp_hist)  : kept for 10 YEARS, older days are deleted.
+--   M&R (Repair entries rr_entry + Testing Register test_reg, and the typed "last year" kitty figures) : the LAST 5 YEARS stay.
+--                                    When data older than 5 years exists (the 6th year has begun), the OLDEST 12 MONTHS of it are deleted.
+--   Kitty / Scrap / Chamber opening figures are running balances, they are never deleted.
+--   Safety: a PR that a Kitty still counts (issue date on or after the Kitty start day) and an Assembly / Oven line that the Chamber report still counts
+--           (day on or after the Chamber start day) is NOT deleted; the number of such lines is written in purge_log.
+--   Runs every Sunday night (pg_cron).  See what happened:  select * from public.purge_log order by id desc limit 10;
+--   The older "delete only when the storage is 90% full" job (purge_if_full) stays as an extra safety net.   Safe to run again.
+-- ================================================================================================================
+create or replace function public.purge_rr_yearly() returns bigint
+language plpgsql security definer set search_path = public as $$
+declare cut date := (current_date - interval '36 months')::date; lo date; hi date; n bigint := 0; held bigint := 0; hc bigint := 0; note text;
+begin
+  select min(pr_date) into lo from public.data where pr_date is not null and pr_date < cut;
+  if lo is not null then
+    hi := least(cut, (lo + interval '12 months')::date);
+    insert into public.cmp_hist (workshop, division, capacity, d, n)         -- the daily counts for the Comparison, BEFORE the PRs go
+      select workshop, upper(btrim(regexp_replace(coalesce(division, ''), '\s+', ' ', 'g'))), coalesce(capacity, 0), pr_date, count(*)
+        from public.data where pr_date is not null and pr_date < hi and not dup group by 1, 2, 3, 4
+      on conflict (workshop, division, capacity, d) do update set n = greatest(public.cmp_hist.n, excluded.n);
+    delete from public.data d where d.pr_date is not null and d.pr_date < hi
+       and not exists (select 1 from public.kitty_base b where b.workshop = d.workshop and d.issue_date is not null and d.issue_date >= b.day);
+    get diagnostics n = row_count;
+    select count(*) into held from public.data where pr_date is not null and pr_date < hi;
+    note := 'R&R: deleted ' || n || ' PRs older than ' || to_char(hi, 'DD.MM.YYYY') || ' (last 3 years stay)' || case when held > 0 then '; ' || held || ' PRs kept because a Kitty still counts them' else '' end;
+    if n > 0 then insert into public.purge_log (db_mb, limit_mb, deleted, note) values (round(pg_database_size(current_database()) / 1048576.0, 1), null, n, note); end if;   -- no log line when nothing was deleted
+  end if;
+  delete from public.cmp_hist where d < (current_date - interval '10 years')::date;
+  get diagnostics hc = row_count;
+  if hc > 0 then insert into public.purge_log (db_mb, limit_mb, deleted, note) values (round(pg_database_size(current_database()) / 1048576.0, 1), null, hc, 'Comparison history: deleted ' || hc || ' day lines older than 10 years'); end if;
+  return n;
+end $$;
+revoke all on function public.purge_rr_yearly() from public, anon, authenticated;
+
+create or replace function public.purge_mr_yearly() returns bigint
+language plpgsql security definer set search_path = public as $$
+declare cut date := (current_date - interval '60 months')::date; lo date; hi date; a bigint := 0; b bigint := 0; c bigint := 0; held bigint := 0;
+begin
+  select min(x) into lo from (
+    select min(day) as x from public.rr_entry where day < cut
+    union all select min(coalesce(test_date, created_at::date)) from public.test_reg where coalesce(test_date, created_at::date) < cut) q;
+  if lo is null then return 0; end if;
+  hi := least(cut, (lo + interval '12 months')::date);
+  delete from public.rr_entry e where e.day < hi
+     and not (e.block in ('ASSEMBLY', 'OVEN') and exists (select 1 from public.ch_base b where b.workshop = e.workshop and b.day <= e.day));
+  get diagnostics a = row_count;
+  select count(*) into held from public.rr_entry where day < hi;
+  delete from public.test_reg where coalesce(test_date, created_at::date) < hi;
+  get diagnostics b = row_count;
+  delete from public.kitty_lyk where day < hi; get diagnostics c = row_count;
+  if to_regclass('public.kitty_lyd') is not null then execute 'delete from public.kitty_lyd where day < $1' using hi; end if;
+  if a + b + c = 0 then return 0; end if;
+  insert into public.purge_log (db_mb, limit_mb, deleted, note) values (round(pg_database_size(current_database()) / 1048576.0, 1), null, a + b + c,
+    'M&R: deleted ' || a || ' Repair lines, ' || b || ' Testing Register lines, ' || c || ' last-year kitty lines older than ' || to_char(hi, 'DD.MM.YYYY') || ' (last 5 years stay)'
+    || case when held > 0 then '; ' || held || ' Assembly/Oven lines kept because the Chamber report still counts them' else '' end);
+  return a + b + c;
+end $$;
+revoke all on function public.purge_mr_yearly() from public, anon, authenticated;
+
+do $$
+begin
+  create extension if not exists pg_cron;
+  begin perform cron.unschedule('tf-purge-rr'); exception when others then null; end;
+  begin perform cron.unschedule('tf-purge-mr'); exception when others then null; end;
+  perform cron.schedule('tf-purge-rr', '0 20 * * 6',  'select public.purge_rr_yearly()');    -- Sunday 01:30 India time
+  perform cron.schedule('tf-purge-mr', '15 20 * * 6', 'select public.purge_mr_yearly()');    -- Sunday 01:45 India time
+exception when others then
+  raise notice 'pg_cron is not available: the yearly purge jobs were NOT created (%). Enable pg_cron and run this file again.', sqlerrm;
+end $$;
 notify pgrst, 'reload schema';
