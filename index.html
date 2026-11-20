@@ -920,11 +920,11 @@ table.cmpt input.ci{width:70px;text-align:center;font:inherit;font-weight:800;bo
 #pz .cmpp table.cmpt tr.w.wt td,#pz .cmpp table.cmpt tr.t.z td{font-size:8.5px}
 #pz .cmpp table.cmpt td.nm,#pz .cmpp table.cmpt th.nm{white-space:normal;min-width:26mm}
 #pz .cmpp .cmph{display:none!important}
-#pz .cmpp{width:277mm!important;max-width:none!important;margin:0 auto!important;overflow:visible!important}
-#pz .cmpp table.cmpt{width:277mm!important;min-width:0!important;max-width:none!important;table-layout:fixed!important;font-size:7pt!important}
+#pz .cmpp{width:100%!important;max-width:none!important;margin:0 auto!important;overflow:visible!important}
+#pz .cmpp table.cmpt{width:100%!important;min-width:0!important;max-width:none!important;table-layout:fixed!important;font-size:7pt!important}
 #pz .cmpp table.cmpt tr.ca{display:table-row!important}
 #pz .cmpp table.cmpt th,#pz .cmpp table.cmpt td{font-size:7pt!important;padding:0 .4mm!important;position:static!important;max-width:none!important;min-width:0!important;overflow:hidden}
-#pz .cmpp table.cmpt thead th{font-size:5.6pt!important;line-height:1.1!important;padding:.4mm .3mm!important}
+#pz .cmpp table.cmpt thead th{font-size:5.2pt!important;line-height:1.1!important;padding:.4mm .3mm!important}
 #pz .cmpp table.cmpt thead tr.ca th{font-size:8pt!important}
 #pz .cmpp table.cmpt thead tr.ca th:not(.ct){font-size:6pt!important}
 #pz .cmpp table.cmpt td{font-size:6.8pt!important}
@@ -933,6 +933,16 @@ table.cmpt input.ci{width:70px;text-align:center;font:inherit;font-weight:800;bo
 #pz .cmpp table.cmpt tr.w.wt td,#pz .cmpp table.cmpt tr.t.z td{font-size:7.4pt!important}
 #pz .cmpp table.cmpt tr.w.s td.nm,#pz .cmpp table.cmpt tr.t.z td.nm{background:inherit!important}
 .cmph{display:none}
+/* final layout (screen + PDF): fixed columns in %, like the Excel sheet; header never overlaps */
+table.cmpt{table-layout:fixed!important;border-collapse:collapse!important}
+table.cmpt thead th{position:static!important;overflow:hidden}
+table.cmpt th.cp,table.cmpt th.nm,table.cmpt td.nm{min-width:0!important;max-width:none!important}
+table.cmpt td{overflow:hidden;text-overflow:clip}
+table.cmpt input.ci{width:92%!important;min-width:0}
+@media(min-width:701px){table.cmpt{width:100%!important;min-width:1250px!important;font-size:11px!important}
+ table.cmpt th,table.cmpt td{padding:7px 1px!important}table.cmpt thead th{padding:4px 1px!important}
+ table.cmpt th.cp{font-size:9.5px!important}table.cmpt td.nm{text-align:left;padding-left:4px!important}}
+@media print{#pz .cmpp table.cmpt thead{display:table-header-group}#pz .cmpp table.cmpt tr{break-inside:avoid;page-break-inside:avoid}}
 /* desktop: the table fills the width and the height of the screen, bigger letters */
 @media(min-width:901px){
  .cmpw{max-height:calc(100vh - 190px)!important}
@@ -2016,6 +2026,7 @@ table.dwt tr.dwT td{background:#ffff00;font-weight:800;font-size:14px}
 .rrt2.xg tbody tr td.bl{background:var(--bg)!important;color:var(--ac);font-weight:800!important;letter-spacing:.5px}
 .rrt2.xg tbody tr td.tt{background:var(--bg)!important;color:var(--ac);font-weight:700!important}
 .rrt2.xg tbody tr.tr td{background:var(--bg)!important;color:var(--ac);font-weight:800!important}
+.rrt2.xg tbody tr.sp td{background:#fff!important;height:14px;border-left:0!important;border-right:0!important}
 .rrt2.xg tbody tr td.xs{background:#cfe3ff!important}
 .rrt2.xg th.x,.rrt2.xg tbody tr td.x{background:transparent!important;border:0!important}
 .rrt2.xg td.x button{width:26px;height:26px;border-radius:50%;line-height:1;transition:background .15s,transform .15s}.rrt2.xg td.x button:hover{background:#fee2e2;transform:rotate(90deg)}
@@ -4316,12 +4327,14 @@ function cmpHtml(edit) {
   var sub = same ? 'COMPARISON OF DIVISION WISE PR FOR THE M/O-' + p2(f.getMonth() + 1) + '/' + f.getFullYear() + ' WITH LAST YEAR SAME MONTH' : 'COMPARISON OF DIVISION WISE PR FOR ' + C.from + ' TO ' + C.to + ' WITH THE SAME DATES OF LAST YEAR';
   var capH = CCAPS.slice(0, 4).map(String).concat(['BELOW<br>100 KVA'], CCAPS.slice(4).map(String), ['100 AND<br>ABOVE', 'TOTAL PR']);
   if (!edit || edit) h = '<div class="cmph"><b>' + esc(cmpTitle()) + '</b><span>' + esc(sub) + '</span><span>' + esc(C.from + ' TO ' + C.to) + '</span></div>' + h;
-  h += '<table class="cmpt"><thead>';
+  var U = [3, 8], sd = []; for (var q = 0; q < 10; q++) sd.push(2.2); sd.splice(4, 0, 2.6); sd.splice(11, 0, 2.6, 2.6, 4.4, 4);
+  var all = U.concat(sd, sd, [4.2, 4.2, 4.2]), sum = all.reduce(function (a, b) { return a + b; }, 0);
+  h += '<table class="cmpt"><colgroup>' + all.map(function (u) { return '<col style="width:' + (u / sum * 100).toFixed(3) + '%">'; }).join('') + '</colgroup><thead>';
   h += '<tr class="ca"><th colspan="' + (NC - 4) + '" class="ct">' + esc(cmpTitle()) + '</th><th>MONTH</th><th colspan="3">' + esc(C.from + ' TO ' + C.to) + '</th></tr>';
   h += '<tr class="ca"><th colspan="' + (NC - 4) + '" class="ct">' + esc(sub) + '</th><th colspan="4"></th></tr>';
   h += '<tr><th rowspan="2">Sl.No.</th><th rowspan="2" class="nm">Name of<br>Division Circle<br>/Zone</th>' +
-    '<th colspan="13">Damaged Transformers PR of ' + esc(lp) + '</th><th rowspan="2" class="ins">Install on<br>01.04.' + C.yp + '</th><th rowspan="2">Damage %</th>' +
-    '<th colspan="13">Damaged Transformers PR of ' + esc(lc) + '</th><th rowspan="2" class="ins">Install on<br>01.04.' + C.yc + '</th><th rowspan="2">DAMAGE %</th>' +
+    '<th colspan="13">Damaged Transformers PR of ' + esc(lp) + '</th><th rowspan="2">Install on<br>01.04.' + C.yp + '</th><th rowspan="2">Damage %</th>' +
+    '<th colspan="13">Damaged Transformers PR of ' + esc(lc) + '</th><th rowspan="2">Install on<br>01.04.' + C.yc + '</th><th rowspan="2">DAMAGE %</th>' +
     '<th rowspan="2">LESS THAN<br>100KVA<br>INC/DEC<br>DAMAGE %</th><th rowspan="2">100 KVA<br>AND ABOVE<br>INC/DEC<br>DAMAGE %</th><th rowspan="2">TOTAL INC/DEC<br>DAMAGE %</th></tr>';
   h += '<tr>' + capH.concat(capH).map(function (x) { return '<th class="cp">' + x + '</th>'; }).join('') + '</tr></thead><tbody>';
   function side(v, inst, edit, key, yr, vi) {
@@ -4479,11 +4492,6 @@ $('cxl').onclick = function () {
 $('cpr').onclick = function () {
   if (!CMP) return msg('cmsg', 'Show the comparison first.', 'info');
   printHtml('Comparison ' + CMP.from + ' to ' + CMP.to, '<div class="ps cmpp noanim">' + cmpHtml(false) + '</div>');
-  // the table is laid out in millimetres (not screen pixels), so it fills one landscape A4 page on any device
-  var tb = $('pz').querySelector('.cmpp table'), cg = '<colgroup><col style="width:7mm"><col style="width:30mm">', side = '';
-  for (var q = 0; q < 13; q++) side += '<col style="width:6.2mm">'; side += '<col style="width:9mm"><col style="width:8.5mm">';
-  cg += side + side + '<col style="width:12mm"><col style="width:12mm"><col style="width:12mm"></colgroup>';
-  tb.insertAdjacentHTML('afterbegin', cg);
 };
 
 /* =====================  GRAPH DASHBOARD (opened from the Summary)  =====================
@@ -7702,29 +7710,52 @@ function mrRepAllTab(b, heads, lines, grouped) {
   h += '<tr class="tr"><td class="tl" colspan="' + heads.length + '">TOTAL</td>'; RR_CAPS.forEach(function (c) { h += '<td class="tt">' + (ct[c] || 0) + '</td>'; }); h += '<td class="tt">' + gt + '</td></tr>';
   return { html: h + '</tbody></table></div>', total: gt };
 }
-function mrRepAll() {
-  var v = MR.rview === 'wsfirm' ? 'wsfirm' : 'firm', h = '', tot = {};
-  h += '<div class="bar rrv"><span class="muted">Firm table:</span><button type="button" class="btn sm' + (v === 'firm' ? '' : ' sec') + '" data-rv="firm">Firm wise</button><button type="button" class="btn sm' + (v === 'wsfirm' ? '' : ' sec') + '" data-rv="wsfirm">Workshop + Firm wise</button></div>';
-  var cards = '';
-  RR_BLK.forEach(function (b) {
-    var D = mrRepAllData(b), t1 = mrRepAllTab(b, ['NAME OF WORKSHOP'], D.W), t2 = v === 'firm' ? mrRepAllTab(b, ['NAME OF FIRM'], D.F) : mrRepAllTab(b, ['WORKSHOP', 'NAME OF FIRM'], D.WF, true);
-    tot[b] = t1.total;
-    cards += '<div class="rrc rrc-' + b + '"><div class="rrh"><span class="rrd"></span>' + b + ' <small>' + RR_SUBT[b] + ' &middot; workshop-wise</small></div>' + t1.html +
-      '<div class="rrh rrh2"><span class="rrd"></span>' + b + ' <small>' + (v === 'firm' ? 'firm-wise (all workshops together)' : 'workshop + firm-wise') + '</small></div>' + t2.html + '</div>';
+function mrRepAllGrp(title, first, groups) {          // groups = [{b, lines:[{n, q}]}] : one table, a merged category cell per group, a TOTAL line, an empty line between groups
+  var N = RR_CAPS.length + 3, h = '<div class="rrh rrh2"><span class="rrd"></span>' + esc(title) + '</div><div class="wrap"><table class="rrt2 xg"><thead><tr><th></th><th>' + esc(first) + '</th>', tots = {};
+  RR_CAPS.forEach(function (c) { h += '<th>' + (RR_LBL[c] || c) + '</th>'; }); h += '<th>TOTAL</th></tr></thead><tbody>';
+  groups.forEach(function (g, gi) {
+    var ct = {}, gt = 0, L = g.lines.length ? g.lines : [{ n: '', q: {} }];
+    if (gi) h += '<tr class="sp"><td colspan="' + N + '"></td></tr>';
+    L.forEach(function (ln, i) {
+      var t = 0; h += '<tr>' + (i ? '' : '<td class="bl" rowspan="' + (L.length + 1) + '">' + esc(g.b) + '</td>') + '<td class="l">' + esc(ln.n) + '</td>';
+      RR_CAPS.forEach(function (c) { var v = ln.q[c] || 0; t += v; ct[c] = (ct[c] || 0) + v; h += '<td>' + (v || '') + '</td>'; }); gt += t; h += '<td class="tt">' + (t || '') + '</td></tr>';
+    });
+    h += '<tr class="tr"><td class="tl">TOTAL</td>'; RR_CAPS.forEach(function (c) { h += '<td class="tt">' + (ct[c] || 0) + '</td>'; }); h += '<td class="tt">' + gt + '</td></tr>'; tots[g.b] = gt;
   });
-  h += '<div class="rrk">' + RR_BLK.map(function (b) { return '<div class="rrkc rrk-' + b + '"><i>' + b + '</i><b>' + tot[b] + '</b><small>' + RR_SUBT[b] + '</small></div>'; }).join('') + '</div>' + cards;
+  return { html: h + '</tbody></table></div>', tots: tots };
+}
+function mrRepAllSets() {                              // [{title, first, groups}] : WORKSHOP WISE, then FIRM WISE of every workshop
+  var D = {}, S = [], any = {};
+  RR_BLK.forEach(function (b) { D[b] = mrRepAllData(b); });
+  S.push({ title: 'WORKSHOP WISE', first: 'WORKSHOP', groups: RR_BLK.map(function (b) { return { b: b, lines: D[b].W.filter(function (x) { return Object.keys(x.q).length; }).map(function (x) { return { n: x.l[0], q: x.q }; }) }; }) });
+  mrWs().forEach(function (w) {
+    var gs = RR_BLK.map(function (b) { return { b: b, lines: D[b].WF.filter(function (x) { return x.l[0] === w; }).map(function (x) { return { n: x.l[1], q: x.q }; }) }; });
+    if (gs.some(function (g) { return g.lines.length; })) S.push({ title: 'FIRM WISE ' + w, first: 'FIRM', groups: gs });
+  });
+  return S;
+}
+function mrRepAll() {
+  var S = mrRepAllSets(), h = '', cards = '', tot = {};
+  S.forEach(function (st, i) { var t = mrRepAllGrp(st.title, st.first, st.groups); if (!i) tot = t.tots; cards += '<div class="rrc">' + t.html.replace(/^<div class="rrh rrh2">/, '<div class="rrh">') + '</div>'; });
+  h += '<div class="rrk">' + RR_BLK.map(function (b) { return '<div class="rrkc rrk-' + b + '"><i>' + b + '</i><b>' + (tot[b] || 0) + '</b><small>' + RR_SUBT[b] + '</small></div>'; }).join('') + '</div>' + cards;
   h += '<div class="bar"><span class="muted" style="flex:1">View only.</span><button class="btn sec" id="mpxl" type="button">&#11015; Excel</button><button class="btn sec" id="mppdf" type="button">&#128196; PDF</button></div>';
   $('mpout').innerHTML = h;
 }
 function mrRepAllXl() {
-  var rows = [], B = RR_BLK, v = MR.rview === 'wsfirm' ? 'wsfirm' : 'firm';
-  function put(b, heads, lines, grouped) {
-    rows.push(heads.concat(RR_CAPS.map(function (c) { return RR_LBL[c] || c; }), ['TOTAL'])); var ct = {}, gt = 0;
-    lines.forEach(function (ln) { var t = 0, line = ln.l.slice(); RR_CAPS.forEach(function (c) { var x = ln.q[c] || 0; t += x; ct[c] = (ct[c] || 0) + x; line.push(x || ''); }); line.push(t); gt += t; rows.push(line); });
-    var tl = ['TOTAL'].concat(heads.slice(1).map(function () { return ''; })); RR_CAPS.forEach(function (c) { tl.push(ct[c] || 0); }); tl.push(gt); rows.push(tl); rows.push([]);
-  }
-  B.forEach(function (b) { var D = mrRepAllData(b); rows.push([b + ' - workshop wise']); put(b, ['NAME OF WORKSHOP'], D.W); rows.push([b + (v === 'firm' ? ' - firm wise' : ' - workshop + firm wise')]); if (v === 'firm') put(b, ['NAME OF FIRM'], D.F); else put(b, ['WORKSHOP', 'NAME OF FIRM'], D.WF); });
-  xlsxDownload('Repair_All_workshops_' + mrFile(MR.pd.d) + '.xlsx', [{ name: 'Repair', rows: rows }]);
+  var rows = [], merges = [], N = RR_CAPS.length + 3;
+  mrRepAllSets().forEach(function (st) {
+    var r0 = rows.length; rows.push([st.title]); merges.push([r0, 0, r0, N - 1]);
+    rows.push(['', st.first].concat(RR_CAPS.map(function (c) { return RR_LBL[c] || c; }), ['TOTAL']));
+    st.groups.forEach(function (g, gi) {
+      if (gi) rows.push([]);
+      var L = g.lines.length ? g.lines : [{ n: '', q: {} }], ct = {}, gt = 0, s0 = rows.length;
+      L.forEach(function (ln, i) { var t = 0, line = [i ? '' : g.b, ln.n]; RR_CAPS.forEach(function (c) { var x = ln.q[c] || 0; t += x; ct[c] = (ct[c] || 0) + x; line.push(x || ''); }); line.push(t); gt += t; rows.push(line); });
+      var tl = ['', 'TOTAL']; RR_CAPS.forEach(function (c) { tl.push(ct[c] || 0); }); tl.push(gt); rows.push(tl);
+      merges.push([s0, 0, rows.length - 1, 0]);
+    });
+    rows.push([]); rows.push([]);
+  });
+  xlsxDownload('Repair_All_workshops_' + mrFile(MR.pd.d) + '.xlsx', [{ name: 'Repair', rows: rows, merges: merges, cw: [14, 24].concat(RR_CAPS.map(function () { return 7; }), [9]) }]);
 }
 /* PDF = the print window (choose "Save as PDF") */
 function mrRepPdfHtml(root) {
