@@ -2006,6 +2006,26 @@ table.dwt tr.dwT td{background:#ffff00;font-weight:800;font-size:14px}
  .rrk{margin-bottom:8px}.rrkc{flex-direction:row;align-items:baseline;gap:10px;padding:6px 14px}.rrkc small{display:none}.rrkc b{font-size:22px}
  .rrc{margin-bottom:8px}.rrh{padding:5px 14px 0}.rrc .wrap{padding:2px 10px 8px}
  #mpout.cmp .rrt.xg th{padding:2px 4px!important;font-size:11.5px!important}#mpout.cmp .rrt.xg td{font-size:12.5px}
+.rrt2.xg th,.rrt2.xg td{background:#c8c8c8!important}.rrt2.xg td.xs{background:#a9cfb3!important}.rrt2.xg th.x,.rrt2.xg td.x{background:transparent!important}.rrt2.xg td.bl{font-weight:400!important;width:90px}.rrt td.tt{font-weight:400!important}
+.rrt2.xg{border-collapse:separate;border-spacing:0;border-radius:10px;overflow:hidden}
+.rrt2.xg th{background:var(--bg)!important;color:var(--ac)!important;font-weight:700!important;font-size:12.5px!important;border:1px solid var(--bd)!important;padding:7px 6px!important}
+.rrt2.xg td{background:#fff!important;border:1px solid #e3e8f3!important;height:33px}
+.rrt2.xg tbody tr:nth-child(even) td{background:#f7f9ff!important}
+.rrt2.xg td>input{transition:background .15s,box-shadow .15s}.rrt2.xg td>input:hover{background:#eef3ff!important}
+.rrt2.xg td>input:focus{background:#fffbe6!important;box-shadow:inset 0 0 0 2px var(--ac)}
+.rrt2.xg tbody tr td.bl{background:var(--bg)!important;color:var(--ac);font-weight:800!important;letter-spacing:.5px}
+.rrt2.xg tbody tr td.tt{background:var(--bg)!important;color:var(--ac);font-weight:700!important}
+.rrt2.xg tbody tr.tr td{background:var(--bg)!important;color:var(--ac);font-weight:800!important}
+.rrt2.xg tbody tr td.xs{background:#cfe3ff!important}
+.rrt2.xg th.x,.rrt2.xg tbody tr td.x{background:transparent!important;border:0!important}
+.rrt2.xg td.x button{width:26px;height:26px;border-radius:50%;line-height:1;transition:background .15s,transform .15s}.rrt2.xg td.x button:hover{background:#fee2e2;transform:rotate(90deg)}
+.rrt2.xg tr.empty td{color:#94a3b8!important}
+.rrt2.xg td>input{height:calc(var(--rh,33px) - 2px)!important;padding-top:0!important;padding-bottom:0!important;line-height:1}
+.rrt2.xg td{height:var(--rh,33px)!important;padding-top:0!important;padding-bottom:0!important}.rrt2.xg td>input{box-sizing:border-box;font-size:12.5px}
+.rrt2.xg td.bl,.rrt2.xg td.tt{line-height:1.1}
+.rrt2.xg td.x button{width:min(26px,calc(var(--rh,33px) - 2px))!important;height:min(26px,calc(var(--rh,33px) - 2px))!important;padding:0!important;font-size:12px;line-height:1}
+ #mpout.cmp .rrt2.xg th{padding:2px 4px!important;font-size:11.5px!important}#mpout.cmp .rrt2.xg td{font-size:12.5px}
+.rrh2{padding-top:12px;border-top:1px dashed var(--bd,#ddd);margin-top:6px}.rrv{gap:8px;align-items:center;margin:0 0 10px}.rrt2.xg td.l{text-align:left;padding-left:8px}
 }
 #rsov{position:fixed;inset:0;z-index:300;background:rgba(20,16,10,.55);display:flex;align-items:flex-start;justify-content:center;padding:3vh 10px;overflow:auto;animation:mrFade .25s both}
 #rsov.hide{display:none}
@@ -2396,7 +2416,7 @@ nav button#tmr{margin-top:auto}
       <div id="rpwebw" class="hide">
         <div class="bar rpbk"><button class="btn sec sm" type="button" data-rpback>&#8249; Reports</button><b id="rpwebt"></b><span style="flex:1"></span><a class="btn sec sm" id="rpwebx" target="_blank" rel="noopener noreferrer">Open in new tab &#8599;</a><button class="btn sec sm hide" type="button" id="rpwebdel">Remove</button></div>
         <div class="muted" style="font-size:12px;margin:4px 2px">If this page stays blank, that web app does not allow itself to open inside another page - use <b>Open in new tab</b>.</div>
-        <iframe id="rpwebf" title="Report" referrerpolicy="no-referrer" allow="clipboard-write; fullscreen" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-downloads allow-modals" style="width:100%;height:calc(100vh - 210px);min-height:440px;border:1px solid #d9dfee;border-radius:12px;background:#fff"></iframe>
+        <iframe id="rpwebf" title="Report" referrerpolicy="no-referrer" allow="clipboard-write; fullscreen" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-downloads allow-modals" style="display:block;width:100%;height:calc(100vh - 150px);min-height:440px;border:1px solid #d9dfee;border-radius:12px;background:#fff"></iframe>
       </div>
       <div id="rpaddo" class="hide mmov"></div>
       <div id="rpcmpw" class="hide" data-m="cmp">
@@ -2538,7 +2558,7 @@ nav button#tmr{margin-top:auto}
     <div id="pdov" class="hide"><div class="box"><div class="hd"><b>Pending for DTC</b><span class="muted" id="pdsub" style="flex:1"></span><button class="btn sm" id="pdsave" type="button" disabled>Save DTC</button><button class="btn sec sm" id="pdx" type="button">Close &#10005;</button></div><div id="pdmsg"></div><div class="wrap mrtb"><table id="pdt"></table></div></div></div>
     <div id="gov" class="hide"><div class="box"><div class="hd"><b id="govt"></b><span id="govbtn" style="margin-left:auto;display:flex;gap:6px;flex-wrap:wrap"></span><button class="btn sec sm" id="govx" type="button">Close &#10005;</button></div><div id="govmsg"></div><div id="govb"></div></div></div>
     <div id="otpbell" class="hide"></div>
-    <div id="rsov" class="hide"><div class="box"><div class="hd"><b>Repair summary</b><span class="muted" style="flex:1">transformers from date to date - firm &amp; capacity wise</span><button class="btn sec sm" id="rsxl" type="button">&#11015; Excel</button><button class="btn sec sm" id="rsx" type="button">Close &#10005;</button></div><div id="rsbar"></div><div id="rsmsg"></div><div id="rsout"></div></div></div>
+    <div id="rsov" class="hide"><div class="box"><div class="hd"><b>Repair summary</b><span class="muted" style="flex:1">transformers from date to date - firm &amp; capacity wise</span><button class="btn sec sm" id="rsxl" type="button">&#11015; Excel</button><button class="btn sec sm" id="rspdf" type="button">&#128196; PDF</button><button class="btn sec sm" id="rsx" type="button">Close &#10005;</button></div><div id="rsbar"></div><div id="rsmsg"></div><div id="rsout"></div></div></div>
     <div id="chmov" class="hide"><div class="box"><div class="hd"><b id="chmt">Chamber Assembly Report</b><button class="btn sec sm" id="chmpr" type="button">&#128424; Print</button><button class="btn sec sm" id="chmxl" type="button">&#11015; Excel</button><button class="btn sec sm hide" id="chmbase" type="button">Start figures (Admin)</button><button class="btn sec sm" id="chmx" type="button">Close &#10005;</button></div><div class="muted" style="font-size:12px;margin:-2px 0 6px">Select cells like in Excel (drag with the mouse, Shift+click, or Ctrl+A), press Ctrl+C and paste in Excel.</div><div id="chmmsg"></div><div id="chmbw" class="hide"></div><div id="chmb"></div></div></div>
     <!-- SCRAP -->
     <section id="t-mrmat" class="hide">
@@ -6835,9 +6855,11 @@ function rpHome() {
   RPC.admin = ME.role === 'admin'; rpDrawChips(); rpShow('');
   rpc('rp_list').then(function (r) { RPC.rows = (r && r.rows) || []; RPC.admin = !!(r && r.admin); if (CURTAB === 'cmp' && !$('rpmenu').classList.contains('hide')) rpDrawChips(); }).catch(function () { });
 }
+function rpWebFit() { var f = $('rpwebf'); if (!f || f.offsetParent === null) return; var h = window.innerHeight - f.getBoundingClientRect().top - 10; f.style.height = Math.max(440, h) + 'px'; }
+window.addEventListener('resize', function () { setTimeout(rpWebFit, 50); });
 function rpWebOpen(id) {
   var r = RPC.rows.filter(function (x) { return x[0] === id; })[0]; if (!r) return;
-  rpShow('web'); $('rpwebt').textContent = r[1]; $('rpwebx').href = r[2]; $('rpwebdel').classList.toggle('hide', !RPC.admin); $('rpwebdel').dataset.id = id; $('rpwebf').src = r[2];
+  rpShow('web'); $('rpwebt').textContent = r[1]; $('rpwebx').href = r[2]; $('rpwebdel').classList.toggle('hide', !RPC.admin); $('rpwebdel').dataset.id = id; $('rpwebf').src = r[2]; rpWebFit(); setTimeout(rpWebFit, 150); setTimeout(rpWebFit, 600);
 }
 function rpAddOpen() {
   var o = $('rpaddo');
@@ -7549,8 +7571,8 @@ function mrRepLoad(force) {
   if (!validD(d)) return msg('mpmsg', 'Enter the date in DD.MM.YYYY format.', 'err');
   msg('mpmsg', ''); $('mpout').innerHTML = '<div class="msg info">Loading...</div>'; var seq = MR.pseq = (MR.pseq || 0) + 1;
   var rrq = MR.pws === '__ALL__' ? Promise.all(mrWs().map(function (w) { return rpc('rr_json', { p_ws: w, p_day: mrIso(d) }); })).then(function (a) {
-    var m = {}, rows = []; a.forEach(function (x) { (x.rows || []).forEach(function (y) { var k = y[0] + '\u0001' + y[1] + '\u0001' + y[2]; if (!(k in m)) { m[k] = [y[0], y[1], y[2], 0]; rows.push(m[k]); } m[k][3] += y[3]; }); });
-    return { rows: rows, firms: [], edit: false, all: true };
+    var m = {}, rows = [], per = {}; mrWs().forEach(function (w, i) { per[w] = (a[i] && a[i].rows) || []; }); a.forEach(function (x) { (x.rows || []).forEach(function (y) { var k = y[0] + '\u0001' + y[1] + '\u0001' + y[2]; if (!(k in m)) { m[k] = [y[0], y[1], y[2], 0]; rows.push(m[k]); } m[k][3] += y[3]; }); });
+    return { rows: rows, firms: [], edit: false, all: true, per: per };
   }) : rpc('rr_json', { p_ws: MR.pws, p_day: mrIso(d) });
   rrq.then(function (r) { if (seq !== MR.pseq) return; MR.pd = { r: r, d: d }; MR.pd.ws = MR.pws; mrRepDraw(); if (r.all) msg('mpmsg', 'All workshops together (view only). Choose one workshop to type data.', 'info'); })
     .catch(function (er) { if (seq !== MR.pseq) return; MR.pd = null; $('mpout').innerHTML = ''; msg('mpmsg', esc(er.message), 'err'); });
@@ -7573,10 +7595,11 @@ function mrRepRender(F, can) {
   var RR_SUB = { REPAIR: 'T/F repaired today', ASSEMBLY: 'T/F sent to assembly today', OVEN: 'T/F sent to oven today' };
   h += '<div class="rrk">' + RR_BLK.map(function (b) { return '<div class="rrkc rrk-' + b + '"><i>' + b + '</i><b id="rrk-' + b + '">0</b><small>' + RR_SUB[b] + '</small></div>'; }).join('') + '</div>';
   RR_BLK.forEach(function (b) { h += '<div class="rrc rrc-' + b + '"><div class="rrh"><span class="rrd"></span>' + b + ' <small>' + RR_SUB[b] + ' &middot; firm-wise</small></div>' + mrRepBlock(b, F, can) + '</div>'; });
-  h += '<div class="bar">' + (can ? '<button class="btn sec" id="rradd" type="button">+ Add firm</button><button class="btn" id="mpsave" type="button" disabled>Save</button>' : '<span class="muted" style="flex:1">View only.</span>') + '<button class="btn sec" id="mpxl" type="button">&#11015; Excel</button></div>';
+  h += '<div class="bar">' + (can ? '<button class="btn sec" id="rradd" type="button">+ Add firm</button><button class="btn" id="mpsave" type="button" disabled>Save</button>' : '<span class="muted" style="flex:1">View only.</span>') + '<button class="btn sec" id="mpxl" type="button">&#11015; Excel</button><button class="btn sec" id="mppdf" type="button">&#128196; PDF</button></div>';
   $('mpout').innerHTML = h; mrRepTotal();
 }
 function mrRepDraw() {
+  if (MR.pd.r.all && MR.pd.r.per) return mrRepAll();
   var r = MR.pd.r, F = [], idx = {};
   var get = function (n) { if (!(n in idx)) idx[n] = F.push({ firm: n, q: {} }) - 1; return F[idx[n]]; };
   (r.rows || []).forEach(function (x) { get(x[1]).q[x[0] + '|' + x[2]] = x[3]; });
@@ -7637,6 +7660,7 @@ document.addEventListener('click', function (e) {
     busy(b, true, 'Saving...'); rpc('rr_save', { p_ws: MR.pd.ws, p_day: mrIso(MR.pd.d), p_rows: mrRepCollect() }).then(function () { busy(b, false); mrRepLoad(true); setTimeout(function () { msg('mpmsg', 'Saved.', 'ok'); }, 0); }).catch(function (er) { busy(b, false); msg('mpmsg', esc(er.message), 'err'); }); return;
   }
   if ((b = t.closest('#mpxl'))) {
+    if (MR.pd && MR.pd.r.all && MR.pd.r.per) return mrRepAllXl();
     var rows = [];
     document.querySelectorAll('#mpout table.rrt').forEach(function (tb) {
       rows.push(['', 'NAME OF FIRM'].concat(RR_CAPS.map(function (c) { return RR_LBL[c] || c; }), ['TOTAL']));
@@ -7649,6 +7673,83 @@ document.addEventListener('click', function (e) {
     });
     xlsxDownload('Repair_' + mrFile(MR.pd.ws) + '_' + mrFile(MR.pd.d) + '.xlsx', [{ name: 'Repair', rows: rows }]);
   }
+});
+/* ---- Repair tab, "All workshops" (Admin): workshop wise, then firm wise or workshop + firm wise ---- */
+var RR_SUBT = { REPAIR: 'T/F repaired today', ASSEMBLY: 'T/F sent to assembly today', OVEN: 'T/F sent to oven today' };
+function mrRepAllData(b) {
+  var per = MR.pd.r.per, W = [], F = {}, WF = {};
+  mrWs().forEach(function (w) {
+    var q = {}; (per[w] || []).forEach(function (y) {
+      if (y[0] !== b) return; var c = y[2], n = +y[3] || 0; q[c] = (q[c] || 0) + n;
+      (F[y[1]] = F[y[1]] || {})[c] = ((F[y[1]] || {})[c] || 0) + n; ((WF[w] = WF[w] || {})[y[1]] = (WF[w][y[1]] || {}))[c] = ((WF[w][y[1]] || {})[c] || 0) + n;
+    });
+    W.push({ l: [w], q: q });
+  });
+  var firms = Object.keys(F).sort(function (a, b2) { return a.toLowerCase() < b2.toLowerCase() ? -1 : 1; }).map(function (k) { return { l: [k], q: F[k] }; }), wf = [];
+  mrWs().forEach(function (w) { Object.keys(WF[w] || {}).sort(function (a, b2) { return a.toLowerCase() < b2.toLowerCase() ? -1 : 1; }).forEach(function (f) { wf.push({ l: [w, f], q: WF[w][f] }); }); });
+  return { W: W, F: firms, WF: wf };
+}
+function mrRepAllTab(b, heads, lines, grouped) {
+  var h = '<div class="wrap"><table class="rrt2 xg" data-b="' + b + '"><thead><tr>' + heads.map(function (x) { return '<th>' + esc(x) + '</th>'; }).join(''), ct = {}, gt = 0, span = {};
+  RR_CAPS.forEach(function (c) { h += '<th>' + (RR_LBL[c] || c) + '</th>'; }); h += '<th>TOTAL</th></tr></thead><tbody>';
+  if (grouped) lines.forEach(function (ln, i) { if (i > 0 && lines[i - 1].l[0] === ln.l[0]) return; var n = 1; while (lines[i + n] && lines[i + n].l[0] === ln.l[0]) n++; span[i] = n; });
+  lines.forEach(function (ln, i) {
+    var t = 0; h += '<tr>';
+    if (grouped) { if (span[i]) h += '<td class="bl" rowspan="' + span[i] + '">' + esc(ln.l[0]) + '</td>'; h += '<td class="l">' + esc(ln.l[1]) + '</td>'; } else h += '<td class="l">' + esc(ln.l[0]) + '</td>';
+    RR_CAPS.forEach(function (c) { var v = ln.q[c] || 0; t += v; ct[c] = (ct[c] || 0) + v; h += '<td>' + (v || '') + '</td>'; }); gt += t; h += '<td class="tt">' + t + '</td></tr>';
+  });
+  if (!lines.length) h += '<tr class="empty"><td colspan="' + (heads.length + RR_CAPS.length + 1) + '" class="muted">No entry.</td></tr>';
+  h += '<tr class="tr"><td class="tl" colspan="' + heads.length + '">TOTAL</td>'; RR_CAPS.forEach(function (c) { h += '<td class="tt">' + (ct[c] || 0) + '</td>'; }); h += '<td class="tt">' + gt + '</td></tr>';
+  return { html: h + '</tbody></table></div>', total: gt };
+}
+function mrRepAll() {
+  var v = MR.rview === 'wsfirm' ? 'wsfirm' : 'firm', h = '', tot = {};
+  h += '<div class="bar rrv"><span class="muted">Firm table:</span><button type="button" class="btn sm' + (v === 'firm' ? '' : ' sec') + '" data-rv="firm">Firm wise</button><button type="button" class="btn sm' + (v === 'wsfirm' ? '' : ' sec') + '" data-rv="wsfirm">Workshop + Firm wise</button></div>';
+  var cards = '';
+  RR_BLK.forEach(function (b) {
+    var D = mrRepAllData(b), t1 = mrRepAllTab(b, ['NAME OF WORKSHOP'], D.W), t2 = v === 'firm' ? mrRepAllTab(b, ['NAME OF FIRM'], D.F) : mrRepAllTab(b, ['WORKSHOP', 'NAME OF FIRM'], D.WF, true);
+    tot[b] = t1.total;
+    cards += '<div class="rrc rrc-' + b + '"><div class="rrh"><span class="rrd"></span>' + b + ' <small>' + RR_SUBT[b] + ' &middot; workshop-wise</small></div>' + t1.html +
+      '<div class="rrh rrh2"><span class="rrd"></span>' + b + ' <small>' + (v === 'firm' ? 'firm-wise (all workshops together)' : 'workshop + firm-wise') + '</small></div>' + t2.html + '</div>';
+  });
+  h += '<div class="rrk">' + RR_BLK.map(function (b) { return '<div class="rrkc rrk-' + b + '"><i>' + b + '</i><b>' + tot[b] + '</b><small>' + RR_SUBT[b] + '</small></div>'; }).join('') + '</div>' + cards;
+  h += '<div class="bar"><span class="muted" style="flex:1">View only.</span><button class="btn sec" id="mpxl" type="button">&#11015; Excel</button><button class="btn sec" id="mppdf" type="button">&#128196; PDF</button></div>';
+  $('mpout').innerHTML = h;
+}
+function mrRepAllXl() {
+  var rows = [], B = RR_BLK, v = MR.rview === 'wsfirm' ? 'wsfirm' : 'firm';
+  function put(b, heads, lines, grouped) {
+    rows.push(heads.concat(RR_CAPS.map(function (c) { return RR_LBL[c] || c; }), ['TOTAL'])); var ct = {}, gt = 0;
+    lines.forEach(function (ln) { var t = 0, line = ln.l.slice(); RR_CAPS.forEach(function (c) { var x = ln.q[c] || 0; t += x; ct[c] = (ct[c] || 0) + x; line.push(x || ''); }); line.push(t); gt += t; rows.push(line); });
+    var tl = ['TOTAL'].concat(heads.slice(1).map(function () { return ''; })); RR_CAPS.forEach(function (c) { tl.push(ct[c] || 0); }); tl.push(gt); rows.push(tl); rows.push([]);
+  }
+  B.forEach(function (b) { var D = mrRepAllData(b); rows.push([b + ' - workshop wise']); put(b, ['NAME OF WORKSHOP'], D.W); rows.push([b + (v === 'firm' ? ' - firm wise' : ' - workshop + firm wise')]); if (v === 'firm') put(b, ['NAME OF FIRM'], D.F); else put(b, ['WORKSHOP', 'NAME OF FIRM'], D.WF); });
+  xlsxDownload('Repair_All_workshops_' + mrFile(MR.pd.d) + '.xlsx', [{ name: 'Repair', rows: rows }]);
+}
+/* PDF = the print window (choose "Save as PDF") */
+function mrRepPdfHtml(root) {
+  var h = '';
+  [].forEach.call(root.children, function (el) {
+    if (el.classList.contains('rrc')) { [].forEach.call(el.children, function (x) { h += mrRepPdfEl(x); }); } else h += mrRepPdfEl(el);
+  });
+  return h;
+}
+function mrRepPdfEl(x) {
+  if (x.classList.contains('rrh')) return '<h3>' + esc(x.textContent.replace(/\s+/g, ' ').trim()) + '</h3>';
+  var t = x.tagName === 'TABLE' ? x : x.querySelector && x.querySelector('table'); if (!t) return '';
+  var c = t.cloneNode(true); [].forEach.call(c.querySelectorAll('input'), function (i) { var sp = document.createElement('span'); sp.textContent = i.value; i.parentNode.replaceChild(sp, i); });
+  [].forEach.call(c.querySelectorAll('.x'), function (e) { e.remove(); }); c.removeAttribute('class'); c.className = 'rpt'; c.removeAttribute('style'); return c.outerHTML;
+}
+function mrRepPrint(title, html) {
+  var st = document.getElementById('chmpgs'); if (st) st.remove(); st = document.createElement('style'); st.id = 'chmpgs';
+  st.textContent = '@media print{@page{size:A4 landscape;margin:10mm}#pz table.rpt{border-collapse:collapse;width:100%;font-size:11px;margin:0 0 10px;page-break-inside:avoid}#pz table.rpt th,#pz table.rpt td{border:1px solid #000;padding:3px 6px;text-align:center;background:#fff;color:#000}#pz table.rpt td.l,#pz table.rpt td.nm{text-align:left}#pz table.rpt th{font-weight:700;background:#eee!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}#pz h3{font-size:13px;margin:10px 0 4px}#pz h2{font-size:16px}}';
+  document.head.appendChild(st); printHtml(title, html);
+}
+document.addEventListener('click', function (e) {
+  var t = e.target; if (!t.closest) return; var b = t.closest('[data-rv]');
+  if (b && b.closest('#mpout')) { MR.rview = b.dataset.rv; if (MR.pd && MR.pd.r.all) mrRepAll(); return; }
+  if (t.closest('#mppdf')) { if (MR.pd) mrRepPrint('Repair - ' + (MR.pd.ws === '__ALL__' ? 'All workshops' : MR.pd.ws) + ' - ' + MR.pd.d, mrRepPdfHtml($('mpout'))); return; }
+  if (t.closest('#rspdf')) { var o = $('rsout'); if (RS && RS.r && o) mrRepPrint('Repair summary - ' + RS.f + ' to ' + RS.t + ' - ' + (RS.w || 'All workshops'), mrRepPdfHtml(o)); return; }
 });
 function mrRepDay(n) { var v = $('mpd').value.trim(); if (!validD(v)) return; var d = parseD(v); d.setDate(d.getDate() + n); $('mpd').value = fmt(d); mrRepLoad(); }
 $('mpprev').onclick = function () { mrRepDay(-1); }; $('mpnext').onclick = function () { mrRepDay(1); };
