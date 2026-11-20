@@ -4189,7 +4189,7 @@ notify pgrst, 'reload schema';
 -- ================================================================================================================
 -- STEP 109 : MATERIAL MANAGEMENT - OIL RECEIVE register + DTC count from the PRs
 -- mat_recv = every oil receipt (date, Fresh / Reclaim, from where, litre).  The Oil Recovery Sheet takes Fresh / Reclaim "Received" from here by itself;
---            a Reclaim receipt also issues qty + 5% of B&C (dirty) oil "for reclaim".  Dirty oil received = DTC count x dirty oil std.
+--            a Reclaim receipt also issues qty ÷ 0.95 of B&C (dirty) oil "for reclaim".  Dirty oil received = DTC count x dirty oil std.
 -- mat_dtc  = PRs received in a month (PR date), capacity wise = the "Total PR" of the M&R Summary.  Each PR is one transformer = one DTC.
 -- Safe to run again.
 -- ================================================================================================================

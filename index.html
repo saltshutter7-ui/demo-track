@@ -5710,7 +5710,7 @@ function mmOilMonth(P, m, prev) {
   MM_OC.forEach(function (k) { dirty += mmRecOf(P, m, k, dtc[k]); }); dirty = mmR3(dirty);
   MM_OT.forEach(function (t) {
     var x = sv[t[0]] || {}, open = prev ? prev[t[0]] : mmNum(x.open), id = t[0];
-    var recv = id === 'fresh' ? fr : id === 'rc' ? rc : id === 'bc' ? dirty : mmNum(x.recv), trf = mmNum(x.trf), dist = mmNum(x.dist), other = id === 'bc' ? mmR3(rc * 1.05) : mmNum(x.other);
+    var recv = id === 'fresh' ? fr : id === 'rc' ? rc : id === 'bc' ? dirty : mmNum(x.recv), trf = mmNum(x.trf), dist = mmNum(x.dist), other = id === 'bc' ? mmDirty(rc) : mmNum(x.other);
     rows[id] = { open: open, recv: recv, trf: trf, dist: dist, other: other, close: mmR3(open + recv - trf - dist - other) };
   });
   return { rows: rows, dtc: dtc, fr: fr, rc: rc, dirty: dirty };
@@ -5754,7 +5754,7 @@ function mmOilEntry() {
     if (c === 2) return mmCalcTd(2, f.cf[k]); if (c === 3) return mmCalcTd(3, f.cr[k]); if (c === 4) return mmCalcTd(4, mmR3(f.cf[k] + f.cr[k]));
     if (c === 5) return mmCalcTd(5, f.dtc[k], ' au'); return mmCalcTd(6, f.rec[k]);
   });
-  $('mmout').innerHTML = note + mmNote('<b>Repaired</b> = from the Repair tab (250 KVA Al + Cu together), you can change it (orange). <b>Total transformer DTC</b> = PRs received in this month (PR date, same as <b>Total PR</b> of the M&amp;R Summary). <b>Fresh / Reclaim Received</b> come from <b>Oil Receive</b>; a Reclaim receipt issues qty + 5% of B&amp;C (dirty) oil for reclaim; the <b>oil recovered as per std</b> is Received in B&amp;C (dirty) oil. Green cells are automatic.') +
+  $('mmout').innerHTML = note + mmNote('<b>Repaired</b> = from the Repair tab (250 KVA Al + Cu together), you can change it (orange). <b>Total transformer DTC</b> = PRs received in this month (PR date, same as <b>Total PR</b> of the M&amp;R Summary). <b>Fresh / Reclaim Received</b> come from <b>Oil Receive</b>; a Reclaim receipt issues B&amp;C (dirty) oil for reclaim = reclaim qty \u00F7 0.95 (reclaim oil is 5% less than the dirty oil); the <b>oil recovered as per std</b> is Received in B&amp;C (dirty) oil. Green cells are automatic.') +
     '<div class="bar" style="margin:0 0 8px">' + (ed ? '<button class="btn sec sm" type="button" id="mmreset">Reset repaired qty to Repair tab</button>' : '') + '<span id="mmsst" class="muted" style="font-size:12.5px"></span></div>' +
     t1 + '<div style="height:12px"></div>' + mmOilAccHtml(f, ed, openEd, mmMonthName(month)) + '<div style="height:12px"></div><div id="mmocalc"></div>';
   mmOilRecalc();
@@ -5777,7 +5777,7 @@ function mmOilRecalc() {
     ['open', 'recv', 'trf', 'dist', 'other'].forEach(function (f) {
       var e = ob.querySelector('input[data-ot="' + id + '"][data-of="' + f + '"]');
       if (e) o[f] = parseFloat(e.value) || 0;
-      else if (f === 'recv' && id === 'fresh') o[f] = C.fr; else if (f === 'recv' && id === 'rc') o[f] = C.rc; else if (f === 'recv' && id === 'bc') o[f] = mmR3(tot[6]); else if (f === 'other' && id === 'bc') o[f] = mmR3(C.rc * 1.05);
+      else if (f === 'recv' && id === 'fresh') o[f] = C.fr; else if (f === 'recv' && id === 'rc') o[f] = C.rc; else if (f === 'recv' && id === 'bc') o[f] = mmR3(tot[6]); else if (f === 'other' && id === 'bc') o[f] = mmDirty(C.rc);
       else { var td = ob.querySelector('tr[data-k="' + f + '"] td[data-c="' + (i + 1) + '"]'); o[f] = td ? (parseFloat(td.dataset.v) || 0) : 0; }
     });
     o.close = mmR3(o.open + o.recv - o.trf - o.dist - o.other); vals[id] = o;
@@ -5832,11 +5832,12 @@ function mmOilSum() {
 }
 
 /* ---- Oil Receive: register (date, Fresh / Reclaim, from where, litre) ---- */
+function mmDirty(rc) { return mmR3(rc / 0.95); }   // reclaim oil is 5% less than the dirty oil it comes from: dirty oil = reclaim / 0.95 (10000 L reclaim = 10526.316 L dirty)
 function mmRcvDef(month) { var cm = mmNow(); if (month === cm) { var t = new Date(); return t.getFullYear() + '-' + p2(t.getMonth() + 1) + '-' + p2(t.getDate()); } var d = new Date(+month.slice(0, 4), +month.slice(5, 7), 0); return month + '-' + p2(d.getDate()); }
 function mmRcvMax(month) { var d = new Date(+month.slice(0, 4), +month.slice(5, 7), 0), e = month + '-' + p2(d.getDate()), t = new Date(), td = t.getFullYear() + '-' + p2(t.getMonth() + 1) + '-' + p2(t.getDate()); return e < td ? e : td; }
 function mmRcvRow(r, ed, month) {
   var id = r ? r[0] : '', day = r ? r[1] : mmRcvDef(month), kind = r ? r[2] : 'fresh', src = r ? (r[3] || '') : '', qty = r ? r[4] : '', note = r ? (r[5] || '') : '';
-  var b = kind === 'reclaim' && qty ? mmR3(qty * 1.05) : 0;
+  var b = kind === 'reclaim' && qty ? mmDirty(qty) : 0;
   if (!ed) return '<tr class="rv"><td class="c sl"></td><td class="c">' + esc(mrDmy(day)) + '</td><td class="l">' + (kind === 'fresh' ? 'Fresh Oil' : 'Reclaim Oil') + '</td><td class="nm">' + esc(src) + '</td><td class="c" data-c="4" data-v="' + qty + '">' + mmF(qty) + '</td><td class="c" data-c="5" data-v="' + b + '">' + mmF(b) + '</td><td class="nm wide">' + esc(note) + '</td></tr>';
   return '<tr class="rv' + (r ? '' : ' blank') + '" data-id="' + id + '"><td class="c sl"></td><td class="in" data-c="1"><input type="date" class="mmr" data-rf="day" value="' + day + '" min="' + month + '-01" max="' + mmRcvMax(month) + '"></td>' +
     '<td class="in" data-c="2"><select class="mmr" data-rf="kind"><option value="fresh"' + (kind === 'fresh' ? ' selected' : '') + '>Fresh Oil</option><option value="reclaim"' + (kind === 'reclaim' ? ' selected' : '') + '>Reclaim Oil</option></select></td>' +
@@ -5852,15 +5853,15 @@ function mmRcvTot() {
     if (tr.dataset.id === '' && tr.classList.contains('blank')) return;
     var q = parseFloat((tr.querySelector('[data-rf="qty"]') || {}).value); if (isNaN(q)) q = parseFloat((tr.querySelector('td[data-c="4"]') || {}).dataset.v) || 0;
     var s = tr.querySelector('select'), k = s ? s.value : (/Reclaim/.test(tr.children[2].textContent) ? 'reclaim' : 'fresh'); o[k] += q;
-    var td = tr.querySelector('td[data-c="5"]'), b = k === 'reclaim' ? mmR3(q * 1.05) : 0; td.textContent = mmF(b); td.dataset.v = b;
+    var td = tr.querySelector('td[data-c="5"]'), b = k === 'reclaim' ? mmDirty(q) : 0; td.textContent = mmF(b); td.dataset.v = b;
   });
-  var tf = $('mmrt'); if (tf) tf.innerHTML = '<td colspan="4" class="l">Total  (Fresh ' + mmF0(mmR3(o.fresh)) + ' L  +  Reclaim ' + mmF0(mmR3(o.reclaim)) + ' L)</td><td data-v="' + mmR3(o.fresh + o.reclaim) + '">' + mmF0(mmR3(o.fresh + o.reclaim)) + '</td><td data-v="' + mmR3(o.reclaim * 1.05) + '">' + mmF0(mmR3(o.reclaim * 1.05)) + '</td><td colspan="2"></td>';
+  var tf = $('mmrt'); if (tf) tf.innerHTML = '<td colspan="4" class="l">Total  (Fresh ' + mmF0(mmR3(o.fresh)) + ' L  +  Reclaim ' + mmF0(mmR3(o.reclaim)) + ' L)</td><td data-v="' + mmR3(o.fresh + o.reclaim) + '">' + mmF0(mmR3(o.fresh + o.reclaim)) + '</td><td data-v="' + mmDirty(o.reclaim) + '">' + mmF0(mmDirty(o.reclaim)) + '</td><td colspan="2"></td>';
 }
 function mmRcvEntry() {
   var P = MM.per[MM.ws], ed = !!P.g.edit, month = MM.month, L = P.list || { rows: [], srcs: [] }, h;
   MM.cur = { P: P, ed: ed, month: month, kind: 'rcv' };
-  h = mmNote(ed ? 'Type a line: <b>Date, Oil (Fresh / Reclaim), From where, Qty (litre)</b>. It is saved by itself and goes into the <b>Oil Recovery Sheet</b> (Received). A <b>Reclaim</b> entry also issues <b>qty + 5%</b> of B&amp;C (dirty) oil for reclaim, so the dirty oil balance becomes less.' : 'View only: only the Admin (or a user with edit right) can add entries.') + '<datalist id="mmsrcs">' + (L.srcs || []).map(function (s) { return '<option value="' + mmEsc(s) + '">'; }).join('') + '</datalist>';
-  h += '<div class="bar" style="margin:0 0 8px"><span id="mmsst" class="muted" style="font-size:12.5px"></span></div><div class="wrap"><table class="mkt mmt" id="mmrg" style="width:auto;min-width:720px"><thead><tr><th colspan="' + (ed ? 8 : 7) + '" class="ttl">Oil Receive - ' + esc(mmMonthName(month)) + ' - ' + esc(MM.ws) + '</th></tr><tr><th>Sl</th><th>Date</th><th>Oil received</th><th>From (where)</th><th>Qty (L)</th><th>B&amp;C (dirty) oil issued for reclaim (+5%)</th><th>Note</th>' + (ed ? '<th></th>' : '') + '</tr></thead><tbody>';
+  h = mmNote(ed ? 'Type a line: <b>Date, Oil (Fresh / Reclaim), From where, Qty (litre)</b>. It is saved by itself and goes into the <b>Oil Recovery Sheet</b> (Received). A <b>Reclaim</b> entry also issues B&amp;C (dirty) oil for reclaim = <b>reclaim qty \u00F7 0.95</b> (reclaim oil comes 5% less than the dirty oil; example: 10000 L reclaim = 10526.316 L dirty), so the dirty oil balance becomes less.' : 'View only: only the Admin (or a user with edit right) can add entries.') + '<datalist id="mmsrcs">' + (L.srcs || []).map(function (s) { return '<option value="' + mmEsc(s) + '">'; }).join('') + '</datalist>';
+  h += '<div class="bar" style="margin:0 0 8px"><span id="mmsst" class="muted" style="font-size:12.5px"></span></div><div class="wrap"><table class="mkt mmt" id="mmrg" style="width:auto;min-width:720px"><thead><tr><th colspan="' + (ed ? 8 : 7) + '" class="ttl">Oil Receive - ' + esc(mmMonthName(month)) + ' - ' + esc(MM.ws) + '</th></tr><tr><th>Sl</th><th>Date</th><th>Oil received</th><th>From (where)</th><th>Qty (L)</th><th>B&amp;C (dirty) oil issued for reclaim (reclaim \u00F7 0.95)</th><th>Note</th>' + (ed ? '<th></th>' : '') + '</tr></thead><tbody>';
   L.rows.forEach(function (r) { h += mmRcvRow(r, ed, month); }); if (ed) h += mmRcvRow(null, ed, month);
   h += '</tbody><tfoot><tr class="t" id="mmrt"></tr></tfoot></table></div>';
   $('mmout').innerHTML = h; mmRcvNum(); mmRcvTot(); mmAutoAll();
@@ -5892,8 +5893,8 @@ function mmRcvSum() {
     return h + '<tr class="t"><td class="l">Total</td>' + t.map(function (x, i) { return '<td data-c="' + (i + 1) + '" data-v="' + mmR3(x) + '">' + mmF(mmR3(x)) + '</td>'; }).join('') + '</tr></tbody></table></div>';
   }
   var ms = Object.keys(byM).sort(), ss = Object.keys(byS).sort();
-  var t1 = tbl('mmrm', 'Oil received month wise - ' + lab, ['Month', 'Fresh Oil (L)', 'Reclaim Oil (L)', 'Total (L)', 'B&C issued for reclaim (+5%)'], ms, mmMonthName, function (k) { var o = byM[k]; return [o.fresh, o.reclaim, o.fresh + o.reclaim, o.reclaim * 1.05]; });
-  var t2 = tbl('mmrs', 'Oil received from where - ' + lab, ['From (where)', 'Fresh Oil (L)', 'Reclaim Oil (L)', 'Total (L)', 'B&C issued for reclaim (+5%)'], ss, function (k) { return k; }, function (k) { var o = byS[k]; return [o.fresh, o.reclaim, o.fresh + o.reclaim, o.reclaim * 1.05]; });
+  var t1 = tbl('mmrm', 'Oil received month wise - ' + lab, ['Month', 'Fresh Oil (L)', 'Reclaim Oil (L)', 'Total (L)', 'B&C issued for reclaim (reclaim \u00F7 0.95)'], ms, mmMonthName, function (k) { var o = byM[k]; return [o.fresh, o.reclaim, o.fresh + o.reclaim, mmDirty(o.reclaim)]; });
+  var t2 = tbl('mmrs', 'Oil received from where - ' + lab, ['From (where)', 'Fresh Oil (L)', 'Reclaim Oil (L)', 'Total (L)', 'B&C issued for reclaim (reclaim \u00F7 0.95)'], ss, function (k) { return k; }, function (k) { var o = byS[k]; return [o.fresh, o.reclaim, o.fresh + o.reclaim, mmDirty(o.reclaim)]; });
   var t3 = '<div class="wrap"><table class="mkt mmt" id="mmrl" style="width:auto;min-width:640px"><thead><tr><th colspan="' + (all ? 7 : 6) + '" class="ttl">Oil receive register - ' + esc(lab) + '</th></tr><tr><th>Sl</th>' + (all ? '<th>Workshop</th>' : '') + '<th>Date</th><th>Oil received</th><th>From (where)</th><th>Qty (L)</th><th>Note</th></tr></thead><tbody>' +
     reg.map(function (r, i) { return '<tr><td class="c">' + (i + 1) + '</td>' + (all ? '<td class="nm">' + esc(r[0]) + '</td>' : '') + '<td class="c">' + esc(mrDmy(r[2])) + '</td><td class="l">' + (r[3] === 'fresh' ? 'Fresh Oil' : 'Reclaim Oil') + '</td><td class="nm">' + esc(r[4] || '') + '</td><td class="c" data-v="' + r[5] + '">' + mmF(+r[5]) + '</td><td class="nm wide">' + esc(r[6] || '') + '</td></tr>'; }).join('') + '</tbody></table></div>';
   $('mmout').innerHTML = (reg.length ? '' : mmNote('No oil received in this period.')) + t1 + '<div style="height:12px"></div>' + t2 + '<div style="height:12px"></div>' + t3;
