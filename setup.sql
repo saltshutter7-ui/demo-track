@@ -4368,3 +4368,50 @@ end $$;
 revoke all on function public.mat_pr_lookup(text, text), public.mat_low_list(text, text, text), public.mat_low_save(text, bigint, text, date, numeric, text, text), public.mat_low_del(text, bigint), public.mat_low_adj(text, text, text) from public, anon;
 grant execute on function public.mat_pr_lookup(text, text), public.mat_low_list(text, text, text), public.mat_low_save(text, bigint, text, date, numeric, text, text), public.mat_low_del(text, bigint), public.mat_low_adj(text, text, text) to authenticated;
 notify pgrst, 'reload schema';
+
+-- ================================================================================================================
+-- STEP 111 : REPORTS > "Add report" - the Admin pastes the link of his own web app (https://...) and it opens inside the Reports tab.
+-- Every user of the same division (Admin, his JEs) sees the added reports; only the Admin adds / removes them.  A DISCOM user sees all.
+-- Safe to run again.
+-- ================================================================================================================
+create table if not exists public.custom_report (id bigserial primary key, org text not null, title text not null, url text not null, by_login text, at timestamptz not null default now());
+alter table public.custom_report enable row level security;
+revoke all on public.custom_report from public, anon, authenticated;
+
+create or replace function public.rp_org() returns text language sql stable security definer set search_path = public as
+$$ select case when p.role = 'admin' then p.org_division
+                when p.role = 'je' then (select w.org_division from public.workshops w where w.name = any (p.scope) limit 1) end
+     from public.profiles p where p.user_id = auth.uid() and p.active $$;
+
+create or replace function public.rp_list() returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare c public.profiles := public.tf_caller();
+begin
+  if c.user_id is null or c.role not in ('admin', 'je', 'discom') then raise exception 'No access.'; end if;
+  return jsonb_build_object('admin', c.role = 'admin',
+    'rows', coalesce((select jsonb_agg(jsonb_build_array(id, title, url) order by id) from public.custom_report where c.role = 'discom' or org = public.rp_org()), '[]'::jsonb));
+end $$;
+
+create or replace function public.rp_add(p_title text, p_url text) returns bigint
+language plpgsql security definer set search_path = public as $$
+declare c public.profiles := public.tf_caller(); t text := btrim(coalesce(p_title, '')); u text := btrim(coalesce(p_url, '')); nid bigint;
+begin
+  if c.user_id is null or c.role <> 'admin' or c.org_division is null then raise exception 'Only an Admin can add a report.'; end if;
+  if length(t) < 1 or length(t) > 60 then raise exception 'Report name: 1 to 60 characters.'; end if;
+  if u !~* '^https://[^\s]+$' or length(u) > 800 then raise exception 'The link must start with https:// and have no spaces.'; end if;
+  if (select count(*) from public.custom_report where org = c.org_division) >= 30 then raise exception 'At most 30 added reports.'; end if;
+  insert into public.custom_report(org, title, url, by_login) values (c.org_division, t, u, c.login_id) returning id into nid;
+  return nid;
+end $$;
+
+create or replace function public.rp_del(p_id bigint) returns text
+language plpgsql security definer set search_path = public as $$
+declare c public.profiles := public.tf_caller();
+begin
+  if c.user_id is null or c.role <> 'admin' then raise exception 'Only an Admin can remove a report.'; end if;
+  delete from public.custom_report where id = p_id and org = c.org_division;
+  return 'deleted';
+end $$;
+revoke all on function public.rp_org(), public.rp_list(), public.rp_add(text, text), public.rp_del(bigint) from public, anon;
+grant execute on function public.rp_org(), public.rp_list(), public.rp_add(text, text), public.rp_del(bigint) to authenticated;
+notify pgrst, 'reload schema';

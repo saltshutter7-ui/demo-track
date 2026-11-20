@@ -2357,7 +2357,7 @@ nav button#tmr{margin-top:auto}
             <input type="text" class="q" id="dq" placeholder="Search PR no, place, firm...">
           </div>
           <div class="tg r">
-            <button class="btn sec sm" id="dclean" type="button">Switch to clean look</button><button class="btn sec sm" id="dxl">&#11015; Excel</button><button class="btn sec sm" id="dpr">Print</button>
+            <button class="btn sec sm hide" id="ddrv" type="button" title="Driver Master">&#128666; Drivers</button><button class="btn sec sm" id="dclean" type="button">Switch to clean look</button><button class="btn sec sm" id="dxl">&#11015; Excel</button><button class="btn sec sm" id="dpr">Print</button>
             <button class="btn sec sm hide" id="ddel">Delete selected</button><button class="btn sec sm" id="dpaste">Paste from Excel</button>
             <button class="btn" id="dsave">Save</button>
           </div>
@@ -2378,6 +2378,7 @@ nav button#tmr{margin-top:auto}
 
     <!-- DRIVER MASTER -->
     <section id="t-drv" class="hide">
+      <div class="bar rpbk hide" id="drvbk"><button class="btn sec sm" type="button" id="drvback">&#8249; Data Sheet</button><b>Drivers</b></div>
       <div class="card">
         <div class="tools">
           <div class="tg"><select id="vws"><option value="">All workshops</option></select><input type="text" class="q" id="vq" placeholder="Search firm, driver, mobile, vehicle..."></div>
@@ -2392,6 +2393,12 @@ nav button#tmr{margin-top:auto}
     <!-- COMPARISON (Admin only) -->
     <section id="t-cmp" class="hide">
       <div id="rpmenu"><div class="rph"><h2>Reports</h2><span class="muted">Tap a report</span></div><div id="rpchips" class="achips"></div></div>
+      <div id="rpwebw" class="hide">
+        <div class="bar rpbk"><button class="btn sec sm" type="button" data-rpback>&#8249; Reports</button><b id="rpwebt"></b><span style="flex:1"></span><a class="btn sec sm" id="rpwebx" target="_blank" rel="noopener noreferrer">Open in new tab &#8599;</a><button class="btn sec sm hide" type="button" id="rpwebdel">Remove</button></div>
+        <div class="muted" style="font-size:12px;margin:4px 2px">If this page stays blank, that web app does not allow itself to open inside another page - use <b>Open in new tab</b>.</div>
+        <iframe id="rpwebf" title="Report" referrerpolicy="no-referrer" allow="clipboard-write; fullscreen" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-downloads allow-modals" style="width:100%;height:calc(100vh - 210px);min-height:440px;border:1px solid #d9dfee;border-radius:12px;background:#fff"></iframe>
+      </div>
+      <div id="rpaddo" class="hide mmov"></div>
       <div id="rpcmpw" class="hide" data-m="cmp">
         <div class="bar rpbk"><button class="btn sec sm" type="button" data-rpback>&#8249; Reports</button><b id="rpcmpt"></b></div>
       <div class="card">
@@ -2883,6 +2890,7 @@ function enter(user) {
       $('who').textContent = ME.name + ' · ' + (ROLE[ME.role] || ME.role) + (ME.div ? ' · ' + ME.div : '');
       showApp(); initDates(); DROWS = []; $('dt').innerHTML = ''; fillWs(); DRV = []; drvLoad(true);
       var ok = allowedTabs(); document.querySelectorAll('nav:not(#mrnav) button').forEach(function (b) { b.classList.toggle('hide', ok.indexOf(b.dataset.t) < 0); });
+      var dv = ok.indexOf('drv') >= 0, dd = ok.indexOf('data') >= 0; $('tdrv').classList.toggle('hide', !dv || dd); $('ddrv').classList.toggle('hide', !(dv && dd)); $('drvbk').classList.toggle('hide', !(dv && dd));   // Drivers live in the Data Sheet (an icon on top); its own tab only for a user who has no Data Sheet
       var first = ok[0] || 'sum'; showTab(first);
       if (ME.must) openPw(true);
       if (typeof mrAfterLogin === 'function') mrAfterLogin();
@@ -2990,12 +2998,15 @@ function allowedTabs() {
 }
 function showTab(t) {
   CURTAB = t;
-  document.querySelectorAll('nav button').forEach(function (x) { x.classList.toggle('on', x.dataset.t === t); });
+  document.querySelectorAll('nav button').forEach(function (x) { x.classList.toggle('on', x.dataset.t === t || (t === 'drv' && x.dataset.t === 'data' && $('tdrv').classList.contains('hide'))); });
   ['sum', 'data', 'drv', 'cmp', 'emg', 'adm'].forEach(function (k) { $('t-' + k).classList.toggle('hide', k !== t); });
 }
 document.querySelectorAll('nav button').forEach(function (b) {
   b.onclick = function () { var t = b.dataset.t; showTab(t); if (t === 'sum') loadSummary(); else if (t === 'adm') admLoad(); else if (t === 'drv') drvLoad(); else if (t === 'cmp') rpHome(); else if (t === 'emg') emgLoad(); else if (!dirtyN()) loadData(); };
 });
+
+$('ddrv').onclick = function () { showTab('drv'); drvLoad(); };
+$('drvback').onclick = function () { showTab('data'); if (!dirtyN()) loadData(); };
 
 /* =====================  SUMMARY  ===================== */
 function dayCount(f, t) { return Math.round((parseD(t) - parseD(f)) / 86400000) + 1; }
@@ -6806,15 +6817,44 @@ var RP_DEFS = [
 ];
 var RP_PANEL = { cmp: 'rpcmpw', dw: 'rpcmpw', kit: 'rpkitw', ks: 'rpksw', lyk: 'rplykw', chm: 'rpchmw', pl: 'rppw' }, RPK = null, RPKS = 0, PLM = null, PLS = 0;
 function rpShow(k) {
-  ['rpcmpw', 'rpkitw', 'rpksw', 'rplykw', 'rpchmw', 'rppw'].forEach(function (id) { $(id).classList.add('hide'); });
+  ['rpcmpw', 'rpkitw', 'rpksw', 'rplykw', 'rpchmw', 'rppw', 'rpwebw'].forEach(function (id) { $(id).classList.add('hide'); });
+  if (k !== 'web') { try { $('rpwebf').src = 'about:blank'; } catch (e) { } }
   $('rpmenu').classList.toggle('hide', !!k);
-  if (k) $(RP_PANEL[k]).classList.remove('hide');
+  if (k) $(RP_PANEL[k] || 'rpwebw').classList.remove('hide');
+}
+var RPC = { rows: [], admin: false };
+function rpDrawChips() {
+  var mr = typeof mrAccess === 'function' && mrAccess(), h = '';
+  RP_DEFS.forEach(function (d) { if (d.mr && !mr) return; h += '<button type="button" class="achip" data-rp="' + d.k + '"><span class="ic" style="--c:' + d.c + '">' + d.i + '</span><span><b>' + esc(d.t) + '</b><small>' + esc(d.s) + '</small></span></button>'; });
+  RPC.rows.forEach(function (r) { h += '<button type="button" class="achip" data-rpweb="' + r[0] + '"><span class="ic" style="--c:#e0f2fe">\u{1F310}</span><span><b>' + esc(r[1]) + '</b><small>Added web app</small></span></button>'; });
+  if (RPC.admin) h += '<button type="button" class="achip" data-rpadd="1"><span class="ic" style="--c:#e4f6e8">+</span><span><b>Add report</b><small>Paste the link of your web app</small></span></button>';
+  $('rpchips').innerHTML = h;
 }
 function rpHome() {
   if (!ME || ['admin', 'je', 'discom'].indexOf(ME.role) < 0) return;
-  var mr = typeof mrAccess === 'function' && mrAccess(), h = '';
-  RP_DEFS.forEach(function (d) { if (d.mr && !mr) return; h += '<button type="button" class="achip" data-rp="' + d.k + '"><span class="ic" style="--c:' + d.c + '">' + d.i + '</span><span><b>' + esc(d.t) + '</b><small>' + esc(d.s) + '</small></span></button>'; });
-  $('rpchips').innerHTML = h; rpShow('');
+  RPC.admin = ME.role === 'admin'; rpDrawChips(); rpShow('');
+  rpc('rp_list').then(function (r) { RPC.rows = (r && r.rows) || []; RPC.admin = !!(r && r.admin); if (CURTAB === 'cmp' && !$('rpmenu').classList.contains('hide')) rpDrawChips(); }).catch(function () { });
+}
+function rpWebOpen(id) {
+  var r = RPC.rows.filter(function (x) { return x[0] === id; })[0]; if (!r) return;
+  rpShow('web'); $('rpwebt').textContent = r[1]; $('rpwebx').href = r[2]; $('rpwebdel').classList.toggle('hide', !RPC.admin); $('rpwebdel').dataset.id = id; $('rpwebf').src = r[2];
+}
+function rpAddOpen() {
+  var o = $('rpaddo');
+  o.innerHTML = '<div class="mmbox" style="width:min(520px,96vw)"><div class="bar" style="justify-content:space-between"><b>Add report</b><button class="btn sec sm" type="button" id="rpax">Close</button></div><div id="rpam"></div>' +
+    '<label>Report name</label><input type="text" id="rpan" maxlength="60" placeholder="e.g. Oil Stock App" style="width:100%">' +
+    '<label style="margin-top:8px">Link of the web app (https://...)</label><input type="text" id="rpau" maxlength="800" placeholder="https://script.google.com/macros/s/.../exec" autocomplete="off" style="width:100%">' +
+    '<p class="muted" style="font-size:12px;margin:8px 0 0">Google Apps Script: Deploy &rarr; Web app &rarr; Who has access: <b>Anyone</b>, and the page must allow opening inside another page (<code>setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)</code>). The link is visible to all users of your division.</p>' +
+    '<div class="bar" style="margin-top:10px;justify-content:flex-end"><button class="btn" type="button" id="rpas">Add</button></div></div>';
+  o.classList.remove('hide'); $('rpan').focus();
+  $('rpax').onclick = function () { o.classList.add('hide'); };
+  $('rpas').onclick = function () {
+    var n = $('rpan').value.trim(), u = $('rpau').value.trim();
+    if (!n) return msg('rpam', 'Write the report name.', 'err');
+    if (!/^https:\/\/\S+$/i.test(u)) return msg('rpam', 'The link must start with https:// and have no spaces.', 'err');
+    $('rpas').disabled = true;
+    rpc('rp_add', { p_title: n, p_url: u }).then(function () { o.classList.add('hide'); rpHome(); }).catch(function (e) { $('rpas').disabled = false; msg('rpam', /rp_add|function/i.test(e.message || '') ? 'Run the new setup.sql in Supabase once (Add report is not switched on in your database yet).' : esc(e.message), 'err'); });
+  };
 }
 function rpOpen(k) {
   rpShow(k);
@@ -6828,6 +6868,9 @@ function rpOpen(k) {
 document.addEventListener('click', function (e) {
   var t = e.target; if (!t.closest) return;
   var b = t.closest('[data-rp]'); if (b && $('rpchips').contains(b)) return rpOpen(b.dataset.rp);
+  b = t.closest('[data-rpweb]'); if (b && $('rpchips').contains(b)) return rpWebOpen(+b.dataset.rpweb);
+  if (t.closest('[data-rpadd]') && $('rpchips').contains(t)) return rpAddOpen();
+  if (t.closest('#rpwebdel')) { var did = +$('rpwebdel').dataset.id; if (did && confirm('Remove this report from the list? (the web app itself is not deleted)')) rpc('rp_del', { p_id: did }).then(function () { rpHome(); }).catch(function (e) { alert(e.message); }); return; }
   if (t.closest('[data-rpback]')) rpHome();
 });
 /* Kitty (the same card as in the M&R Summary) */
