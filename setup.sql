@@ -4276,3 +4276,96 @@ end $$;
 revoke all on function public.mat_get(text), public.mat_dtc(text, text, text), public.mat_recv_list(text, text, text), public.mat_recv_save(text, bigint, date, text, text, numeric, text), public.mat_recv_del(text, bigint) from public, anon;
 grant execute on function public.mat_get(text), public.mat_dtc(text, text, text), public.mat_recv_list(text, text, text), public.mat_recv_save(text, bigint, date, text, text, numeric, text), public.mat_recv_del(text, bigint) to authenticated;
 notify pgrst, 'reload schema';
+
+-- ================================================================================================================
+-- STEP 110 : MATERIAL MANAGEMENT - OIL FOUND BELOW STD (PR wise register)
+-- The user types a PR no; Vill (place of damage), Substation, JE name, Division and Capacity come from the Data Sheet.  He adds the Oil found (litre), the reason of low oil and a remark.
+-- In the Oil Recovery Sheet, for such a PR (when its DTC is done) the OIL FOUND is taken as the recovered oil in place of the Dirty std.
+-- mat_low_adj = [[month, capacity, number of such PRs whose DTC is done in the month, total oil found], ...]
+-- Safe to run again.
+-- ================================================================================================================
+create table if not exists public.mat_low (id bigserial primary key, workshop text not null, pr_no text not null, day date not null,
+  vill text, substation text, je_name text, division text, capacity int, oil_found numeric(12, 3) not null check (oil_found >= 0), reason text, remark text,
+  by_login text, at timestamptz not null default now(), constraint mat_low_uni unique (workshop, pr_no));
+create index if not exists mat_low_day on public.mat_low (workshop, day);
+alter table public.mat_low enable row level security;
+revoke all on public.mat_low from public, anon, authenticated;
+
+create or replace function public.mat_pr_lookup(p_ws text, p_pr text) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare r record;
+begin
+  if not public.mr_ok() then raise exception 'No access to the M&R dashboard.'; end if;
+  if not (p_ws = any (public.my_workshops())) then raise exception 'This workshop is not yours.'; end if;
+  select place_of_damage, substation, je_name, division, capacity into r from public.data where workshop = p_ws and not dup and upper(btrim(pr_no)) = upper(btrim(p_pr)) limit 1;
+  if not found then raise exception 'PR % is not in the Data Sheet of this workshop.', btrim(p_pr); end if;
+  return jsonb_build_object('vill', r.place_of_damage, 'sub', r.substation, 'je', r.je_name, 'div', r.division, 'cap', r.capacity);
+end $$;
+
+create or replace function public.mat_low_list(p_ws text, p_from text, p_to text) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare d0 date; d1 date;
+begin
+  if not public.mr_ok() then raise exception 'No access to the M&R dashboard.'; end if;
+  if not (p_ws = any (public.my_workshops())) then raise exception 'This workshop is not yours.'; end if;
+  if p_from !~ '^\d{4}-(0[1-9]|1[0-2])$' or p_to !~ '^\d{4}-(0[1-9]|1[0-2])$' or p_from > p_to then raise exception 'Wrong month.'; end if;
+  d0 := (p_from || '-01')::date; d1 := ((p_to || '-01')::date + interval '1 month')::date;
+  if d1 - d0 > 1900 then raise exception 'Choose at most 60 months.'; end if;
+  return coalesce((select jsonb_agg(jsonb_build_array(id, to_char(day, 'YYYY-MM-DD'), pr_no, vill, substation, je_name, division, capacity, oil_found, reason, remark) order by day, id)
+                     from (select * from public.mat_low where workshop = p_ws and day >= d0 and day < d1 order by day, id limit 3000) q), '[]'::jsonb);
+end $$;
+
+create or replace function public.mat_low_save(p_ws text, p_id bigint, p_pr text, p_day date, p_found numeric, p_reason text, p_remark text) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare me text; nid bigint; r record; pr text := btrim(coalesce(p_pr, ''));
+begin
+  if not public.mr_edit_ok(p_ws) then raise exception 'You cannot change this list of this workshop.'; end if;
+  if pr = '' or length(pr) > 60 then raise exception 'Enter the PR no.'; end if;
+  if p_day is null or p_day > current_date or p_day < date '2000-01-01' then raise exception 'Wrong date (a future date is not allowed).'; end if;
+  if p_found is null or p_found < 0 or p_found > 100000 then raise exception 'Wrong oil found quantity.'; end if;
+  if length(coalesce(p_reason, '')) > 300 or length(coalesce(p_remark, '')) > 300 then raise exception 'Text too long.'; end if;
+  select place_of_damage, substation, je_name, division, capacity, pr_no into r from public.data where workshop = p_ws and not dup and upper(btrim(pr_no)) = upper(pr) limit 1;
+  if not found then raise exception 'PR % is not in the Data Sheet of this workshop.', pr; end if;
+  select login_id into me from public.profiles where user_id = auth.uid();
+  begin
+    if p_id is null then
+      insert into public.mat_low(workshop, pr_no, day, vill, substation, je_name, division, capacity, oil_found, reason, remark, by_login)
+        values (p_ws, r.pr_no, p_day, r.place_of_damage, r.substation, r.je_name, r.division, r.capacity, p_found, nullif(btrim(p_reason), ''), nullif(btrim(p_remark), ''), me) returning id into nid;
+    else
+      update public.mat_low set pr_no = r.pr_no, day = p_day, vill = r.place_of_damage, substation = r.substation, je_name = r.je_name, division = r.division, capacity = r.capacity,
+             oil_found = p_found, reason = nullif(btrim(p_reason), ''), remark = nullif(btrim(p_remark), ''), by_login = me, at = now()
+       where id = p_id and workshop = p_ws returning id into nid;
+      if nid is null then raise exception 'Entry not found.'; end if;
+    end if;
+  exception when unique_violation then raise exception 'PR % is already in this list.', r.pr_no;
+  end;
+  return jsonb_build_object('id', nid, 'pr', r.pr_no, 'vill', r.place_of_damage, 'sub', r.substation, 'je', r.je_name, 'div', r.division, 'cap', r.capacity);
+end $$;
+
+create or replace function public.mat_low_del(p_ws text, p_id bigint) returns text
+language plpgsql security definer set search_path = public as $$
+begin
+  if not public.mr_edit_ok(p_ws) then raise exception 'You cannot change this list of this workshop.'; end if;
+  delete from public.mat_low where id = p_id and workshop = p_ws;
+  return 'deleted';
+end $$;
+
+create or replace function public.mat_low_adj(p_ws text, p_from text, p_to text) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare d0 date; d1 date;
+begin
+  if not public.mr_ok() then raise exception 'No access to the M&R dashboard.'; end if;
+  if not (p_ws = any (public.my_workshops())) then raise exception 'This workshop is not yours.'; end if;
+  if p_from !~ '^\d{4}-(0[1-9]|1[0-2])$' or p_to !~ '^\d{4}-(0[1-9]|1[0-2])$' or p_from > p_to then raise exception 'Wrong month.'; end if;
+  d0 := (p_from || '-01')::date; d1 := ((p_to || '-01')::date + interval '1 month')::date;
+  if d1 - d0 > 3700 then raise exception 'Choose at most 120 months.'; end if;
+  return coalesce((select jsonb_agg(jsonb_build_array(m, cap, n, f) order by m, cap)
+                     from (select to_char(t.dtc_date, 'YYYY-MM') m, coalesce(x.capacity, 0)::int cap, count(*)::int n, sum(l.oil_found) f
+                             from public.mat_low l join public.data x on x.workshop = l.workshop and upper(btrim(x.pr_no)) = upper(btrim(l.pr_no)) and not x.dup
+                             join public.dtc t on t.data_id = x.id
+                            where l.workshop = p_ws and nullif(btrim(t.dtc_no), '') is not null and t.dtc_date >= d0 and t.dtc_date < d1
+                            group by 1, 2) q), '[]'::jsonb);
+end $$;
+revoke all on function public.mat_pr_lookup(text, text), public.mat_low_list(text, text, text), public.mat_low_save(text, bigint, text, date, numeric, text, text), public.mat_low_del(text, bigint), public.mat_low_adj(text, text, text) from public, anon;
+grant execute on function public.mat_pr_lookup(text, text), public.mat_low_list(text, text, text), public.mat_low_save(text, bigint, text, date, numeric, text, text), public.mat_low_del(text, bigint), public.mat_low_adj(text, text, text) to authenticated;
+notify pgrst, 'reload schema';
