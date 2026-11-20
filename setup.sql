@@ -4190,7 +4190,7 @@ notify pgrst, 'reload schema';
 -- STEP 109 : MATERIAL MANAGEMENT - OIL RECEIVE register + DTC count from the PRs
 -- mat_recv = every oil receipt (date, Fresh / Reclaim, from where, litre).  The Oil Recovery Sheet takes Fresh / Reclaim "Received" from here by itself;
 --            a Reclaim receipt also issues qty + 5% of B&C (dirty) oil "for reclaim".  Dirty oil received = DTC count x dirty oil std.
--- mat_dtc  = transformers whose DTC is done (DTC no filled in the DTC / Kitty list, Data Sheet PRs) in a month, capacity wise.
+-- mat_dtc  = PRs received in a month (PR date), capacity wise = the "Total PR" of the M&R Summary.  Each PR is one transformer = one DTC.
 -- Safe to run again.
 -- ================================================================================================================
 create table if not exists public.mat_recv (id bigserial primary key, workshop text not null, day date not null, kind text not null check (kind in ('fresh', 'reclaim')),
@@ -4213,7 +4213,7 @@ begin
               from public.mat_recv where workshop = p_ws group by 1) x), '{}'::jsonb));
 end $$;
 
--- DTC done per month (DTC date) and capacity: [[month, capacity, n], ...]
+-- PRs received per month (PR date) and capacity: [[month, capacity, n], ...]
 create or replace function public.mat_dtc(p_ws text, p_from text, p_to text) returns jsonb
 language plpgsql stable security definer set search_path = public as $$
 declare d0 date; d1 date;
@@ -4224,9 +4224,9 @@ begin
   d0 := (p_from || '-01')::date; d1 := ((p_to || '-01')::date + interval '1 month')::date;
   if d1 - d0 > 3700 then raise exception 'Choose at most 120 months.'; end if;
   return coalesce((select jsonb_agg(jsonb_build_array(m, cap, n) order by m, cap)
-                     from (select to_char(t.dtc_date, 'YYYY-MM') m, coalesce(x.capacity, 0)::int cap, count(*)::int n
-                             from public.data x join public.dtc t on t.data_id = x.id
-                            where x.workshop = p_ws and not x.dup and nullif(btrim(t.dtc_no), '') is not null and t.dtc_date >= d0 and t.dtc_date < d1
+                     from (select to_char(x.pr_date, 'YYYY-MM') m, coalesce(x.capacity, 0)::int cap, count(*)::int n
+                             from public.data x
+                            where x.workshop = p_ws and not x.dup and x.pr_date >= d0 and x.pr_date < d1
                             group by 1, 2) q), '[]'::jsonb);
 end $$;
 
@@ -4280,8 +4280,8 @@ notify pgrst, 'reload schema';
 -- ================================================================================================================
 -- STEP 110 : MATERIAL MANAGEMENT - OIL FOUND BELOW STD (PR wise register)
 -- The user types a PR no; Vill (place of damage), Substation, JE name, Division and Capacity come from the Data Sheet.  He adds the Oil found (litre), the reason of low oil and a remark.
--- In the Oil Recovery Sheet, for such a PR (when its DTC is done) the OIL FOUND is taken as the recovered oil in place of the Dirty std.
--- mat_low_adj = [[month, capacity, number of such PRs whose DTC is done in the month, total oil found], ...]
+-- In the Oil Recovery Sheet, for such a PR (PR date in the month) the OIL FOUND is taken as the recovered oil in place of the Dirty std.
+-- mat_low_adj = [[month, capacity, number of such PRs received (PR date) in the month, total oil found], ...]
 -- Safe to run again.
 -- ================================================================================================================
 create table if not exists public.mat_low (id bigserial primary key, workshop text not null, pr_no text not null, day date not null,
@@ -4360,10 +4360,9 @@ begin
   d0 := (p_from || '-01')::date; d1 := ((p_to || '-01')::date + interval '1 month')::date;
   if d1 - d0 > 3700 then raise exception 'Choose at most 120 months.'; end if;
   return coalesce((select jsonb_agg(jsonb_build_array(m, cap, n, f) order by m, cap)
-                     from (select to_char(t.dtc_date, 'YYYY-MM') m, coalesce(x.capacity, 0)::int cap, count(*)::int n, sum(l.oil_found) f
+                     from (select to_char(x.pr_date, 'YYYY-MM') m, coalesce(x.capacity, 0)::int cap, count(*)::int n, sum(l.oil_found) f
                              from public.mat_low l join public.data x on x.workshop = l.workshop and upper(btrim(x.pr_no)) = upper(btrim(l.pr_no)) and not x.dup
-                             join public.dtc t on t.data_id = x.id
-                            where l.workshop = p_ws and nullif(btrim(t.dtc_no), '') is not null and t.dtc_date >= d0 and t.dtc_date < d1
+                            where l.workshop = p_ws and x.pr_date >= d0 and x.pr_date < d1
                             group by 1, 2) q), '[]'::jsonb);
 end $$;
 revoke all on function public.mat_pr_lookup(text, text), public.mat_low_list(text, text, text), public.mat_low_save(text, bigint, text, date, numeric, text, text), public.mat_low_del(text, bigint), public.mat_low_adj(text, text, text) from public, anon;

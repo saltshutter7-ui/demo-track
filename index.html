@@ -2114,6 +2114,11 @@ table.tst td.rx button:hover{background:#fee2e2}
 #mmout input.mmr[type=date],#mmout select.mmr{text-align:left;min-width:120px}
 #mmout input.mmn:focus,#mmout input.mmr:focus,#mmout select.mmr:focus,#mmstdo input.mmn:focus{outline:2px solid #217346!important;outline-offset:-2px;background:#fff!important}
 #mmout table.mkt td.std{font-weight:700!important;background:#fff2cc!important;vertical-align:middle}
+#mmout td.wide{min-width:240px;max-width:380px}
+#mmout td.nm{white-space:normal!important;word-break:break-word}
+#mmout textarea.mmr{display:block;width:100%;min-width:240px;margin:0;border:0!important;border-radius:0!important;background:transparent!important;font:inherit;padding:4px 6px!important;line-height:1.3;resize:none;overflow:hidden;white-space:pre-wrap;word-break:break-word;box-sizing:border-box;box-shadow:none!important;outline:none;text-align:left}
+#mmout textarea.mmr:focus{outline:2px solid #217346!important;outline-offset:-2px;background:#fff!important}
+#mmout input.mmr[data-rf=src]{min-width:190px}
 #mmout .mmdel{border:0;background:transparent;color:#c00000;cursor:pointer;font-size:15px;padding:0 6px}
 .mmrng{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap}.mmrng label{display:flex;flex-direction:column;font-size:12px}
 #mmpanel .btn.on{background:#217346;color:#fff}
@@ -5547,7 +5552,7 @@ var MM_DEFS = [
   { k: 'wsc', t: 'Wire & Strip Consumption', s: 'Monthly stock, consumed and as per STD', i: '\u{1F9F5}', c: '#e4f6e8' },
   { k: 'oil', t: 'Oil Recovery Sheet', s: 'Oil account and recovery from DTC', i: '\u{1F6E2}️', c: '#fff4cc' },
   { k: 'rcv', t: 'Oil Receive', s: 'Fresh / Reclaim oil received: date, from where', i: '\u26FD', c: '#e0f2fe' },
-  { k: 'low', t: 'Oil Found Below STD', s: 'PR wise: oil found, reason of low oil', i: '\\u{1F4C9}', c: '#fde8e8' }
+  { k: 'low', t: 'Oil Found Below STD', s: 'PR wise: oil found, reason of low oil', i: '\u{1F4C9}', c: '#fde8e8' }
 ];
 function mmHome() {
   var h = ''; MM_DEFS.forEach(function (d) { h += '<button type="button" class="achip" data-mmk="' + d.k + '"><span class="ic" style="--c:' + d.c + '">' + d.i + '</span><span><b>' + esc(d.t) + '</b><small>' + esc(d.s) + '</small></span></button>'; });
@@ -5670,7 +5675,7 @@ function mmSheet(tbl, name) {
     var c = 0, row = (rows[r] = rows[r] || []); occ[r] = occ[r] || [];
     [].forEach.call(tr.children, function (td) {
       while (occ[r][c]) c++;
-      var rs = +td.getAttribute('rowspan') || 1, cs = +td.getAttribute('colspan') || 1, e = td.querySelector('input,select'), v = e ? (e.tagName === 'SELECT' ? e.options[e.selectedIndex].text : (e.type === 'date' ? mrDmy(e.value) : e.value)) : td.classList.contains('x') ? '' : (td.dataset.v !== undefined && td.dataset.v !== '' && !td.classList.contains('nm') ? td.dataset.v : td.textContent.replace(/\s+/g, ' ').trim());
+      var rs = +td.getAttribute('rowspan') || 1, cs = +td.getAttribute('colspan') || 1, e = td.querySelector('input,select,textarea'), v = e ? (e.tagName === 'SELECT' ? e.options[e.selectedIndex].text : (e.type === 'date' ? mrDmy(e.value) : e.value)) : td.classList.contains('x') ? '' : (td.dataset.v !== undefined && td.dataset.v !== '' && !td.classList.contains('nm') ? td.dataset.v : td.textContent.replace(/\s+/g, ' ').trim());
       if (v === '-' ) v = 0; if (typeof v === 'string' && /^-?\d+(\.\d+)?$/.test(v)) v = parseFloat(v);
       var th = td.tagName === 'TH' || tr.classList.contains('t') || tr.classList.contains('grp'), left = td.classList.contains('nm') || td.classList.contains('l');
       var s = th ? 5 : (left ? 14 : 4);
@@ -5749,7 +5754,7 @@ function mmOilEntry() {
     if (c === 2) return mmCalcTd(2, f.cf[k]); if (c === 3) return mmCalcTd(3, f.cr[k]); if (c === 4) return mmCalcTd(4, mmR3(f.cf[k] + f.cr[k]));
     if (c === 5) return mmCalcTd(5, f.dtc[k], ' au'); return mmCalcTd(6, f.rec[k]);
   });
-  $('mmout').innerHTML = note + mmNote('<b>Repaired</b> = from the Repair tab (250 KVA Al + Cu together), you can change it (orange). <b>DTC</b> = transformers whose DTC is done in this month (from the PRs). <b>Fresh / Reclaim Received</b> come from <b>Oil Receive</b>; a Reclaim receipt issues qty + 5% of B&amp;C (dirty) oil for reclaim; the <b>oil recovered as per std</b> is Received in B&amp;C (dirty) oil. Green cells are automatic.') +
+  $('mmout').innerHTML = note + mmNote('<b>Repaired</b> = from the Repair tab (250 KVA Al + Cu together), you can change it (orange). <b>Total transformer DTC</b> = PRs received in this month (PR date, same as <b>Total PR</b> of the M&amp;R Summary). <b>Fresh / Reclaim Received</b> come from <b>Oil Receive</b>; a Reclaim receipt issues qty + 5% of B&amp;C (dirty) oil for reclaim; the <b>oil recovered as per std</b> is Received in B&amp;C (dirty) oil. Green cells are automatic.') +
     '<div class="bar" style="margin:0 0 8px">' + (ed ? '<button class="btn sec sm" type="button" id="mmreset">Reset repaired qty to Repair tab</button>' : '') + '<span id="mmsst" class="muted" style="font-size:12.5px"></span></div>' +
     t1 + '<div style="height:12px"></div>' + mmOilAccHtml(f, ed, openEd, mmMonthName(month)) + '<div style="height:12px"></div><div id="mmocalc"></div>';
   mmOilRecalc();
@@ -5832,12 +5837,12 @@ function mmRcvMax(month) { var d = new Date(+month.slice(0, 4), +month.slice(5, 
 function mmRcvRow(r, ed, month) {
   var id = r ? r[0] : '', day = r ? r[1] : mmRcvDef(month), kind = r ? r[2] : 'fresh', src = r ? (r[3] || '') : '', qty = r ? r[4] : '', note = r ? (r[5] || '') : '';
   var b = kind === 'reclaim' && qty ? mmR3(qty * 1.05) : 0;
-  if (!ed) return '<tr class="rv"><td class="c sl"></td><td class="c">' + esc(mrDmy(day)) + '</td><td class="l">' + (kind === 'fresh' ? 'Fresh Oil' : 'Reclaim Oil') + '</td><td class="nm">' + esc(src) + '</td><td class="c" data-c="4" data-v="' + qty + '">' + mmF(qty) + '</td><td class="c" data-c="5" data-v="' + b + '">' + mmF(b) + '</td><td class="nm">' + esc(note) + '</td></tr>';
+  if (!ed) return '<tr class="rv"><td class="c sl"></td><td class="c">' + esc(mrDmy(day)) + '</td><td class="l">' + (kind === 'fresh' ? 'Fresh Oil' : 'Reclaim Oil') + '</td><td class="nm">' + esc(src) + '</td><td class="c" data-c="4" data-v="' + qty + '">' + mmF(qty) + '</td><td class="c" data-c="5" data-v="' + b + '">' + mmF(b) + '</td><td class="nm wide">' + esc(note) + '</td></tr>';
   return '<tr class="rv' + (r ? '' : ' blank') + '" data-id="' + id + '"><td class="c sl"></td><td class="in" data-c="1"><input type="date" class="mmr" data-rf="day" value="' + day + '" min="' + month + '-01" max="' + mmRcvMax(month) + '"></td>' +
     '<td class="in" data-c="2"><select class="mmr" data-rf="kind"><option value="fresh"' + (kind === 'fresh' ? ' selected' : '') + '>Fresh Oil</option><option value="reclaim"' + (kind === 'reclaim' ? ' selected' : '') + '>Reclaim Oil</option></select></td>' +
     '<td class="in" data-c="3"><input type="text" class="mmr" data-rf="src" list="mmsrcs" maxlength="120" value="' + mmEsc(src) + '" placeholder="From where"></td>' +
     '<td class="in" data-c="4"><input type="text" inputmode="decimal" autocomplete="off" class="mmr" data-rf="qty" value="' + qty + '"></td>' +
-    '<td class="c au" data-c="5" data-v="' + b + '">' + mmF(b) + '</td><td class="in" data-c="6"><input type="text" class="mmr" data-rf="note" maxlength="300" value="' + mmEsc(note) + '"></td>' +
+    '<td class="c au" data-c="5" data-v="' + b + '">' + mmF(b) + '</td><td class="in wide" data-c="6"><textarea rows="1" class="mmr" data-rf="note" maxlength="300">' + esc(note) + '</textarea></td>' +
     '<td class="c x" data-c="7">' + (r ? '<button type="button" class="mmdel" title="Delete this entry">&#10005;</button>' : '') + '</td></tr>';
 }
 function mmRcvNums() { var o = { fresh: 0, reclaim: 0 }; document.querySelectorAll('#mmrg tr.rv[data-id]').forEach(function (tr) { if (tr.dataset.id === '') return; var q = parseFloat((tr.querySelector('[data-rf="qty"]') || {}).value); if (isNaN(q)) q = parseFloat((tr.querySelector('td[data-c="4"]') || {}).dataset.v) || 0; var k = tr.querySelector('select') ? tr.querySelector('select').value : (/Reclaim/.test(tr.children[2].textContent) ? 'reclaim' : 'fresh'); o[k] += q; }); return o; }
@@ -5858,7 +5863,7 @@ function mmRcvEntry() {
   h += '<div class="bar" style="margin:0 0 8px"><span id="mmsst" class="muted" style="font-size:12.5px"></span></div><div class="wrap"><table class="mkt mmt" id="mmrg" style="width:auto;min-width:720px"><thead><tr><th colspan="' + (ed ? 8 : 7) + '" class="ttl">Oil Receive - ' + esc(mmMonthName(month)) + ' - ' + esc(MM.ws) + '</th></tr><tr><th>Sl</th><th>Date</th><th>Oil received</th><th>From (where)</th><th>Qty (L)</th><th>B&amp;C (dirty) oil issued for reclaim (+5%)</th><th>Note</th>' + (ed ? '<th></th>' : '') + '</tr></thead><tbody>';
   L.rows.forEach(function (r) { h += mmRcvRow(r, ed, month); }); if (ed) h += mmRcvRow(null, ed, month);
   h += '</tbody><tfoot><tr class="t" id="mmrt"></tr></tfoot></table></div>';
-  $('mmout').innerHTML = h; mmRcvNum(); mmRcvTot();
+  $('mmout').innerHTML = h; mmRcvNum(); mmRcvTot(); mmAutoAll();
 }
 function mmRcvNum() { document.querySelectorAll('#mmrg tr.rv').forEach(function (tr, i) { tr.querySelector('td.sl').textContent = i + 1; }); }
 function mmRcvSave(tr) {
@@ -5870,7 +5875,7 @@ function mmRcvSave(tr) {
   rpc('mat_recv_save', { p_ws: C.P.w, p_id: id, p_day: day, p_kind: kind, p_src: src || null, p_qty: qty, p_note: note || null }).then(function (nid) {
     var wasBlank = tr.classList.contains('blank'); tr.dataset.id = nid; tr.classList.remove('blank');
     var x = tr.querySelector('td.x'); if (x && !x.firstChild) x.innerHTML = '<button type="button" class="mmdel" title="Delete this entry">&#10005;</button>';
-    if (wasBlank) { tr.insertAdjacentHTML('afterend', mmRcvRow(null, true, C.month)); }
+    if (wasBlank) { tr.insertAdjacentHTML('afterend', mmRcvRow(null, true, C.month)); mmAutoAll(); }
     mmRcvNum(); mmRcvTot(); var s = $('mmsst'); if (s) s.textContent = '✓ Saved ' + new Date().toTimeString().slice(0, 5);
     if (src) { var dl = $('mmsrcs'); if (dl && ![].some.call(dl.options, function (o) { return o.value === src; })) dl.insertAdjacentHTML('beforeend', '<option value="' + mmEsc(src) + '">'); }
   }).catch(function (er) { var s = $('mmsst'); if (s) s.textContent = ''; msg('mmmsg', esc(er.message), 'err'); });
@@ -5890,7 +5895,7 @@ function mmRcvSum() {
   var t1 = tbl('mmrm', 'Oil received month wise - ' + lab, ['Month', 'Fresh Oil (L)', 'Reclaim Oil (L)', 'Total (L)', 'B&C issued for reclaim (+5%)'], ms, mmMonthName, function (k) { var o = byM[k]; return [o.fresh, o.reclaim, o.fresh + o.reclaim, o.reclaim * 1.05]; });
   var t2 = tbl('mmrs', 'Oil received from where - ' + lab, ['From (where)', 'Fresh Oil (L)', 'Reclaim Oil (L)', 'Total (L)', 'B&C issued for reclaim (+5%)'], ss, function (k) { return k; }, function (k) { var o = byS[k]; return [o.fresh, o.reclaim, o.fresh + o.reclaim, o.reclaim * 1.05]; });
   var t3 = '<div class="wrap"><table class="mkt mmt" id="mmrl" style="width:auto;min-width:640px"><thead><tr><th colspan="' + (all ? 7 : 6) + '" class="ttl">Oil receive register - ' + esc(lab) + '</th></tr><tr><th>Sl</th>' + (all ? '<th>Workshop</th>' : '') + '<th>Date</th><th>Oil received</th><th>From (where)</th><th>Qty (L)</th><th>Note</th></tr></thead><tbody>' +
-    reg.map(function (r, i) { return '<tr><td class="c">' + (i + 1) + '</td>' + (all ? '<td class="nm">' + esc(r[0]) + '</td>' : '') + '<td class="c">' + esc(mrDmy(r[2])) + '</td><td class="l">' + (r[3] === 'fresh' ? 'Fresh Oil' : 'Reclaim Oil') + '</td><td class="nm">' + esc(r[4] || '') + '</td><td class="c" data-v="' + r[5] + '">' + mmF(+r[5]) + '</td><td class="nm">' + esc(r[6] || '') + '</td></tr>'; }).join('') + '</tbody></table></div>';
+    reg.map(function (r, i) { return '<tr><td class="c">' + (i + 1) + '</td>' + (all ? '<td class="nm">' + esc(r[0]) + '</td>' : '') + '<td class="c">' + esc(mrDmy(r[2])) + '</td><td class="l">' + (r[3] === 'fresh' ? 'Fresh Oil' : 'Reclaim Oil') + '</td><td class="nm">' + esc(r[4] || '') + '</td><td class="c" data-v="' + r[5] + '">' + mmF(+r[5]) + '</td><td class="nm wide">' + esc(r[6] || '') + '</td></tr>'; }).join('') + '</tbody></table></div>';
   $('mmout').innerHTML = (reg.length ? '' : mmNote('No oil received in this period.')) + t1 + '<div style="height:12px"></div>' + t2 + '<div style="height:12px"></div>' + t3;
 }
 
@@ -5954,8 +5959,11 @@ function mmExcel() {
 }
 
 /* ---- Excel-like keys: arrows / Enter move between cells, whole cell selected on entry, paste from Excel ---- */
+function mmAutoH(e) { e.style.height = 'auto'; e.style.height = Math.max(e.scrollHeight, 24) + 'px'; }
+function mmAutoAll() { document.querySelectorAll('#mmout textarea.mmr').forEach(mmAutoH); }
+document.addEventListener('input', function (e) { var t = e.target; if (t && t.tagName === 'TEXTAREA' && t.classList.contains('mmr')) mmAutoH(t); });
 function mmCol(td) { return td.dataset.c !== undefined ? td.dataset.c : 'i' + td.cellIndex; }
-function mmInpIn(td) { return td ? td.querySelector('input:not([disabled]):not([type=date]),select') : null; }
+function mmInpIn(td) { return td ? td.querySelector('input:not([disabled]):not([type=date]),select,textarea') : null; }
 function mmDown(inp, dir) {
   var td = inp.closest('td'), tr = td.parentNode, col = mmCol(td);
   while ((tr = dir > 0 ? tr.nextElementSibling : tr.previousElementSibling)) { var c = [].filter.call(tr.children, function (x) { return mmCol(x) === col && mmInpIn(x); })[0]; if (c) return mmInpIn(c); }
@@ -5963,10 +5971,11 @@ function mmDown(inp, dir) {
 }
 function mmSide(inp, dir) { var tr = inp.closest('tr'), all = [].filter.call(tr.querySelectorAll('td'), function (x) { return mmInpIn(x); }).map(mmInpIn), i = all.indexOf(inp); return all[i + dir] || null; }
 function mmFocus(e) { if (!e) return false; e.focus(); if (e.select && e.type !== 'date') e.select(); return true; }
-document.addEventListener('focusin', function (e) { var t = e.target; if (t && t.tagName === 'INPUT' && t.type === 'text' && t.closest && t.closest('#mmout,#mmstdo')) setTimeout(function () { try { t.select(); } catch (x) { } }, 0); });
+document.addEventListener('focusin', function (e) { var t = e.target; if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA') && t.type !== 'date' && t.closest && t.closest('#mmout,#mmstdo')) setTimeout(function () { try { t.select(); } catch (x) { } }, 0); });
 document.addEventListener('keydown', function (e) {
   var t = e.target; if (!t || !t.closest || !t.closest('#mmout,#mmstdo') || e.ctrlKey || e.altKey || e.metaKey) return;
   if (t.tagName === 'SELECT' && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) return;
+  if (t.tagName === 'TEXTAREA') { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); var nx = mmDown(t, 1); if (nx) mmFocus(nx); else t.blur(); } return; }
   if (t.tagName !== 'INPUT' && t.tagName !== 'SELECT') return; if (t.type === 'date') { if (e.key === 'Enter') { e.preventDefault(); mmFocus(mmSide(t, 1)); } return; }
   var k = e.key, n = null;
   if (k === 'Enter' || k === 'ArrowDown') n = mmDown(t, e.shiftKey && k === 'Enter' ? -1 : 1);
@@ -6074,11 +6083,11 @@ function mmLowRow(r, ed, month, P) {
   var id = r ? r[0] : '', day = r ? r[1] : mmRcvDef(month), pr = r ? r[2] : '', vill = r ? (r[3] || '') : '', sub = r ? (r[4] || '') : '', je = r ? (r[5] || '') : '', dv = r ? (r[6] || '') : '', cap = r ? r[7] : '', fnd = r ? r[8] : '', rs = r ? (r[9] || '') : '', rm = r ? (r[10] || '') : '';
   var std = cap ? mmOstd(P).d[String(cap)] : '';
   function au(c, v) { return '<td class="nm au" data-c="' + c + '">' + esc(v) + '</td>'; }
-  if (!ed) return '<tr class="lw"><td class="c sl"></td><td class="c">' + esc(mrDmy(day)) + '</td><td class="nm">' + esc(pr) + '</td>' + au(3, vill) + au(4, sub) + au(5, je) + au(6, dv) + '<td class="c" data-c="7">' + esc(cap) + '</td><td class="c" data-c="8" data-v="' + fnd + '">' + mmF(fnd) + '</td><td class="c" data-c="9" data-v="' + (std || 0) + '">' + mmF(std) + '</td><td class="nm">' + esc(rs) + '</td><td class="nm">' + esc(rm) + '</td></tr>';
+  if (!ed) return '<tr class="lw"><td class="c sl"></td><td class="c">' + esc(mrDmy(day)) + '</td><td class="nm">' + esc(pr) + '</td>' + au(3, vill) + au(4, sub) + au(5, je) + au(6, dv) + '<td class="c" data-c="7">' + esc(cap) + '</td><td class="c" data-c="8" data-v="' + fnd + '">' + mmF(fnd) + '</td><td class="c" data-c="9" data-v="' + (std || 0) + '">' + mmF(std) + '</td><td class="nm wide">' + esc(rs) + '</td><td class="nm wide">' + esc(rm) + '</td></tr>';
   return '<tr class="lw' + (r ? '' : ' blank') + '" data-id="' + id + '"><td class="c sl"></td><td class="in" data-c="1"><input type="date" class="mmr" data-rf="day" value="' + day + '" min="' + month + '-01" max="' + mmRcvMax(month) + '"></td>' +
     '<td class="in" data-c="2"><input type="text" class="mmr" data-rf="pr" maxlength="60" value="' + mmEsc(pr) + '" placeholder="PR no"></td>' + au(3, vill) + au(4, sub) + au(5, je) + au(6, dv) +
     '<td class="c au" data-c="7">' + esc(cap) + '</td><td class="in" data-c="8"><input type="text" inputmode="decimal" autocomplete="off" class="mmr" data-rf="found" value="' + fnd + '"></td><td class="c" data-c="9" data-v="' + (std || 0) + '">' + mmF(std) + '</td>' +
-    '<td class="in" data-c="10"><input type="text" class="mmr" data-rf="reason" maxlength="300" value="' + mmEsc(rs) + '"></td><td class="in" data-c="11"><input type="text" class="mmr" data-rf="remark" maxlength="300" value="' + mmEsc(rm) + '"></td>' +
+    '<td class="in wide" data-c="10"><textarea rows="1" class="mmr" data-rf="reason" maxlength="300">' + esc(rs) + '</textarea></td><td class="in wide" data-c="11"><textarea rows="1" class="mmr" data-rf="remark" maxlength="300">' + esc(rm) + '</textarea></td>' +
     '<td class="c x" data-c="12">' + (r ? '<button type="button" class="mmdel" title="Delete this entry">&#10005;</button>' : '') + '</td></tr>';
 }
 function mmLowNum() { document.querySelectorAll('#mmlg tr.lw').forEach(function (tr, i) { tr.querySelector('td.sl').textContent = i + 1; }); }
@@ -6090,11 +6099,11 @@ function mmLowTot() {
 function mmLowEntry() {
   var P = MM.per[MM.ws], ed = !!P.g.edit, month = MM.month, rows = P.low || [], h;
   MM.cur = { P: P, ed: ed, month: month, kind: 'low' };
-  h = mmNote(ed ? 'Type the <b>PR no</b>: Vill, Substation, JE name, Division and Capacity come from the Data Sheet. Then type the <b>Oil found (L)</b>, the <b>reason of low oil</b> and a remark. It saves by itself. In the <b>Oil Recovery Sheet</b>, for this PR (when its DTC is done) the <b>oil found</b> is taken as the recovered oil in place of the Dirty std.' : 'View only: only the Admin (or a user with edit right) can add entries.');
+  h = mmNote(ed ? 'Type the <b>PR no</b>: Vill, Substation, JE name, Division and Capacity come from the Data Sheet. Then type the <b>Oil found (L)</b>, the <b>reason of low oil</b> and a remark. It saves by itself. In the <b>Oil Recovery Sheet</b>, for this PR (PR date in the month) the <b>oil found</b> is taken as the recovered oil in place of the Dirty std.' : 'View only: only the Admin (or a user with edit right) can add entries.');
   h += '<div class="bar" style="margin:0 0 8px"><span id="mmsst" class="muted" style="font-size:12.5px"></span></div><div class="wrap"><table class="mkt mmt" id="mmlg" style="width:auto;min-width:900px"><thead><tr><th colspan="' + (ed ? 13 : 12) + '" class="ttl">Oil found below STD - ' + esc(mmMonthName(month)) + ' - ' + esc(MM.ws) + '</th></tr><tr><th>Sl</th><th>Date</th><th>PR No</th><th>Vill name</th><th>Substation</th><th>JE name</th><th>Division</th><th>Capacity (KVA)</th><th>Oil found (L)</th><th>Dirty oil std (L)</th><th>Reason of low oil</th><th>Remark</th>' + (ed ? '<th></th>' : '') + '</tr></thead><tbody>';
   rows.forEach(function (r) { h += mmLowRow(r, ed, month, P); }); if (ed) h += mmLowRow(null, ed, month, P);
   h += '</tbody><tfoot><tr class="t" id="mmlt"></tr></tfoot></table></div>';
-  $('mmout').innerHTML = h; mmLowNum(); mmLowTot();
+  $('mmout').innerHTML = h; mmLowNum(); mmLowTot(); mmAutoAll();
 }
 function mmLowFill(tr, d) {
   [['3', d.vill], ['4', d.sub], ['5', d.je], ['6', d.div], ['7', d.cap]].forEach(function (x) { var td = tr.querySelector('td[data-c="' + x[0] + '"]'); if (td) td.textContent = x[1] === null || x[1] === undefined ? '' : x[1]; });
@@ -6116,7 +6125,7 @@ function mmLowSave(tr, prChanged) {
   rpc('mat_low_save', { p_ws: C.P.w, p_id: id, p_pr: pr, p_day: day, p_found: q, p_reason: g('reason').trim() || null, p_remark: g('remark').trim() || null }).then(function (d) {
     var wasBlank = tr.classList.contains('blank'); tr.dataset.id = d.id; tr.classList.remove('blank'); tr.querySelector('[data-rf="pr"]').value = d.pr; mmLowFill(tr, d);
     var x = tr.querySelector('td.x'); if (x && !x.firstChild) x.innerHTML = '<button type="button" class="mmdel" title="Delete this entry">&#10005;</button>';
-    if (wasBlank) tr.insertAdjacentHTML('afterend', mmLowRow(null, true, C.month, C.P));
+    if (wasBlank) { tr.insertAdjacentHTML('afterend', mmLowRow(null, true, C.month, C.P)); mmAutoAll(); }
     mmLowNum(); mmLowTot(); var s = $('mmsst'); if (s) s.textContent = '✓ Saved ' + new Date().toTimeString().slice(0, 5);
   }).catch(function (er) { var s = $('mmsst'); if (s) s.textContent = ''; msg('mmmsg', esc(er.message), 'err'); });
 }
@@ -6126,7 +6135,7 @@ function mmLowSum() {
   reg.sort(function (x, y) { return x[2] < y[2] ? -1 : x[2] > y[2] ? 1 : x[1] - y[1]; });
   var body = reg.map(function (r, i) {
     var P = MM.per[r[0]], std = r[8] ? mmOstd(P).d[String(r[8])] || 0 : 0, f = +r[9], low = mmR3(std - f); n++; s += f; sd += low;
-    return '<tr><td class="c">' + (i + 1) + '</td>' + (all ? '<td class="nm">' + esc(r[0]) + '</td>' : '') + '<td class="c">' + esc(mrDmy(r[2])) + '</td><td class="nm">' + esc(r[3]) + '</td><td class="nm">' + esc(r[4] || '') + '</td><td class="nm">' + esc(r[5] || '') + '</td><td class="nm">' + esc(r[6] || '') + '</td><td class="nm">' + esc(r[7] || '') + '</td><td class="c">' + esc(r[8] || '') + '</td><td class="c" data-v="' + f + '">' + mmF(f) + '</td><td class="c" data-v="' + std + '">' + mmF(std) + '</td><td class="c" data-v="' + low + '">' + mmF(low) + '</td><td class="nm">' + esc(r[10] || '') + '</td><td class="nm">' + esc(r[11] || '') + '</td></tr>';
+    return '<tr><td class="c">' + (i + 1) + '</td>' + (all ? '<td class="nm">' + esc(r[0]) + '</td>' : '') + '<td class="c">' + esc(mrDmy(r[2])) + '</td><td class="nm">' + esc(r[3]) + '</td><td class="nm">' + esc(r[4] || '') + '</td><td class="nm">' + esc(r[5] || '') + '</td><td class="nm">' + esc(r[6] || '') + '</td><td class="nm">' + esc(r[7] || '') + '</td><td class="c">' + esc(r[8] || '') + '</td><td class="c" data-v="' + f + '">' + mmF(f) + '</td><td class="c" data-v="' + std + '">' + mmF(std) + '</td><td class="c" data-v="' + low + '">' + mmF(low) + '</td><td class="nm wide">' + esc(r[10] || '') + '</td><td class="nm wide">' + esc(r[11] || '') + '</td></tr>';
   }).join('');
   var cols = all ? 14 : 13;
   $('mmout').innerHTML = (reg.length ? '' : mmNote('No PR in this period.')) + '<div class="wrap"><table class="mkt mmt" id="mmll" style="width:auto;min-width:900px"><thead><tr><th colspan="' + cols + '" class="ttl">Oil found below STD - ' + esc(lab) + '</th></tr><tr><th>Sl</th>' + (all ? '<th>Workshop</th>' : '') + '<th>Date</th><th>PR No</th><th>Vill name</th><th>Substation</th><th>JE name</th><th>Division</th><th>Capacity (KVA)</th><th>Oil found (L)</th><th>Dirty oil std (L)</th><th>Below std (L)</th><th>Reason of low oil</th><th>Remark</th></tr></thead><tbody>' + body +
