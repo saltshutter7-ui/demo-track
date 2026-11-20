@@ -4185,3 +4185,94 @@ end $$;
 revoke all on function public.mat_get(text), public.mat_rep(text, text, text), public.mat_save(text, text, text, jsonb, boolean), public.mat_std_save(text, text, jsonb) from public, anon;
 grant execute on function public.mat_get(text), public.mat_rep(text, text, text), public.mat_save(text, text, text, jsonb, boolean), public.mat_std_save(text, text, jsonb) to authenticated;
 notify pgrst, 'reload schema';
+
+-- ================================================================================================================
+-- STEP 109 : MATERIAL MANAGEMENT - OIL RECEIVE register + DTC count from the PRs
+-- mat_recv = every oil receipt (date, Fresh / Reclaim, from where, litre).  The Oil Recovery Sheet takes Fresh / Reclaim "Received" from here by itself;
+--            a Reclaim receipt also issues qty + 5% of B&C (dirty) oil "for reclaim".  Dirty oil received = DTC count x dirty oil std.
+-- mat_dtc  = transformers whose DTC is done (DTC no filled in the DTC / Kitty list, Data Sheet PRs) in a month, capacity wise.
+-- Safe to run again.
+-- ================================================================================================================
+create table if not exists public.mat_recv (id bigserial primary key, workshop text not null, day date not null, kind text not null check (kind in ('fresh', 'reclaim')),
+  src text, qty numeric(12, 3) not null check (qty > 0), note text, by_login text, at timestamptz not null default now());
+create index if not exists mat_recv_i on public.mat_recv (workshop, day);
+alter table public.mat_recv enable row level security;
+revoke all on public.mat_recv from public, anon, authenticated;
+
+create or replace function public.mat_get(p_ws text) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+begin
+  if not public.mr_ok() then raise exception 'No access to the M&R dashboard.'; end if;
+  if not (p_ws = any (public.my_workshops())) then raise exception 'This workshop is not yours.'; end if;
+  return jsonb_build_object('edit', public.mr_edit_ok(p_ws),
+    'mstd', (select mstd from public.mat_cfg where workshop = p_ws), 'oilstd', (select oilstd from public.mat_cfg where workshop = p_ws),
+    'ws',  coalesce((select jsonb_object_agg(month, data) from public.mat_ws  where workshop = p_ws), '{}'::jsonb),
+    'oil', coalesce((select jsonb_object_agg(month, data) from public.mat_oil where workshop = p_ws), '{}'::jsonb),
+    'recv', coalesce((select jsonb_object_agg(m, o) from (select to_char(day, 'YYYY-MM') m,
+              jsonb_build_object('fresh', coalesce(sum(qty) filter (where kind = 'fresh'), 0), 'reclaim', coalesce(sum(qty) filter (where kind = 'reclaim'), 0)) o
+              from public.mat_recv where workshop = p_ws group by 1) x), '{}'::jsonb));
+end $$;
+
+-- DTC done per month (DTC date) and capacity: [[month, capacity, n], ...]
+create or replace function public.mat_dtc(p_ws text, p_from text, p_to text) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare d0 date; d1 date;
+begin
+  if not public.mr_ok() then raise exception 'No access to the M&R dashboard.'; end if;
+  if not (p_ws = any (public.my_workshops())) then raise exception 'This workshop is not yours.'; end if;
+  if p_from !~ '^\d{4}-(0[1-9]|1[0-2])$' or p_to !~ '^\d{4}-(0[1-9]|1[0-2])$' or p_from > p_to then raise exception 'Wrong month.'; end if;
+  d0 := (p_from || '-01')::date; d1 := ((p_to || '-01')::date + interval '1 month')::date;
+  if d1 - d0 > 3700 then raise exception 'Choose at most 120 months.'; end if;
+  return coalesce((select jsonb_agg(jsonb_build_array(m, cap, n) order by m, cap)
+                     from (select to_char(t.dtc_date, 'YYYY-MM') m, coalesce(x.capacity, 0)::int cap, count(*)::int n
+                             from public.data x join public.dtc t on t.data_id = x.id
+                            where x.workshop = p_ws and not x.dup and nullif(btrim(t.dtc_no), '') is not null and t.dtc_date >= d0 and t.dtc_date < d1
+                            group by 1, 2) q), '[]'::jsonb);
+end $$;
+
+-- the receipts of a period: {rows:[[id, day, kind, src, qty, note], ...], srcs:[places used before]}
+create or replace function public.mat_recv_list(p_ws text, p_from text, p_to text) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare d0 date; d1 date;
+begin
+  if not public.mr_ok() then raise exception 'No access to the M&R dashboard.'; end if;
+  if not (p_ws = any (public.my_workshops())) then raise exception 'This workshop is not yours.'; end if;
+  if p_from !~ '^\d{4}-(0[1-9]|1[0-2])$' or p_to !~ '^\d{4}-(0[1-9]|1[0-2])$' or p_from > p_to then raise exception 'Wrong month.'; end if;
+  d0 := (p_from || '-01')::date; d1 := ((p_to || '-01')::date + interval '1 month')::date;
+  if d1 - d0 > 1900 then raise exception 'Choose at most 60 months.'; end if;
+  return jsonb_build_object(
+    'rows', coalesce((select jsonb_agg(jsonb_build_array(id, to_char(day, 'YYYY-MM-DD'), kind, src, qty, note) order by day, id)
+                        from (select * from public.mat_recv where workshop = p_ws and day >= d0 and day < d1 order by day, id limit 3000) q), '[]'::jsonb),
+    'srcs', coalesce((select jsonb_agg(s order by s) from (select distinct btrim(src) s from public.mat_recv where workshop = p_ws and nullif(btrim(src), '') is not null limit 100) z), '[]'::jsonb));
+end $$;
+
+create or replace function public.mat_recv_save(p_ws text, p_id bigint, p_day date, p_kind text, p_src text, p_qty numeric, p_note text) returns bigint
+language plpgsql security definer set search_path = public as $$
+declare me text; nid bigint;
+begin
+  if not public.mr_edit_ok(p_ws) then raise exception 'You cannot change the Oil Receive of this workshop.'; end if;
+  if p_kind not in ('fresh', 'reclaim') then raise exception 'Choose Fresh or Reclaim oil.'; end if;
+  if p_day is null or p_day > current_date or p_day < date '2000-01-01' then raise exception 'Wrong date (a future date is not allowed).'; end if;
+  if p_qty is null or p_qty <= 0 or p_qty > 10000000 then raise exception 'Wrong quantity.'; end if;
+  if length(coalesce(p_src, '')) > 120 or length(coalesce(p_note, '')) > 300 then raise exception 'Text too long.'; end if;
+  select login_id into me from public.profiles where user_id = auth.uid();
+  if p_id is null then
+    insert into public.mat_recv(workshop, day, kind, src, qty, note, by_login) values (p_ws, p_day, p_kind, nullif(btrim(p_src), ''), p_qty, nullif(btrim(p_note), ''), me) returning id into nid;
+  else
+    update public.mat_recv set day = p_day, kind = p_kind, src = nullif(btrim(p_src), ''), qty = p_qty, note = nullif(btrim(p_note), ''), by_login = me, at = now()
+     where id = p_id and workshop = p_ws returning id into nid;
+    if nid is null then raise exception 'Entry not found.'; end if;
+  end if;
+  return nid;
+end $$;
+
+create or replace function public.mat_recv_del(p_ws text, p_id bigint) returns text
+language plpgsql security definer set search_path = public as $$
+begin
+  if not public.mr_edit_ok(p_ws) then raise exception 'You cannot change the Oil Receive of this workshop.'; end if;
+  delete from public.mat_recv where id = p_id and workshop = p_ws;
+  return 'deleted';
+end $$;
+revoke all on function public.mat_get(text), public.mat_dtc(text, text, text), public.mat_recv_list(text, text, text), public.mat_recv_save(text, bigint, date, text, text, numeric, text), public.mat_recv_del(text, bigint) from public, anon;
+grant execute on function public.mat_get(text), public.mat_dtc(text, text, text), public.mat_recv_list(text, text, text), public.mat_recv_save(text, bigint, date, text, text, numeric, text), public.mat_recv_del(text, bigint) to authenticated;
+notify pgrst, 'reload schema';
