@@ -2574,7 +2574,7 @@ nav button#tmr{margin-top:auto}
     <!-- SCRAP -->
     <section id="t-mrmat" class="hide">
       <div class="card">
-        <div class="bar sbar"><div class="ptitle"><b>Material Management</b><span>wire, strip and oil - month wise (repairs come from the Repair tab)</span></div></div>
+        <div class="bar sbar"><div class="ptitle"><b>Material Management</b><span>wire, strip, oil and insulating material - month wise (repairs come from the Repair tab)</span></div></div>
         <div id="mmmenu"><div class="achips" id="mmchips"></div></div>
         <div id="mmpanel" class="hide">
           <div class="bar" style="gap:8px;flex-wrap:wrap;align-items:flex-end;margin:6px 0">
@@ -5544,14 +5544,18 @@ function mrShow(t) {
 var MM_S = [['10 KVA', '7.1x4.1 MM Al. Strip'], ['', '6.6x4.8 MM Al. Strip'], ['25 KVA', '7x3 MM Al. Strip'], ['', '8x2.75 MM Al. Strip'], ['63 KVA', '7x4 MM Al. Strip'], ['', '8x3.5 MM Al. Strip'], ['100 KVA', '10x4 MM Al. Strip'], ['', '10x4.4 MM Al. Strip'], ['160 KVA', '7.5x5.1 MM Al. Strip'], ['250 KVA', '10.5x5.5 MM Al. Strip'], ['', '11x5 MM Al. Strip']];
 var MM_W = [['10 KVA', '10 KVA(19/20SWG SE)'], ['25 KVA', '21 SWG SE'], ['', '21 SWG DPC'], ['63 KVA', '17 SWG SE'], ['', '17.5 SWG SE'], ['', '17 SWG DPC'], ['', '17.5 SWG DPC'], ['100 KVA', '16 SWG SE'], ['', '16.5 SWG SE'], ['', '16 SWG DPC'], ['', '16.5 SWG DPC'], ['160 KVA', '14 SWG DPC Al.'], ['250 KVA', '12.5 SWG DPC Al.'], ['', '13 SWG DPC Al.']];
 var MM_IT = MM_S.map(function (x) { return { cat: 'Strip', sl: x[0], name: x[1], unit: 'Kg' }; }).concat(MM_W.map(function (x) { return { cat: 'Wire', sl: x[0], name: x[1], unit: 'Kg' }; }));
+var MM_INS_G = [["Material", [["Press Board Sheet 1 mm Type-D", "Kg"], ["Press Board Sheet 1.5 mm Type-D", "Kg"], ["Press Board Sheet 3 mm Type-D", "Kg"], ["Press Board Block 25x30x3 mm", "Kg"], ["Press Board Block 40x45x3 mm", "Kg"], ["Craft Paper of size 4 Mile X (40”/36”)", "Kg"], ["Craft Paper of size 10 Mile X (40”/36”)", "Kg"], ["HT Porcelain Bushing", "No"], ["LT Porcelain Bushing (25 to 100 KVA)", "No"], ["LT Procelain Bushing (250 KVA to 400 KVA)", "No"], ["LT Porcelain Bushing (630 KVA)", "No"], ["Fresh transformer Oil", "KL"], ["HT Bushing rod (25 to 100 KVA)", "No"], ["HT Bushing rod (250 to 400 KVA)", "No"], ["LT Bushing rod (25 to 100 KVA)", "No"], ["LT Bushing rod (250 to 400 KVA)", "No"], ["LT Bushing rod (630 KVA)", "No"], ["Breather 250gm", "No"], ["Breather 500gm", "No"], ["Arcing horn", "No"], ["Al. Clamping ring", "No"]]], ["Backlite Tube", [["Backlite Tube 4 mm", "No"], ["Backlite Tube 6 mm", "No"], ["Backlite Tube 8 mm", "No"], ["Backlite Tube 10 mm", "No"], ["Backlite Tube 12 mm", "No"]]], ["Fiber Glass Sleeves", [["Fiber Glass Sleeves 1MMX 1 MTR", "No"], ["Fiber Glass Sleeves 2MMX 1 MTR", "No"], ["Fiber Glass Sleeves 3MMX 1 MTR", "No"], ["Fiber Glass Sleeves 4 MMX 1 MTR", "No"], ["Fiber Glass Sleeves 6MMX 1 MTR", "No"], ["Fiber Glass Sleeves 10MMX 1 MTR", "No"], ["Fiber Glass Sleeves 12 MMX 1 MTR", "No"], ["Gasket of Set (10 KVA to 100 KVA)", "No"], ["Gasket of Set (160 KVA to400 KVA)", "No"]]], ["Oil Seal", [["Oil seal LT 12mm", "No"], ["Oil seal LT 20mm", "No"], ["Oil seal HT12mm", "No"]]], ["Other", [["Weaving Tape 25mmx50 mtr.", "No"], ["Clamping Member (Al. casting with MS Hexagonal nut).", "No"], ["Cotton Tape 1” x 50 Mtr.", "Mtr."]]]];
+var MM_INS = [];
+(function () { var i = 25; MM_INS_G.forEach(function (g) { var n = 0; g[1].forEach(function (x) { if (x[0] !== 'Fresh transformer Oil') MM_INS.push({ i: i, cat: g[0], sl: ++n, name: x[0], unit: x[1] }); i++; }); }); })();   // the Fresh oil of the sheet is handled by the Oil Recovery Sheet
+var MM_RK = { fresh: 'Fresh Oil', reclaim: 'Reclaim Oil', ou: 'O&U Oil', reclaim_ou: 'Reclaimed (O&U) Oil' };
 var MM_K = ['10', '16', '25', '63', '100', '160', '250(al)', '250(cu)', '400', '630'];
 var MMK_STD = ['10', '16', '25', '63', '100', '160', '250(al)', '400', '630'];   // the Cu 250 KVA is not counted in the wire / strip consumption
 var MM_OC = ['10', '16', '25', '63', '100', '160', '250', '400', '630', '1000'];
-var MM_DEF_STD = {"0":{"10":1},"1":{"10":3},"2":{"25":6},"3":{"25":3},"4":{"63":4},"5":{"63":14},"6":{"16":9,"100":12.5},"7":{"100":12.5},"8":{"160":30},"9":{"250(al)":21.5},"10":{"250(al)":21.5},"11":{"10":7},"12":{"25":13},"13":{"25":3},"14":{"16":11,"63":12.5},"15":{"63":12.5},"16":{"63":3.5},"17":{"63":3.5},"18":{"100":17.5},"19":{"100":17.5},"20":{"100":4.5},"21":{"100":4.5},"22":{"160":60},"23":{"250(al)":40},"24":{"250(al)":32}};
+var MM_DEF_STD = {"0":{"10":1},"1":{"10":3},"2":{"25":6},"3":{"25":3},"4":{"63":4},"5":{"63":14},"6":{"16":9,"100":12.5},"7":{"100":12.5},"8":{"160":30},"9":{"250(al)":21.5},"10":{"250(al)":21.5},"11":{"10":7},"12":{"25":13},"13":{"25":3},"14":{"16":11,"63":12.5},"15":{"63":12.5},"16":{"63":3.5},"17":{"63":3.5},"18":{"100":17.5},"19":{"100":17.5},"20":{"100":4.5},"21":{"100":4.5},"22":{"160":60},"23":{"250(al)":40},"24":{"250(al)":32},"25":{"10":2,"16":2,"25":3.5,"63":3.5,"100":3.5,"160":6,"250(al)":6,"250(cu)":6,"400":6,"630":6},"26":{"10":1,"16":1,"25":1,"63":1,"100":1,"160":4},"27":{"10":1,"16":1,"25":1,"63":2,"100":2,"160":5,"250(al)":8,"250(cu)":8,"400":8,"630":8},"28":{"10":1,"16":1,"25":2},"29":{"63":2.5,"100":2.5,"160":4,"250(al)":4,"250(cu)":4,"400":4,"630":4},"30":{"10":0.02,"16":0.03,"25":0.05,"63":0.05,"100":0.05,"160":3,"250(al)":3,"250(cu)":3,"400":3,"630":3},"31":{"10":3,"16":3,"25":3,"63":3,"100":3,"160":3,"250(al)":3,"250(cu)":3,"400":3,"630":3},"32":{"10":2,"16":2,"25":3,"63":3,"100":3,"160":3,"250(al)":3,"250(cu)":3,"400":3,"630":3},"33":{"10":2,"16":2,"25":4,"63":4,"100":4},"34":{"160":4,"250(al)":4,"250(cu)":4,"400":4},"35":{"630":4},"37":{"10":2,"16":2,"25":4,"63":4,"100":4},"38":{"160":4,"250(al)":4,"250(cu)":4,"400":4,"630":4},"39":{"10":2,"16":2,"25":4,"63":4,"100":4},"40":{"160":4,"250(al)":4,"250(cu)":4,"400":4},"41":{"630":4},"42":{"10":1,"16":1,"25":1,"63":1,"100":1},"43":{"160":1,"250(al)":1,"250(cu)":1,"400":1,"630":1},"44":{"10":2,"16":2,"25":4,"63":4,"100":4,"160":4,"250(al)":4,"250(cu)":4,"400":4,"630":4},"45":{"10":2,"16":2,"25":4,"63":4,"100":4,"160":4,"250(al)":4,"250(cu)":4,"400":4,"630":4},"46":{"10":1,"16":1,"25":3,"63":3,"100":3,"160":3,"250(al)":3,"250(cu)":3,"400":3,"630":3},"47":{"10":1,"16":1,"25":3,"63":3,"100":3,"160":3,"250(al)":3,"250(cu)":3,"400":3,"630":3},"48":{"10":1,"16":1,"25":3,"63":3,"100":3,"160":3,"250(al)":3,"250(cu)":3,"400":3,"630":3},"49":{"25":4,"63":4,"100":4,"160":4,"250(al)":4,"250(cu)":4,"400":4,"630":4},"50":{"100":3,"160":3,"250(al)":3,"250(cu)":3,"400":3,"630":3},"51":{"10":3,"16":3,"25":3,"63":3,"100":3},"52":{"10":3,"16":3,"25":3,"63":3,"100":3},"53":{"10":3,"16":3,"25":3,"63":3,"100":3},"54":{"10":3,"16":3,"25":3,"63":3,"100":3},"55":{"10":3,"16":3,"25":3,"63":3,"100":3},"56":{"160":4,"250(al)":4,"250(cu)":4,"400":4},"57":{"160":4,"250(al)":4,"250(cu)":4,"400":4},"58":{"10":0.5,"16":0.5,"25":0.5,"63":0.5},"59":{"100":1,"160":1,"250(al)":1,"250(cu)":1,"400":1,"630":1},"60":{"10":2,"16":2,"25":4,"63":4,"100":4},"61":{"160":4,"250(al)":4,"250(cu)":4,"400":4,"630":4},"62":{"10":2,"16":2,"25":4,"63":4,"100":4,"160":4,"250(al)":4,"250(cu)":4,"400":4,"630":4},"63":{"160":5,"250(al)":5,"250(cu)":5,"400":5,"630":5},"64":{"10":8,"16":8,"25":12,"63":12,"100":12,"160":12,"250(al)":12,"250(cu)":12,"400":12,"630":12},"65":{"10":4,"16":4,"25":4,"63":4,"100":5,"160":5,"250(al)":5,"250(cu)":5,"400":5,"630":5}};
 var MM_OIL_STD = { '10': 40, '16': 50, '25': 90, '63': 150, '100': 190, '160': 220, '250': 380, '400': 480, '630': 650, '1000': 0 };
 var MM_OIL_FAC = { '10': 0.6, '16': 0.6, '25': 0.6, '63': 0.6, '100': 0.6, '160': 0.7, '250': 0.7, '400': 0.7, '630': 0.7, '1000': 0 };
 var MM_OT = [['fresh', 'Fresh Oil'], ['bc', 'B&C Oil'], ['rc', 'Reclaim Oil'], ['ou', 'O&U']];
-var MM_OR = [['open', 'Opening Balance'], ['recv', 'Received During Month'], ['trf', 'Issued for TF Repairing'], ['dist', 'Issued to Dist division'], ['other', 'Issued to other workshop / dirty oil for reclaim'], ['close', 'Closing Balance']];
+var MM_OR = [['open', 'Opening Balance'], ['recv', 'Received During Month'], ['trf', 'Issued for TF Repairing'], ['dist', 'Issued to Dist division'], ['other', 'Issue for reclaim'], ['close', 'Closing Balance']];
 var MM_WF = ['open', 'recv', 'tr', 'cons', 'old'];
 var MM_HEAD = ['Sl No', 'Name of Material', 'Unit', 'Opening Balance', 'Material Received (Store/Ws)', 'Material Transfer to other w/s', 'Consumed', 'IF OLD MATERIAL USED THEN QTY', 'Balance', 'As per STD (qty repaired x material std, all materials of the capacity added)'];
 var MM_FLD = [null, null, null, 'open', 'recv', 'tr', 'cons', 'old', 'bal', 'std'];
@@ -5575,7 +5579,12 @@ function mmAutoW(rows, month) { var o = {}; MM_K.forEach(function (k) { o[k] = 0
 function mmAutoO(rows, month) { var o = {}; MM_OC.forEach(function (k) { o[k] = 0; }); (rows || []).forEach(function (x) { if (x[0] !== month) return; var k = (x[1] === '250AL' || x[1] === '250CU') ? '250' : x[1]; if (k in o) o[k] += +x[2]; }); return o; }
 function mmRepW(P, month) { var au = mmAutoW(P.rep, month), ov = ((P.g.ws || {})[month] || {}).rep || {}, r = {}; MM_K.forEach(function (k) { r[k] = ov[k] !== undefined ? mmNum(ov[k]) : au[k]; }); return { auto: au, rep: r }; }
 function mmRepO(P, month) { var au = mmAutoO(P.rep, month), ov = ((P.g.oil || {})[month] || {}).rep || {}, r = {}; MM_OC.forEach(function (k) { r[k] = ov[k] !== undefined ? mmNum(ov[k]) : au[k]; }); return { auto: au, rep: r }; }
-function mmMstd(P) { return P.g.mstd || MM_DEF_STD; }
+function mmMstd(P) {
+  var sv = P.g.mstd; if (!sv) return MM_DEF_STD; if (P._ms && P._ms0 === sv) return P._ms;
+  var o = {}, k; for (k in sv) o[k] = sv[k]; MM_INS.forEach(function (x) { if (o[x.i] === undefined && MM_DEF_STD[x.i]) o[x.i] = MM_DEF_STD[x.i]; });   // insulating std not saved yet = the default std
+  P._ms0 = sv; P._ms = o; return o;
+}
+function mmStdI(i, rep, mstd) { var t = 0, m = (mstd || {})[i] || {}; for (var k in m) t += (parseFloat(rep[k]) || 0) * m[k]; return mmR3(t); }   // insulating material: Cu 250 KVA is counted too
 
 /* ---- Wire & Strip: month chain ---- */
 function mmStart(map) { var k = Object.keys(map || {}).sort(); return k.length ? k[0] : null; }
@@ -5602,6 +5611,7 @@ var MM_DEFS = [
   { k: 'wsc', t: 'Wire & Strip Consumption', s: 'Monthly stock, consumed and as per STD', i: '\u{1F9F5}', c: '#e4f6e8' },
   { k: 'oil', t: 'Oil Recovery Sheet', s: 'Oil account and recovery from DTC', i: '\u{1F6E2}️', c: '#fff4cc' },
   { k: 'rcv', t: 'Oil Receive', s: 'Fresh / Reclaim oil received: date, from where', i: '\u26FD', c: '#e0f2fe' },
+  { k: 'ins', t: 'Insulating Material', s: 'Press board, bushing, rod, tube, sleeve, seal...: stock, consumed, as per STD', i: '\u{1F9F1}', c: '#efe6ff' },
   { k: 'low', t: 'Oil Found Below STD', s: 'PR wise: oil found, reason of low oil', i: '\u{1F4C9}', c: '#fde8e8' }
 ];
 function mmHome() {
@@ -5620,8 +5630,8 @@ function mmOpen(k) {
 function mmSetMode(m, noLoad) {
   asFlushAll(); MM.mode = m;
   var o = $('mmw').dataset.o || '', cur = $('mmw').value;
-  $('mmw').innerHTML = (m === 'sum' && MM.all ? '<option value="__ALL__">All workshops</option>' : '') + o;
-  if (cur && [].some.call($('mmw').options, function (x) { return x.value === cur; })) $('mmw').value = cur; MM.ws = $('mmw').value;
+  $('mmw').innerHTML = (MM.all ? '<option value="__ALL__">All workshops</option>' : '') + o;
+  if (cur && [].some.call($('mmw').options, function (x) { return x.value === cur; })) $('mmw').value = cur; else { var f1 = [].filter.call($('mmw').options, function (x) { return x.value !== '__ALL__'; })[0]; if (f1) $('mmw').value = f1.value; } MM.ws = $('mmw').value;
   document.querySelectorAll('[data-mmmode]').forEach(function (b) { b.classList.toggle('on', b.dataset.mmmode === m); });
   var cm = mmNow();
   $('mmper').innerHTML = m === 'entry'
@@ -5641,6 +5651,7 @@ document.addEventListener('click', function (e) {
   if (t.closest('#mmreset')) return mmReset();
 });
 document.addEventListener('change', function (e) {
+  var t0 = e.target; if (t0 && t0.dataset && t0.dataset.ins && MM.kind === 'ins') { mmInsRecalc(); }
   var t = e.target; if (!t || !t.id) return;
   if (t.id === 'mmw') { asFlushAll(); MM.ws = t.value; mmLoad(); } else if (t.id === 'mmm') mmGo(t.value);
   else if (t.id === 'mmf' || t.id === 'mmt') { MM.from = $('mmf').value; MM.to = $('mmt').value; mmLoad(); }
@@ -5701,12 +5712,13 @@ function mmReset() {
   var C = MM.cur; if (!C) return;
   document.querySelectorAll('#mmr input[data-q]').forEach(function (e) { e.value = C.auto[e.dataset.q] || ''; });
   document.querySelectorAll('#mmr input[data-oq]').forEach(function (e) { e.value = (C.auto[e.dataset.oq] || ''); });
-  if (MM.kind === 'wsc') { mmWscRecalc(); asRun('mm', mmWscSave, 600); } else { mmOilRecalc(); asRun('mm', mmOilSave, 600); }
+  if (MM.kind === 'ins') { mmInsRecalc(); asRun('mm', mmInsSave, 600); } else if (MM.kind === 'wsc') { mmWscRecalc(); asRun('mm', mmWscSave, 600); } else { mmOilRecalc(); asRun('mm', mmOilSave, 600); }
 }
 document.addEventListener('input', function (e) {
   var t = e.target; if (!t.classList || !t.classList.contains('mmn') || !MM.cur || !MM.cur.ed) return;
   var v = t.value.replace(/[^0-9.]/g, ''); if (v !== t.value) t.value = v;
-  if (MM.kind === 'wsc') { mmWscRecalc(); asRun('mm', mmWscSave, 900); } else { mmOilRecalc(); asRun('mm', mmOilSave, 900); }
+  if (t.dataset.ins) t.dataset.auto = t.value === '' ? '1' : '0';
+  if (MM.kind === 'ins') { mmInsRecalc(); asRun('mm', mmInsSave, 900); } else if (MM.kind === 'wsc') { mmWscRecalc(); asRun('mm', mmWscSave, 900); } else { mmOilRecalc(); asRun('mm', mmOilSave, 900); }
 });
 
 /* ---- Wire & Strip: summary From - To ---- */
@@ -5756,14 +5768,14 @@ function mmOilStartM(P) { var a = Object.keys(P.g.oil || {}).concat(Object.keys(
 function mmRecOf(P, m, k, dtc) { var d = mmOstd(P).d[k], n = 0, f = 0; (P.adj || []).forEach(function (x) { if (x[0] === m && String(x[1]) === k) { n += +x[2]; f += +x[3]; } }); return mmR3(Math.max(0, dtc - n) * d + f); }   // PRs of "Oil found below STD": the oil found is taken in place of the Dirty std
 function mmDtcOf(P, m) { var o = {}; MM_OC.forEach(function (k) { o[k] = 0; }); (P.dtc || []).forEach(function (x) { if (x[0] === m && (String(x[1]) in o)) o[String(x[1])] += +x[2]; }); return o; }
 function mmOilMonth(P, m, prev) {
-  var rec = (P.g.recv || {})[m] || {}, sv = ((P.g.oil || {})[m] || {}).o || {}, dtc = mmDtcOf(P, m), ds = mmOstd(P).d, rows = {}, dirty = 0, fr = mmNum(rec.fresh), rc = mmNum(rec.reclaim);
+  var rec = (P.g.recv || {})[m] || {}, sv = ((P.g.oil || {})[m] || {}).o || {}, dtc = mmDtcOf(P, m), ds = mmOstd(P).d, rows = {}, dirty = 0, fr = mmNum(rec.fresh), rc0 = mmNum(rec.reclaim), rc = mmR3(rc0 + mmNum(rec.reclaim_ou)), ouR = mmNum(rec.ou), ouI = mmOu(mmNum(rec.reclaim_ou));
   MM_OC.forEach(function (k) { dirty += mmRecOf(P, m, k, dtc[k]); }); dirty = mmR3(dirty);
   MM_OT.forEach(function (t) {
     var x = sv[t[0]] || {}, open = prev ? prev[t[0]] : mmNum(x.open), id = t[0];
-    var recv = id === 'fresh' ? fr : id === 'rc' ? rc : id === 'bc' ? dirty : mmNum(x.recv), trf = mmNum(x.trf), dist = mmNum(x.dist), other = id === 'bc' ? mmDirty(rc) : mmNum(x.other);
+    var recv = id === 'fresh' ? fr : id === 'rc' ? rc : id === 'bc' ? dirty : ouR, trf = mmNum(x.trf), dist = mmNum(x.dist), other = id === 'bc' ? mmDirty(rc0) : id === 'ou' ? ouI : mmNum(x.other);
     rows[id] = { open: open, recv: recv, trf: trf, dist: dist, other: other, close: mmR3(open + recv - trf - dist - other) };
   });
-  return { rows: rows, dtc: dtc, fr: fr, rc: rc, dirty: dirty };
+  return { rows: rows, dtc: dtc, fr: fr, rc: rc, rc0: rc0, ouR: ouR, ouI: ouI, dirty: dirty };
 }
 function mmOilChain(P, upto) {
   var st = mmOilStartM(P), out = {}, prev = null, n = 0; if (!st || upto < st) return out;
@@ -5774,7 +5786,7 @@ function mmOilFull(P, month) {
   var ch = mmOilChain(P, month), r = ch[month], rp = mmRepO(P, month), std = mmOstd(P), cf = {}, cr = {}, rec = {};
   if (!r) { r = mmOilMonth(P, month, null); var bx = r.rows.bc; bx.recv = 0; bx.close = mmR3(bx.open - bx.trf - bx.dist - bx.other); }   // before the first oil month: nothing is received / recovered yet
   MM_OC.forEach(function (k) { cf[k] = mmR3(rp.rep[k] * std.f[k]); cr[k] = mmR3(rp.rep[k] * std.r[k]); rec[k] = mmRecOf(P, month, k, r.dtc[k]); });
-  return { rows: r.rows, rep: rp.rep, auto: rp.auto, dtc: r.dtc, cf: cf, cr: cr, rec: rec, std: std, fr: r.fr, rc: r.rc, start: mmOilStartM(P) };
+  return { rows: r.rows, rep: rp.rep, auto: rp.auto, dtc: r.dtc, cf: cf, cr: cr, rec: rec, std: std, fr: r.fr, rc: r.rc, rc0: r.rc0, ouR: r.ouR, ouI: r.ouI, start: mmOilStartM(P) };
 }
 function mmOilCalcHtml(cf, cr, tf, tr_) {
   function row(a, x, y, cls) { var d = x + y; return '<tr><td class="l">' + a + '</td><td class="c" data-v="' + x + '">' + mmF0(x) + '</td><td class="c" data-v="' + y + '">' + mmF0(y) + '</td><td class="c' + (cls && d > 0 ? ' neg' : '') + '" data-v="' + d + '">' + mmF0(d) + '</td></tr>'; }
@@ -5785,14 +5797,14 @@ var MM_OTH = ['Capacity (KVA)', 'Repaired in Repair tab (auto - you can change)'
 function mmOilAccHtml(f, ed, openEd, lab) {
   return mmKva('mmoo', 'Oil account - ' + lab, MM_OR.map(function (r) { return r[0]; }), function (k) { return MM_OR.filter(function (r) { return r[0] === k; })[0][1]; }, ['Oil movement'].concat(MM_OT.map(function (t) { return t[1]; })).concat(['Total (without B&C)']), [], function (k, c) {
     if (c === 5) return mmCalcTd(5, 0);
-    var t = MM_OT[c - 1][0], x = f.rows[t], auto = (k === 'recv' && t !== 'ou') || (k === 'other' && t === 'bc');
+    var t = MM_OT[c - 1][0], x = f.rows[t], auto = k === 'recv' || (k === 'other' && (t === 'bc' || t === 'ou'));
     if (k === 'close' || auto || (k === 'open' && !openEd) || !ed) return mmCalcTd(c, x[k], auto ? ' au' : '');
     return '<td class="in" data-c="' + c + '">' + mmInp('data-of', k, x[k], false, ' data-ot="' + t + '"') + '</td>';
   });
 }
 function mmOilEntry() {
   var P = MM.per[MM.ws], g = P.g, month = MM.month, f = mmOilFull(P, month), st = f.start, ed = !!g.edit, openEd = ed && (!st || month <= st), before = !!(st && month < st);
-  MM.cur = { P: P, month: month, start: st, openEd: openEd, before: before, ed: ed, auto: f.auto, std: f.std, fr: f.fr, rc: f.rc, recK: f.rec };
+  MM.cur = { P: P, month: month, start: st, openEd: openEd, before: before, ed: ed, auto: f.auto, std: f.std, fr: f.fr, rc: f.rc, rc0: f.rc0, ouR: f.ouR, ouI: f.ouI, recK: f.rec };
   var note = '';
   if (ed) {
     if (!st) note = mmNote('No oil entries yet. This is the first month: enter the <b>Opening Balance</b> of each oil (only once). After that the closing of a month becomes the opening of the next month by itself.');
@@ -5804,7 +5816,7 @@ function mmOilEntry() {
     if (c === 2) return mmCalcTd(2, f.cf[k]); if (c === 3) return mmCalcTd(3, f.cr[k]); if (c === 4) return mmCalcTd(4, mmR3(f.cf[k] + f.cr[k]));
     if (c === 5) return mmCalcTd(5, f.dtc[k], ' au'); return mmCalcTd(6, f.rec[k]);
   });
-  $('mmout').innerHTML = note + mmNote('<b>Repaired</b> = from the Repair tab (250 KVA Al + Cu together), you can change it (orange). <b>Total transformer DTC</b> = PRs received in this month (PR date, same as <b>Total PR</b> of the M&amp;R Summary). <b>Fresh / Reclaim Received</b> come from <b>Oil Receive</b>; a Reclaim receipt issues B&amp;C (dirty) oil for reclaim = reclaim qty \u00F7 0.95 (reclaim oil is 5% less than the dirty oil); the <b>oil recovered as per std</b> is Received in B&amp;C (dirty) oil. Green cells are automatic.') +
+  $('mmout').innerHTML = note + mmNote('<b>Repaired</b> = from the Repair tab (250 KVA Al + Cu together), you can change it (orange). <b>Total transformer DTC</b> = PRs received in this month (PR date, same as <b>Total PR</b> of the M&amp;R Summary). <b>Fresh / Reclaim Received</b> come from <b>Oil Receive</b>; a Reclaim receipt issues B&amp;C (dirty) oil for reclaim = reclaim qty \u00F7 0.95 (reclaim oil is 5% less than the dirty oil); a Reclaimed (O&amp;U) receipt adds to Reclaim oil and issues O&amp;U oil for reclaim = qty \u00F7 0.97 (3% less); O&amp;U Oil received goes to the O&amp;U column; the <b>oil recovered as per std</b> is Received in B&amp;C (dirty) oil. Green cells are automatic.') +
     '<div class="bar" style="margin:0 0 8px">' + (ed ? '<button class="btn sec sm" type="button" id="mmreset">Reset repaired qty to Repair tab</button>' : '') + '<span id="mmsst" class="muted" style="font-size:12.5px"></span></div>' +
     t1 + '<div style="height:12px"></div>' + mmOilAccHtml(f, ed, openEd, mmMonthName(month)) + '<div style="height:12px"></div><div id="mmocalc"></div>';
   mmOilRecalc();
@@ -5827,12 +5839,12 @@ function mmOilRecalc() {
     ['open', 'recv', 'trf', 'dist', 'other'].forEach(function (f) {
       var e = ob.querySelector('input[data-ot="' + id + '"][data-of="' + f + '"]');
       if (e) o[f] = parseFloat(e.value) || 0;
-      else if (f === 'recv' && id === 'fresh') o[f] = C.fr; else if (f === 'recv' && id === 'rc') o[f] = C.rc; else if (f === 'recv' && id === 'bc') o[f] = mmR3(tot[6]); else if (f === 'other' && id === 'bc') o[f] = mmDirty(C.rc);
+      else if (f === 'recv' && id === 'fresh') o[f] = C.fr; else if (f === 'recv' && id === 'rc') o[f] = C.rc; else if (f === 'recv' && id === 'bc') o[f] = mmR3(tot[6]); else if (f === 'recv' && id === 'ou') o[f] = C.ouR; else if (f === 'other' && id === 'bc') o[f] = mmDirty(C.rc0); else if (f === 'other' && id === 'ou') o[f] = C.ouI;
       else { var td = ob.querySelector('tr[data-k="' + f + '"] td[data-c="' + (i + 1) + '"]'); o[f] = td ? (parseFloat(td.dataset.v) || 0) : 0; }
     });
     o.close = mmR3(o.open + o.recv - o.trf - o.dist - o.other); vals[id] = o;
   });
-  MM_OR.forEach(function (r) { var tr = ob.querySelector('tr[data-k="' + r[0] + '"]'); MM_OT.forEach(function (t, i) { if (!tr.querySelector('input[data-ot="' + t[0] + '"]')) { mmSetTd(tr, i + 1, vals[t[0]][r[0]]); var td = tr.querySelector('td[data-c="' + (i + 1) + '"]'); if ((r[0] === 'recv' && t[0] !== 'ou') || (r[0] === 'other' && t[0] === 'bc')) td.classList.add('au'); } }); mmSetTd(tr, 5, mmOilTot(vals, r[0])); });
+  MM_OR.forEach(function (r) { var tr = ob.querySelector('tr[data-k="' + r[0] + '"]'); MM_OT.forEach(function (t, i) { if (!tr.querySelector('input[data-ot="' + t[0] + '"]')) { mmSetTd(tr, i + 1, vals[t[0]][r[0]]); var td = tr.querySelector('td[data-c="' + (i + 1) + '"]'); if (r[0] === 'recv' || (r[0] === 'other' && (t[0] === 'bc' || t[0] === 'ou'))) td.classList.add('au'); } }); mmSetTd(tr, 5, mmOilTot(vals, r[0])); });
   C.vals = vals; C.rep = rep;
   $('mmocalc').innerHTML = mmOilCalcHtml(mmR3(sf), mmR3(sr), vals.fresh.trf, vals.rc.trf);
 }
@@ -5840,7 +5852,7 @@ function mmOilSave() {
   var C = MM.cur; if (!C || !C.ed || !$('mmot')) return; mmOilRecalc();
   var isStart = !C.start || C.month <= C.start, o = {}, any = false, hasOpen = false, ov = {};
   MM_OT.forEach(function (t) { var x = {}, r = C.vals[t[0]]; ['open', 'recv', 'trf', 'dist', 'other'].forEach(function (f) {
-    if (f === 'open' && !isStart) return; if (f === 'recv' && t[0] !== 'ou') return; if (f === 'other' && t[0] === 'bc') return;
+    if (f === 'open' && !isStart) return; if (f === 'recv') return; if (f === 'other' && (t[0] === 'bc' || t[0] === 'ou')) return;
     if (r[f]) { x[f] = r[f]; any = true; if (f === 'open') hasOpen = true; } }); o[t[0]] = x; });
   MM_OC.forEach(function (k) { if (Math.abs(C.rep[k] - C.auto[k]) > 0.0005) { ov[k] = C.rep[k]; any = true; } });
   var rec = { o: o }; if (Object.keys(ov).length) rec.rep = ov;
@@ -5882,36 +5894,37 @@ function mmOilSum() {
 }
 
 /* ---- Oil Receive: register (date, Fresh / Reclaim, from where, litre) ---- */
+function mmOu(rc) { return mmR3(rc / 0.97); }   // reclaim oil made from O&U oil is 3% less: O&U oil issued for reclaim = Reclaimed(O&U) / 0.97
+function mmIss(kind, q) { return kind === 'reclaim' ? mmDirty(q) : kind === 'reclaim_ou' ? mmOu(q) : 0; }
 function mmDirty(rc) { return mmR3(rc / 0.95); }   // reclaim oil is 5% less than the dirty oil it comes from: dirty oil = reclaim / 0.95 (10000 L reclaim = 10526.316 L dirty)
 function mmRcvDef(month) { var cm = mmNow(); if (month === cm) { var t = new Date(); return t.getFullYear() + '-' + p2(t.getMonth() + 1) + '-' + p2(t.getDate()); } var d = new Date(+month.slice(0, 4), +month.slice(5, 7), 0); return month + '-' + p2(d.getDate()); }
 function mmRcvMax(month) { var d = new Date(+month.slice(0, 4), +month.slice(5, 7), 0), e = month + '-' + p2(d.getDate()), t = new Date(), td = t.getFullYear() + '-' + p2(t.getMonth() + 1) + '-' + p2(t.getDate()); return e < td ? e : td; }
 function mmRcvRow(r, ed, month) {
   var id = r ? r[0] : '', day = r ? r[1] : mmRcvDef(month), kind = r ? r[2] : 'fresh', src = r ? (r[3] || '') : '', qty = r ? r[4] : '', note = r ? (r[5] || '') : '';
-  var b = kind === 'reclaim' && qty ? mmDirty(qty) : 0;
-  if (!ed) return '<tr class="rv"><td class="c sl"></td><td class="c">' + esc(mrDmy(day)) + '</td><td class="l">' + (kind === 'fresh' ? 'Fresh Oil' : 'Reclaim Oil') + '</td><td class="nm">' + esc(src) + '</td><td class="c" data-c="4" data-v="' + qty + '">' + mmF(qty) + '</td><td class="c" data-c="5" data-v="' + b + '">' + mmF(b) + '</td><td class="nm wide">' + esc(note) + '</td></tr>';
-  return '<tr class="rv' + (r ? '' : ' blank') + '" data-id="' + id + '"><td class="c sl"></td><td class="in" data-c="1"><input type="date" class="mmr" data-rf="day" value="' + day + '" min="' + month + '-01" max="' + mmRcvMax(month) + '"></td>' +
-    '<td class="in" data-c="2"><select class="mmr" data-rf="kind"><option value="fresh"' + (kind === 'fresh' ? ' selected' : '') + '>Fresh Oil</option><option value="reclaim"' + (kind === 'reclaim' ? ' selected' : '') + '>Reclaim Oil</option></select></td>' +
+  var b = qty ? mmIss(kind, qty) : 0, KO = Object.keys(MM_RK);
+  if (!ed) return '<tr class="rv" data-kind="' + kind + '"><td class="c sl"></td><td class="c">' + esc(mrDmy(day)) + '</td><td class="l">' + esc(MM_RK[kind] || kind) + '</td><td class="nm">' + esc(src) + '</td><td class="c" data-c="4" data-v="' + qty + '">' + mmF(qty) + '</td><td class="c" data-c="5" data-v="' + b + '">' + mmF(b) + '</td><td class="nm wide">' + esc(note) + '</td></tr>';
+  return '<tr class="rv' + (r ? '' : ' blank') + '" data-id="' + id + '" data-kind="' + kind + '"><td class="c sl"></td><td class="in" data-c="1"><input type="date" class="mmr" data-rf="day" value="' + day + '" min="' + month + '-01" max="' + mmRcvMax(month) + '"></td>' +
+    '<td class="in" data-c="2"><select class="mmr" data-rf="kind">' + KO.map(function (x) { return '<option value="' + x + '"' + (kind === x ? ' selected' : '') + '>' + esc(MM_RK[x]) + '</option>'; }).join('') + '</select></td>' +
     '<td class="in" data-c="3"><input type="text" class="mmr" data-rf="src" list="mmsrcs" maxlength="120" value="' + mmEsc(src) + '" placeholder="From where"></td>' +
     '<td class="in" data-c="4"><input type="text" inputmode="decimal" autocomplete="off" class="mmr" data-rf="qty" value="' + qty + '"></td>' +
     '<td class="c au" data-c="5" data-v="' + b + '">' + mmF(b) + '</td><td class="in wide" data-c="6"><textarea rows="1" class="mmr" data-rf="note" maxlength="300">' + esc(note) + '</textarea></td>' +
     '<td class="c x" data-c="7">' + (r ? '<button type="button" class="mmdel" title="Delete this entry">&#10005;</button>' : '') + '</td></tr>';
 }
-function mmRcvNums() { var o = { fresh: 0, reclaim: 0 }; document.querySelectorAll('#mmrg tr.rv[data-id]').forEach(function (tr) { if (tr.dataset.id === '') return; var q = parseFloat((tr.querySelector('[data-rf="qty"]') || {}).value); if (isNaN(q)) q = parseFloat((tr.querySelector('td[data-c="4"]') || {}).dataset.v) || 0; var k = tr.querySelector('select') ? tr.querySelector('select').value : (/Reclaim/.test(tr.children[2].textContent) ? 'reclaim' : 'fresh'); o[k] += q; }); return o; }
 function mmRcvTot() {
-  var t = $('mmrg'); if (!t) return; var o = { fresh: 0, reclaim: 0 };
+  var t = $('mmrg'); if (!t) return; var o = { fresh: 0, reclaim: 0, ou: 0, reclaim_ou: 0 }, di = 0, oi = 0;
   t.querySelectorAll('tr.rv').forEach(function (tr) {
     if (tr.dataset.id === '' && tr.classList.contains('blank')) return;
     var q = parseFloat((tr.querySelector('[data-rf="qty"]') || {}).value); if (isNaN(q)) q = parseFloat((tr.querySelector('td[data-c="4"]') || {}).dataset.v) || 0;
-    var s = tr.querySelector('select'), k = s ? s.value : (/Reclaim/.test(tr.children[2].textContent) ? 'reclaim' : 'fresh'); o[k] += q;
-    var td = tr.querySelector('td[data-c="5"]'), b = k === 'reclaim' ? mmDirty(q) : 0; td.textContent = mmF(b); td.dataset.v = b;
+    var s = tr.querySelector('select'), k = s ? s.value : (tr.dataset.kind || 'fresh'); tr.dataset.kind = k; o[k] += q;
+    var td = tr.querySelector('td[data-c="5"]'), b = mmIss(k, q); td.textContent = mmF(b); td.dataset.v = b; td.title = k === 'reclaim' ? 'taken from B&C (dirty) oil' : k === 'reclaim_ou' ? 'taken from O&U oil' : '';
   });
-  var tf = $('mmrt'); if (tf) tf.innerHTML = '<td colspan="4" class="l">Total  (Fresh ' + mmF0(mmR3(o.fresh)) + ' L  +  Reclaim ' + mmF0(mmR3(o.reclaim)) + ' L)</td><td data-v="' + mmR3(o.fresh + o.reclaim) + '">' + mmF0(mmR3(o.fresh + o.reclaim)) + '</td><td data-v="' + mmDirty(o.reclaim) + '">' + mmF0(mmDirty(o.reclaim)) + '</td><td colspan="2"></td>';
+  var tf = $('mmrt'); if (tf) tf.innerHTML = '<td colspan="4" class="l">Total  (Fresh ' + mmF0(mmR3(o.fresh)) + '  +  Reclaim ' + mmF0(mmR3(o.reclaim)) + '  +  O&amp;U ' + mmF0(mmR3(o.ou)) + '  +  Reclaimed(O&amp;U) ' + mmF0(mmR3(o.reclaim_ou)) + ' L)</td><td data-v="' + mmR3(o.fresh + o.reclaim + o.ou + o.reclaim_ou) + '">' + mmF0(mmR3(o.fresh + o.reclaim + o.ou + o.reclaim_ou)) + '</td><td data-v="' + mmR3(mmDirty(o.reclaim) + mmOu(o.reclaim_ou)) + '" title="B&C ' + mmF0(mmDirty(o.reclaim)) + ' + O&U ' + mmF0(mmOu(o.reclaim_ou)) + '">' + mmF0(mmR3(mmDirty(o.reclaim) + mmOu(o.reclaim_ou))) + '</td><td colspan="2"></td>';
 }
 function mmRcvEntry() {
   var P = MM.per[MM.ws], ed = !!P.g.edit, month = MM.month, L = P.list || { rows: [], srcs: [] }, h;
   MM.cur = { P: P, ed: ed, month: month, kind: 'rcv' };
-  h = mmNote(ed ? 'Type a line: <b>Date, Oil (Fresh / Reclaim), From where, Qty (litre)</b>. It is saved by itself and goes into the <b>Oil Recovery Sheet</b> (Received). A <b>Reclaim</b> entry also issues B&amp;C (dirty) oil for reclaim = <b>reclaim qty \u00F7 0.95</b> (reclaim oil comes 5% less than the dirty oil; example: 10000 L reclaim = 10526.316 L dirty), so the dirty oil balance becomes less.' : 'View only: only the Admin (or a user with edit right) can add entries.') + '<datalist id="mmsrcs">' + (L.srcs || []).map(function (s) { return '<option value="' + mmEsc(s) + '">'; }).join('') + '</datalist>';
-  h += '<div class="bar" style="margin:0 0 8px"><span id="mmsst" class="muted" style="font-size:12.5px"></span></div><div class="wrap"><table class="mkt mmt" id="mmrg" style="width:auto;min-width:720px"><thead><tr><th colspan="' + (ed ? 8 : 7) + '" class="ttl">Oil Receive - ' + esc(mmMonthName(month)) + ' - ' + esc(MM.ws) + '</th></tr><tr><th>Sl</th><th>Date</th><th>Oil received</th><th>From (where)</th><th>Qty (L)</th><th>B&amp;C (dirty) oil issued for reclaim (reclaim \u00F7 0.95)</th><th>Note</th>' + (ed ? '<th></th>' : '') + '</tr></thead><tbody>';
+  h = mmNote(ed ? 'Type a line: <b>Date, Oil (Fresh / Reclaim / O&amp;U / Reclaimed (O&amp;U)), From where, Qty (litre)</b>. It is saved by itself and goes into the <b>Oil Recovery Sheet</b> (Received). A <b>Reclaim</b> entry issues B&amp;C (dirty) oil for reclaim = <b>reclaim qty \u00F7 0.95</b> (10000 L reclaim = 10526.316 L dirty). A <b>Reclaimed (O&amp;U)</b> entry is added to Reclaim oil and issues O&amp;U oil for reclaim = <b>qty \u00F7 0.97</b> (O&amp;U reclaim loses 3%; 10000 L = 10309.278 L O&amp;U).' : 'View only: only the Admin (or a user with edit right) can add entries.') + '<datalist id="mmsrcs">' + (L.srcs || []).map(function (s) { return '<option value="' + mmEsc(s) + '">'; }).join('') + '</datalist>';
+  h += '<div class="bar" style="margin:0 0 8px"><span id="mmsst" class="muted" style="font-size:12.5px"></span></div><div class="wrap"><table class="mkt mmt" id="mmrg" style="width:auto;min-width:720px"><thead><tr><th colspan="' + (ed ? 8 : 7) + '" class="ttl">Oil Receive - ' + esc(mmMonthName(month)) + ' - ' + esc(MM.ws) + '</th></tr><tr><th>Sl</th><th>Date</th><th>Oil received</th><th>From (where)</th><th>Qty (L)</th><th>Issue for reclaim (L) (Reclaim \u00F7 0.95 from B&amp;C, Reclaimed(O&amp;U) \u00F7 0.97 from O&amp;U)</th><th>Note</th>' + (ed ? '<th></th>' : '') + '</tr></thead><tbody>';
   L.rows.forEach(function (r) { h += mmRcvRow(r, ed, month); }); if (ed) h += mmRcvRow(null, ed, month);
   h += '</tbody><tfoot><tr class="t" id="mmrt"></tr></tfoot></table></div>';
   $('mmout').innerHTML = h; mmRcvNum(); mmRcvTot(); mmAutoAll();
@@ -5932,44 +5945,147 @@ function mmRcvSave(tr) {
   }).catch(function (er) { var s = $('mmsst'); if (s) s.textContent = ''; msg('mmmsg', esc(er.message), 'err'); });
 }
 function mmRcvSum() {
-  MM.cur = null; var a = MM.from, b = MM.to, lab = mmMonthName(a) + (a === b ? '' : ' to ' + mmMonthName(b)), all = MM.names.length > 1, byM = {}, byS = {}, reg = [];
+  MM.cur = null; var a = MM.from, b = MM.to, lab = mmMonthName(a) + (a === b ? '' : ' to ' + mmMonthName(b)), all = MM.names.length > 1, byM = {}, byS = {}, reg = [], KO = Object.keys(MM_RK), z = function () { return { fresh: 0, reclaim: 0, ou: 0, reclaim_ou: 0 }; };
   MM.names.forEach(function (w) { ((MM.per[w].list || {}).rows || []).forEach(function (r) { reg.push([w].concat(r)); }); });
   reg.sort(function (x, y) { return x[2] < y[2] ? -1 : x[2] > y[2] ? 1 : x[1] - y[1]; });
   reg.forEach(function (r) { var m = r[2].slice(0, 7), s = (r[4] || '(not written)').trim(), q = +r[5], k = r[3];
-    (byM[m] = byM[m] || { fresh: 0, reclaim: 0 })[k] += q; (byS[s] = byS[s] || { fresh: 0, reclaim: 0 })[k] += q; });
+    (byM[m] = byM[m] || z())[k] += q; (byS[s] = byS[s] || z())[k] += q; });
   function tbl(id, ttl, head, keys, lf, cv) {
-    var h = '<div class="wrap"><table class="mkt mmt" id="' + id + '" style="width:auto;min-width:420px"><thead><tr><th colspan="5" class="ttl">' + esc(ttl) + '</th></tr><tr>' + head.map(function (x) { return '<th>' + esc(x) + '</th>'; }).join('') + '</tr></thead><tbody>', t = [0, 0, 0, 0];
-    keys.forEach(function (k) { var v = cv(k); h += '<tr data-k="' + mmEsc(k) + '"><td class="l">' + esc(lf(k)) + '</td>' + v.map(function (x, i) { t[i] += x; return mmCalcTd(i + 1, mmR3(x)); }).join('') + '</tr>'; });
-    return h + '<tr class="t"><td class="l">Total</td>' + t.map(function (x, i) { return '<td data-c="' + (i + 1) + '" data-v="' + mmR3(x) + '">' + mmF(mmR3(x)) + '</td>'; }).join('') + '</tr></tbody></table></div>';
+    var h = '<div class="wrap"><table class="mkt mmt" id="' + id + '" style="width:auto;min-width:420px"><thead><tr><th colspan="' + head.length + '" class="ttl">' + esc(ttl) + '</th></tr><tr>' + head.map(function (x) { return '<th>' + esc(x) + '</th>'; }).join('') + '</tr></thead><tbody>', t = [];
+    keys.forEach(function (k) { var v = cv(k); h += '<tr data-k="' + mmEsc(k) + '"><td class="l">' + esc(lf(k)) + '</td>' + v.map(function (x, i) { t[i] = (t[i] || 0) + x; return mmCalcTd(i + 1, mmR3(x)); }).join('') + '</tr>'; });
+    return h + '<tr class="t"><td class="l">Total</td>' + head.slice(1).map(function (x, i) { var q = t[i] || 0; return '<td data-c="' + (i + 1) + '" data-v="' + mmR3(q) + '">' + mmF(mmR3(q)) + '</td>'; }).join('') + '</tr></tbody></table></div>';
   }
+  var HD = KO.map(function (x) { return MM_RK[x] + ' (L)'; }).concat(['Total (L)', 'Issue for reclaim (L)']), vals = function (o) { return KO.map(function (x) { return o[x]; }).concat([o.fresh + o.reclaim + o.ou + o.reclaim_ou, mmDirty(o.reclaim) + mmOu(o.reclaim_ou)]); };
   var ms = Object.keys(byM).sort(), ss = Object.keys(byS).sort();
-  var t1 = tbl('mmrm', 'Oil received month wise - ' + lab, ['Month', 'Fresh Oil (L)', 'Reclaim Oil (L)', 'Total (L)', 'B&C issued for reclaim (reclaim \u00F7 0.95)'], ms, mmMonthName, function (k) { var o = byM[k]; return [o.fresh, o.reclaim, o.fresh + o.reclaim, mmDirty(o.reclaim)]; });
-  var t2 = tbl('mmrs', 'Oil received from where - ' + lab, ['From (where)', 'Fresh Oil (L)', 'Reclaim Oil (L)', 'Total (L)', 'B&C issued for reclaim (reclaim \u00F7 0.95)'], ss, function (k) { return k; }, function (k) { var o = byS[k]; return [o.fresh, o.reclaim, o.fresh + o.reclaim, mmDirty(o.reclaim)]; });
+  var t1 = tbl('mmrm', 'Oil received month wise - ' + lab, ['Month'].concat(HD), ms, mmMonthName, function (k) { return vals(byM[k]); });
+  var t2 = tbl('mmrs', 'Oil received from where - ' + lab, ['From (where)'].concat(HD), ss, function (k) { return k; }, function (k) { return vals(byS[k]); });
   var t3 = '<div class="wrap"><table class="mkt mmt" id="mmrl" style="width:auto;min-width:640px"><thead><tr><th colspan="' + (all ? 7 : 6) + '" class="ttl">Oil receive register - ' + esc(lab) + '</th></tr><tr><th>Sl</th>' + (all ? '<th>Workshop</th>' : '') + '<th>Date</th><th>Oil received</th><th>From (where)</th><th>Qty (L)</th><th>Note</th></tr></thead><tbody>' +
-    reg.map(function (r, i) { return '<tr><td class="c">' + (i + 1) + '</td>' + (all ? '<td class="nm">' + esc(r[0]) + '</td>' : '') + '<td class="c">' + esc(mrDmy(r[2])) + '</td><td class="l">' + (r[3] === 'fresh' ? 'Fresh Oil' : 'Reclaim Oil') + '</td><td class="nm">' + esc(r[4] || '') + '</td><td class="c" data-v="' + r[5] + '">' + mmF(+r[5]) + '</td><td class="nm wide">' + esc(r[6] || '') + '</td></tr>'; }).join('') + '</tbody></table></div>';
+    reg.map(function (r, i) { return '<tr><td class="c">' + (i + 1) + '</td>' + (all ? '<td class="nm">' + esc(r[0]) + '</td>' : '') + '<td class="c">' + esc(mrDmy(r[2])) + '</td><td class="l">' + esc(MM_RK[r[3]] || r[3]) + '</td><td class="nm">' + esc(r[4] || '') + '</td><td class="c" data-v="' + r[5] + '">' + mmF(+r[5]) + '</td><td class="nm wide">' + esc(r[6] || '') + '</td></tr>'; }).join('') + '</tbody></table></div>';
   $('mmout').innerHTML = (reg.length ? '' : mmNote('No oil received in this period.')) + t1 + '<div style="height:12px"></div>' + t2 + '<div style="height:12px"></div>' + t3;
+}
+
+/* ---- Insulating Material: monthly stock like Wire & Strip; Consumed = as per STD (qty repaired x std) filled by itself, you can change it ---- */
+function mmRepI(P, month) { var au = mmAutoW(P.rep, month), ov = ((P.g.ins || {})[month] || {}).rep || {}, r = {}; MM_K.forEach(function (k) { r[k] = ov[k] !== undefined ? mmNum(ov[k]) : au[k]; }); return { auto: au, rep: r }; }
+function mmInsAuto(std, open, recv, tr) { return (std > 0 && mmR3(open + recv - tr) >= std) ? std : 0; }   // no material in stock = no use shown, so the balance never goes minus
+function mmInsOne(P, m, prev) {
+  var sv = ((P.g.ins || {})[m] || {}), rp = mmRepI(P, m).rep, ms = mmMstd(P), rows = {};
+  MM_INS.forEach(function (x) {
+    var s0 = (sv.rows && sv.rows[x.i]) || {}, r = {};
+    ['open', 'recv', 'tr', 'old'].forEach(function (f) { r[f] = s0[f] !== undefined ? mmNum(s0[f]) : 0; });
+    if (prev) { var q = prev[x.i]; r.open = mmR3(q.open + q.recv - q.tr - q.cons); }
+    r.std = mmStdI(x.i, rp, ms); r.auto = mmInsAuto(r.std, r.open, r.recv, r.tr); r.ed = s0.cons !== undefined; r.cons = r.ed ? mmNum(s0.cons) : r.auto;
+    rows[x.i] = r;
+  });
+  return rows;
+}
+function mmInsChain(P, upto) {
+  var out = {}, st = mmStart(P.g.ins), prev = null, n = 0; if (!st || upto < st) return out;
+  for (var m = st; m <= upto && n < 600; m = mmShift(m, 1), n++) { out[m] = mmInsOne(P, m, prev); prev = out[m]; }
+  return out;
+}
+function mmInsGrid(id, rows, ed, openEd, label, heads) {
+  var n = 10, nums = ['1', '2', '3', '4', '5', '6', '7', '8', '9 = 4+5-6-7', '10'], h = '<div class="wrap"><table class="mkt mmt" id="' + id + '"' + (ed ? ' data-edit="1"' : '') + '><thead><tr><th colspan="' + n + '" class="ttl">Details of Insulating Material availability &amp; Balance position</th></tr><tr><th rowspan="2">' + esc(heads[0]) + '</th><th rowspan="2">' + esc(heads[1]) + '</th><th rowspan="2">' + esc(heads[2]) + '</th><th colspan="' + (n - 3) + '" class="ed">' + esc(label) + '</th></tr><tr>';
+  for (var c0 = 3; c0 < n; c0++) h += '<th>' + esc(heads[c0]) + '</th>';
+  h += '</tr><tr class="nm">' + nums.map(function (x) { return '<th>' + esc(x) + '</th>'; }).join('') + '</tr></thead><tbody>';
+  var last = '';
+  MM_INS.forEach(function (x) {
+    if (x.cat !== last) { last = x.cat; h += '<tr class="grp"><td colspan="' + n + '">' + esc(x.cat) + '</td></tr>'; }
+    var r = rows[x.i], bal = mmR3(r.open + r.recv - r.tr - r.cons), v = { open: r.open, recv: r.recv, tr: r.tr, cons: r.cons, old: r.old, bal: bal };
+    h += '<tr class="it" data-i="' + x.i + '"><td class="l">' + x.sl + '</td><td class="nm">' + esc(x.name) + '</td><td>' + esc(x.unit) + '</td>';
+    for (var c = 3; c < 9; c++) {
+      var f = MM_FLD[c];
+      if (ed && (f === 'recv' || f === 'tr' || f === 'cons' || f === 'old' || (f === 'open' && openEd))) h += '<td class="in' + (f === 'cons' && !r.ed ? ' au' : '') + '" data-c="' + c + '">' + mmInp('data-f', f, v[f], false, ' data-i="' + x.i + '"' + (f === 'cons' ? ' data-ins="1" data-auto="' + (r.ed ? 0 : 1) + '"' : '')) + '</td>';
+      else h += '<td class="c' + (v[f] < 0 ? ' neg' : '') + '" data-c="' + c + '" data-v="' + v[f] + '">' + mmF(v[f]) + '</td>';
+    }
+    h += '<td class="c std" data-c="9" data-v="' + r.std + '">' + mmF(r.std) + '</td></tr>';
+  });
+  return h + '</tbody></table></div>';
+}
+function mmInsEntry() {
+  var P = MM.per[MM.ws], g = P.g, ins = g.ins || {}, month = MM.month, ch = mmInsChain(P, month), rows = ch[month] || mmInsOne(P, month, null);
+  var st = mmStart(ins), ed = !!g.edit, openEd = ed && (!st || month <= st), before = !!(st && month < st), rp = mmRepI(P, month);
+  MM.cur = { P: P, ins: ins, month: month, start: st, openEd: openEd, before: before, ed: ed, auto: rp.auto, mstd: mmMstd(P), kind: 'ins' };
+  var note = '';
+  if (ed) {
+    if (!st) note = mmNote('No monthly entry yet. This is the first month, so enter the <b>Opening Balance</b> (only once). After that the opening of every month comes from the closing of the month before.');
+    else if (before) note = mmNote('This month is before the first month (<b>' + mmMonthName(st) + '</b>). The Opening Balance you enter here makes it the new first month.');
+    else if (openEd) note = mmNote('This is the first month: you can change the Opening Balance here. Later months get their opening by themselves.', true);
+    else note = mmNote('Opening Balance = closing balance of the month before (automatic). Fill the other yellow cells.', true);
+  } else note = mmNote('View only: only the Admin (or a user with edit right) can fill this page.');
+  var gr = mmInsGrid('mmg', rows, ed, openEd, mmMonthName(month), MM_HEAD.slice(0, 6).concat(['Consumed (auto = as per STD, you can change)', MM_HEAD[7], MM_HEAD[8], 'As per STD (qty repaired x material std)']));
+  var rt = mmKva('mmr', 'Qty of Repaired Transformer - ' + mmMonthName(month), MM_K, mmKLab, ['Capacity in KVA', 'Qty (from Repair tab)'], [1], function (k) { return ed ? '<td class="in' + (Math.abs(rp.rep[k] - rp.auto[k]) > 0.0005 ? ' chg' : '') + '" data-c="1">' + mmInp('data-q', k, rp.rep[k]) + '</td>' : mmCalcTd(1, rp.rep[k]); });
+  $('mmout').innerHTML = note + mmNote('<b>As per STD</b> = qty repaired (Repair tab) x material std of each capacity (250 KVA Al + Cu both counted). <b>Consumed</b> is filled with the As per STD qty by itself (green) and you can type another qty. If the stock (Opening + Received - Transfer) is less than the STD qty, the consumed qty is <b>not shown</b>, so the Balance never goes minus.') +
+    '<div class="bar" style="margin:0 0 8px">' + (ed ? '<button class="btn sec sm" type="button" id="mmreset">Reset repaired qty to Repair tab</button>' : '') + '<span id="mmsst" class="muted" style="font-size:12.5px"></span></div>' + gr + '<h3 class="sec" style="margin:14px 0 6px">Qty of Repaired Transformer</h3>' + rt;
+  mmInsRecalc();
+}
+function mmInsRecalc() {
+  var C = MM.cur, t = $('mmg'); if (!C || !t) return; var rep = {};
+  document.querySelectorAll('#mmr tr[data-k]').forEach(function (tr) { var k = tr.dataset.k, e = tr.querySelector('input'), td = tr.querySelector('td[data-c="1"]'); var q = e ? (parseFloat(e.value) || 0) : (parseFloat(td.dataset.v) || 0); rep[k] = q; td.classList.toggle('chg', Math.abs(q - C.auto[k]) > 0.0005); });
+  mmKvaTot('mmr', [1]); C.rep = rep;
+  t.querySelectorAll('tr.it').forEach(function (tr) {
+    var i = +tr.dataset.i, v = {}, std = mmStdI(i, rep, C.mstd), ce = tr.querySelector('input[data-f="cons"]');
+    ['open', 'recv', 'tr'].forEach(function (f) { var td = tr.querySelector('td[data-c="' + MM_FLD.indexOf(f) + '"]'), e = td.querySelector('input'); v[f] = e ? (parseFloat(e.value) || 0) : (parseFloat(td.dataset.v) || 0); });
+    var au = mmInsAuto(std, v.open, v.recv, v.tr);
+    if (ce) { if (ce.dataset.auto === '1') { if (document.activeElement !== ce) ce.value = au || ''; v.cons = au; } else v.cons = parseFloat(ce.value) || 0; ce.parentNode.classList.toggle('au', ce.dataset.auto === '1'); }
+    else { var tdc = tr.querySelector('td[data-c="6"]'); v.cons = parseFloat(tdc.dataset.v) || 0; }
+    var sd = tr.querySelector('td.std'); sd.textContent = mmF(std); sd.dataset.v = std; mmSetTd(tr, 8, mmR3(v.open + v.recv - v.tr - v.cons));
+  });
+}
+function mmInsSave() {
+  var C = MM.cur, t = $('mmg'); if (!C || !t || !C.ed) return; mmInsRecalc();
+  var rows = {}, any = false, hasOpen = false, rep = {}, isStart = !C.start || C.month <= C.start;
+  t.querySelectorAll('tr.it').forEach(function (tr) {
+    var i = +tr.dataset.i, o = {};
+    ['open', 'recv', 'tr', 'old'].forEach(function (f) { var e = tr.querySelector('input[data-f="' + f + '"]'); if (!e) return; var v = mmNum(e.value); if (v < 0) return; if (v) { o[f] = v; any = true; if (f === 'open') hasOpen = true; } });
+    var ce = tr.querySelector('input[data-f="cons"]'); if (ce && ce.dataset.auto === '0') { o.cons = Math.max(0, mmNum(ce.value)); any = true; }
+    if (Object.keys(o).length) rows[i] = o;
+  });
+  MM_K.forEach(function (k) { if (Math.abs(C.rep[k] - C.auto[k]) > 0.0005) { rep[k] = C.rep[k]; any = true; } });
+  var data = any ? { rows: rows, rep: rep } : null, g = C.P.g, month = C.month, w = C.P.w;
+  $('mmsst').textContent = 'Saving...';
+  return rpc('mat_save', { p_ws: w, p_kind: 'ins', p_month: month, p_data: data, p_clear_open: !!(isStart && hasOpen) }).then(function () {
+    g.ins = g.ins || {}; if (data) g.ins[month] = data; else delete g.ins[month];
+    if (isStart && hasOpen) Object.keys(g.ins).forEach(function (m) { if (m !== month && g.ins[m].rows) for (var i in g.ins[m].rows) delete g.ins[m].rows[i].open; });
+    C.start = mmStart(g.ins); var s = $('mmsst'); if (s) s.textContent = '✓ Saved ' + new Date().toTimeString().slice(0, 5);
+  }).catch(function (er) { var s = $('mmsst'); if (s) s.textContent = ''; msg('mmmsg', esc(er.message), 'err'); });
+}
+function mmInsSum() {
+  MM.cur = null; var a = MM.from, b = MM.to, rows = {}, rep = {}, lab = mmMonthName(a) + (a === b ? '' : ' to ' + mmMonthName(b));
+  MM_K.forEach(function (k) { rep[k] = 0; }); MM_INS.forEach(function (x) { rows[x.i] = { open: 0, recv: 0, tr: 0, cons: 0, old: 0, std: 0 }; });
+  MM.names.forEach(function (w) {
+    var P = MM.per[w], st = mmStart(P.g.ins), ch = mmInsChain(P, b);
+    for (var m = a, ix = 0; m <= b; m = mmShift(m, 1), ix++) {
+      var o = ch[m] || mmInsOne(P, m, null), r = mmRepI(P, m).rep; MM_K.forEach(function (k) { rep[k] += r[k]; });
+      MM_INS.forEach(function (x) { var A = rows[x.i], B = o[x.i]; if (ix === 0) A.open += (st && a < st && ch[st]) ? ch[st][x.i].open : B.open; A.recv += B.recv; A.tr += B.tr; A.cons += B.cons; A.old += B.old; A.std += B.std; });
+    }
+  });
+  MM_INS.forEach(function (x) { for (var f in rows[x.i]) rows[x.i][f] = mmR3(rows[x.i][f]); });
+  var heads = MM_HEAD.slice(0, 6).concat(['Consumed', MM_HEAD[7], 'Closing Balance (' + mmMonthName(b) + ')', 'As per STD (qty repaired x material std)']); heads[3] = 'Opening Balance (' + mmMonthName(a) + ')';
+  var rt = mmKva('mmr', 'Qty of Repaired Transformer - ' + lab, MM_K, mmKLab, ['Capacity in KVA', 'Qty'], [1], function (k) { return mmCalcTd(1, mmR3(rep[k])); });
+  $('mmout').innerHTML = mmNote((MM.names.length > 1 ? '<b>All workshops added up.</b> ' : '') + 'Opening = opening of the <b>From</b> month. Closing = closing of the <b>To</b> month. Received, transfer, consumed and repaired transformers of all months in between are added up.', true) + mmInsGrid('mmg', rows, false, false, lab, heads) + '<h3 class="sec" style="margin:14px 0 6px">Qty of Repaired Transformer</h3>' + rt;
+  mmKvaTot('mmr', [1]);
 }
 
 /* ---- STD dialog (v2) ---- */
 function mmStdOpen() {
   var P = MM.per && MM.per[MM.ws]; if (!P) return msg('mmmsg', 'Choose one workshop for the STD.', 'err');
-  var ed = !!P.g.edit, wsc = MM.kind === 'wsc', o = $('mmstdo'), h = '';
+  var ed = !!P.g.edit, ins = MM.kind === 'ins', wsc = MM.kind === 'wsc' || ins, o = $('mmstdo'), h = '', cols = ins ? MM_K : MMK_STD, items = ins ? MM_INS : MM_IT.map(function (x, i) { return { i: i, cat: x.cat, name: x.name, unit: x.unit }; });
   if (wsc) {
     var ms = mmMstd(P), last = '';
-    h = '<p class="muted" style="font-size:12.5px;margin:0 0 8px">Quantity of each material needed for ONE transformer, capacity wise. <b>As per STD</b> = qty repaired x this std. ' + (ed ? 'Saved for the whole workshop.' : 'View only.') + '</p><div class="mmstdw"><table class="mkt mmt"><thead><tr><th>Material</th>' + MMK_STD.map(function (k) { return '<th>' + esc(k === '250(al)' ? '250 (Al)' : k) + '</th>'; }).join('') + '</tr></thead><tbody>';
-    MM_IT.forEach(function (x, i) { if (x.cat !== last) { last = x.cat; h += '<tr class="grp"><td colspan="' + (MMK_STD.length + 1) + '">' + esc(x.cat) + '</td></tr>'; } h += '<tr><td class="nm">' + esc(x.name) + ' <small>(' + esc(x.unit) + ')</small></td>' + MMK_STD.map(function (k) { var v = (ms[i] || {})[k]; return '<td class="in">' + (ed ? '<input class="mmn" type="text" inputmode="decimal" autocomplete="off" data-si="' + i + '" data-sk="' + mmEsc(k) + '" value="' + (v || '') + '">' : (v || '')) + '</td>'; }).join('') + '</tr>'; });
+    h = '<p class="muted" style="font-size:12.5px;margin:0 0 8px">Quantity of each material needed for ONE transformer, capacity wise. <b>As per STD</b> = qty repaired x this std. ' + (ed ? 'Saved for the whole workshop.' : 'View only.') + '</p><div class="mmstdw"><table class="mkt mmt"><thead><tr><th>Material</th>' + cols.map(function (k) { return '<th>' + esc(k === '250(al)' ? '250 (Al)' : k === '250(cu)' ? '250 (Cu)' : k) + '</th>'; }).join('') + '</tr></thead><tbody>';
+    items.forEach(function (x) { if (x.cat !== last) { last = x.cat; h += '<tr class="grp"><td colspan="' + (cols.length + 1) + '">' + esc(x.cat) + '</td></tr>'; } h += '<tr><td class="nm">' + esc(x.name) + ' <small>(' + esc(x.unit) + ')</small></td>' + cols.map(function (k) { var v = (ms[x.i] || {})[k]; return '<td class="in">' + (ed ? '<input class="mmn" type="text" inputmode="decimal" autocomplete="off" data-si="' + x.i + '" data-sk="' + mmEsc(k) + '" value="' + (v || '') + '">' : (v || '')) + '</td>'; }).join('') + '</tr>'; });
     h += '</tbody></table></div>';
   } else {
     var os = mmOstd(P);
     h = '<p class="muted" style="font-size:12.5px;margin:0 0 8px">Per transformer, capacity wise (litre). <b>Fresh</b> and <b>Reclaim</b> = oil used for ONE repair (the Consume columns). <b>Dirty</b> = oil recovered per ONE DTC (goes to B&amp;C / dirty oil Received). ' + (ed ? 'Saved for the whole workshop.' : 'View only.') + '</p><table class="mkt mmt" style="width:auto"><thead><tr><th>Capacity (KVA)</th><th>Fresh Oil std (L)</th><th>Reclaim Oil std (L)</th><th>Dirty Oil std (L)</th></tr></thead><tbody>' +
       MM_OC.map(function (k) { return '<tr><td class="l">' + esc(mmCapLab(k)) + '</td>' + MM_OSK.map(function (t) { return '<td class="in">' + (ed ? '<input class="mmn" type="text" inputmode="decimal" autocomplete="off" data-so="' + k + '" data-st="' + t[0] + '" value="' + (os[t[0]][k] || '') + '">' : mmF(os[t[0]][k])) + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table>';
   }
-  o.innerHTML = '<div class="mmbox"><div class="bar" style="justify-content:space-between"><b>STD - ' + esc(MM.ws) + ' - ' + (wsc ? 'Wire &amp; Strip' : 'Oil') + '</b><button class="btn sec sm" type="button" id="mmstdx">Close</button></div><div id="mmstdm"></div>' + h + (ed ? '<div class="bar" style="margin-top:10px;justify-content:flex-end"><button class="btn" type="button" id="mmstds">Save STD</button></div>' : '') + '</div>';
+  o.innerHTML = '<div class="mmbox"><div class="bar" style="justify-content:space-between"><b>STD - ' + esc(MM.ws) + ' - ' + (ins ? 'Insulating Material' : wsc ? 'Wire &amp; Strip' : 'Oil') + '</b><button class="btn sec sm" type="button" id="mmstdx">Close</button></div><div id="mmstdm"></div>' + h + (ed ? '<div class="bar" style="margin-top:10px;justify-content:flex-end"><button class="btn" type="button" id="mmstds">Save STD</button></div>' : '') + '</div>';
   o.classList.remove('hide');
   $('mmstdx').onclick = function () { o.classList.add('hide'); };
   if (ed) $('mmstds').onclick = function () {
-    var nw = wsc ? {} : { f: {}, r: {}, d: {} }, kind = wsc ? 'mstd' : 'oilstd';
-    if (wsc) o.querySelectorAll('input[data-si]').forEach(function (e) { var v = mmNum(e.value); if (v > 0) (nw[e.dataset.si] = nw[e.dataset.si] || {})[e.dataset.sk] = v; });
+    var nw = wsc ? JSON.parse(JSON.stringify(P.g.mstd || MM_DEF_STD)) : { f: {}, r: {}, d: {} }, kind = wsc ? 'mstd' : 'oilstd';
+    if (wsc) { items.forEach(function (x) { nw[x.i] = {}; }); o.querySelectorAll('input[data-si]').forEach(function (e) { var v = mmNum(e.value); if (v > 0) nw[e.dataset.si][e.dataset.sk] = v; }); }   // the other group (wire/strip or insulating) keeps its std
     else o.querySelectorAll('input[data-so]').forEach(function (e) { nw[e.dataset.st][e.dataset.so] = Math.max(0, mmNum(e.value)); });
     $('mmstds').disabled = true;
     rpc('mat_std_save', { p_ws: MM.ws, p_kind: kind, p_data: nw }).then(function () { P.g[kind] = nw; o.classList.add('hide'); mmLoad(); }).catch(function (er) { $('mmstds').disabled = false; msg('mmstdm', esc(er.message), 'err'); });
@@ -5979,9 +6095,9 @@ function mmStdOpen() {
 /* ---- load (v2) ---- */
 function mmLoad() {
   asFlushAll();
-  var seq = ++MM.seq, sum = MM.mode === 'sum', all = MM.ws === '__ALL__', names = all ? mrWs() : [MM.ws], k = MM.kind;
+  var seq = ++MM.seq, sum0 = MM.mode === 'sum', all = MM.ws === '__ALL__', sum = sum0 || all, names = all ? mrWs() : [MM.ws], k = MM.kind;   // All workshops = always the added-up view
   if (!names[0]) return;
-  var a = sum ? MM.from : MM.month, b = sum ? MM.to : MM.month;
+  var a = sum0 ? MM.from : MM.month, b = sum0 ? MM.to : MM.month;
   if (!/^\d{4}-\d{2}$/.test(a || '') || !/^\d{4}-\d{2}$/.test(b || '')) return msg('mmmsg', 'Choose the month.', 'err');
   if (a > b) return msg('mmmsg', 'The "From" month cannot be after the "To" month.', 'err');
   if (sum && mmShift(a, 36) <= b) return msg('mmmsg', 'Choose at most 36 months.', 'err');
@@ -5997,15 +6113,16 @@ function mmLoad() {
     });
   })).then(function (arr) {
     if (seq !== MM.seq) return; msg('mmmsg', ''); MM.per = {}; MM.names = names; names.forEach(function (w, i) { MM.per[w] = arr[i]; });
-    if (k === 'wsc') (sum ? mmWscSum() : mmWscEntry()); else if (k === 'oil') (sum ? mmOilSum() : mmOilEntry()); else if (k === 'low') (sum ? mmLowSum() : mmLowEntry()); else (sum ? mmRcvSum() : mmRcvEntry());
+    var sf = MM.from, st2 = MM.to; if (!sum0) { MM.from = MM.month; MM.to = MM.month; }
+    try { if (k === 'wsc') (sum ? mmWscSum() : mmWscEntry()); else if (k === 'ins') (sum ? mmInsSum() : mmInsEntry()); else if (k === 'oil') (sum ? mmOilSum() : mmOilEntry()); else if (k === 'low') (sum ? mmLowSum() : mmLowEntry()); else (sum ? mmRcvSum() : mmRcvEntry()); } finally { MM.from = sf; MM.to = st2; }
   }).catch(function (e) { if (seq === MM.seq) msg('mmmsg', /mat_|function/i.test(e.message || '') ? 'Run the new setup.sql in Supabase once (Material Management is not switched on in your database yet).' : esc(e.message), 'err'); });
 }
 function mmExcel() {
-  var ids = MM.kind === 'wsc' ? [['mmg', 'Wire & Strip'], ['mmr', 'Repaired Qty']] : MM.kind === 'oil' ? [['mmot', 'Oil std'], ['mmoo', 'Oil account'], ['mmoc', 'Oil recovery'], ['mmow', 'Closing wise']] : (MM.mode === 'sum' ? [['mmrm', 'Month wise'], ['mmrs', 'From wise'], ['mmrl', 'Register']] : [['mmrg', 'Oil Receive']]);
+  var ids = (MM.kind === 'wsc' || MM.kind === 'ins') ? [['mmg', MM.kind === 'ins' ? 'Insulating Material' : 'Wire & Strip'], ['mmr', 'Repaired Qty']] : MM.kind === 'oil' ? [['mmot', 'Oil std'], ['mmoo', 'Oil account'], ['mmoc', 'Oil recovery'], ['mmow', 'Closing wise']] : (MM.mode === 'sum' ? [['mmrm', 'Month wise'], ['mmrs', 'From wise'], ['mmrl', 'Register']] : [['mmrg', 'Oil Receive']]);
   if (MM.kind === 'low') ids = MM.mode === 'sum' ? [['mmll', 'Oil found below STD']] : [['mmlg', 'Oil found below STD']];
   var sh = []; ids.forEach(function (x) { var t = $(x[0]); if (t) sh.push(mmSheet(t, x[1])); });
   if (!sh.length) return msg('mmmsg', 'Nothing to download yet.', 'err');
-  var per = MM.mode === 'sum' ? MM.from + '_to_' + MM.to : MM.month, nm = MM.kind === 'wsc' ? 'Wire_Strip_Consumption_' : MM.kind === 'oil' ? 'Oil_Recovery_' : MM.kind === 'low' ? 'Oil_Found_Below_STD_' : 'Oil_Receive_';
+  var per = MM.mode === 'sum' ? MM.from + '_to_' + MM.to : MM.month, nm = MM.kind === 'ins' ? 'Insulating_Material_' : MM.kind === 'wsc' ? 'Wire_Strip_Consumption_' : MM.kind === 'oil' ? 'Oil_Recovery_' : MM.kind === 'low' ? 'Oil_Found_Below_STD_' : 'Oil_Receive_';
   xlsxDownload(nm + mrFile(MM.ws === '__ALL__' ? 'All' : MM.ws) + '_' + per + '.xlsx', sh);
 }
 

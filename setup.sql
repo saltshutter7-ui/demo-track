@@ -4415,3 +4415,92 @@ end $$;
 revoke all on function public.rp_org(), public.rp_list(), public.rp_add(text, text), public.rp_del(bigint) from public, anon;
 grant execute on function public.rp_org(), public.rp_list(), public.rp_add(text, text), public.rp_del(bigint) to authenticated;
 notify pgrst, 'reload schema';
+
+-- ================================================================================================================
+-- STEP 112 : MATERIAL MANAGEMENT - O&U oil + Reclaimed (O&U) in Oil Receive, INSULATING MATERIAL sheet
+-- mat_recv.kind now also 'ou' (O&U oil received) and 'reclaim_ou' (Reclaimed O&U oil: added to Reclaim oil, issues qty / 0.97 of O&U oil "for reclaim").
+-- mat_ins = Insulating Material of one month  {rows:{itemNo:{open,recv,tr,old,cons}}, rep:{capacity:qty}}   (cons only when the user changed the automatic as-per-STD qty)
+-- Safe to run again.
+-- ================================================================================================================
+alter table public.mat_recv drop constraint if exists mat_recv_kind_check;
+alter table public.mat_recv add constraint mat_recv_kind_check check (kind in ('fresh', 'reclaim', 'ou', 'reclaim_ou'));
+create table if not exists public.mat_ins (workshop text not null, month text not null check (month ~ '^\d{4}-(0[1-9]|1[0-2])$'), data jsonb not null, by_login text, at timestamptz not null default now(), primary key (workshop, month));
+alter table public.mat_ins enable row level security;
+revoke all on public.mat_ins from public, anon, authenticated;
+
+create or replace function public.mat_get(p_ws text) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+begin
+  if not public.mr_ok() then raise exception 'No access to the M&R dashboard.'; end if;
+  if not (p_ws = any (public.my_workshops())) then raise exception 'This workshop is not yours.'; end if;
+  return jsonb_build_object('edit', public.mr_edit_ok(p_ws),
+    'mstd', (select mstd from public.mat_cfg where workshop = p_ws), 'oilstd', (select oilstd from public.mat_cfg where workshop = p_ws),
+    'ws',  coalesce((select jsonb_object_agg(month, data) from public.mat_ws  where workshop = p_ws), '{}'::jsonb),
+    'oil', coalesce((select jsonb_object_agg(month, data) from public.mat_oil where workshop = p_ws), '{}'::jsonb),
+    'ins', coalesce((select jsonb_object_agg(month, data) from public.mat_ins where workshop = p_ws), '{}'::jsonb),
+    'recv', coalesce((select jsonb_object_agg(m, o) from (select to_char(day, 'YYYY-MM') m,
+              jsonb_build_object('fresh', coalesce(sum(qty) filter (where kind = 'fresh'), 0), 'reclaim', coalesce(sum(qty) filter (where kind = 'reclaim'), 0),
+                'ou', coalesce(sum(qty) filter (where kind = 'ou'), 0), 'reclaim_ou', coalesce(sum(qty) filter (where kind = 'reclaim_ou'), 0)) o
+              from public.mat_recv where workshop = p_ws group by 1) x), '{}'::jsonb));
+end $$;
+
+create or replace function public.mat_save(p_ws text, p_kind text, p_month text, p_data jsonb, p_clear_open boolean default false) returns text
+language plpgsql security definer set search_path = public as $$
+declare me text;
+begin
+  if not public.mr_edit_ok(p_ws) then raise exception 'You cannot change the Material Management of this workshop.'; end if;
+  if p_kind not in ('ws', 'oil', 'ins') then raise exception 'Wrong kind.'; end if;
+  if p_month !~ '^\d{4}-(0[1-9]|1[0-2])$' then raise exception 'Wrong month.'; end if;
+  if p_month > to_char(current_date, 'YYYY-MM') then raise exception 'Entries for future months are not allowed.'; end if;
+  if p_data is not null and length(p_data::text) > 60000 then raise exception 'Too much data.'; end if;
+  select login_id into me from public.profiles where user_id = auth.uid();
+  if p_kind = 'ins' then
+    if p_data is null or p_data = '{}'::jsonb then delete from public.mat_ins where workshop = p_ws and month = p_month;
+    else insert into public.mat_ins(workshop, month, data, by_login, at) values (p_ws, p_month, p_data, me, now())
+         on conflict (workshop, month) do update set data = excluded.data, by_login = excluded.by_login, at = now(); end if;
+    if p_clear_open then
+      update public.mat_ins w set data = jsonb_set(w.data, '{rows}', coalesce((select jsonb_object_agg(k, v - 'open') from jsonb_each(w.data->'rows') e(k, v)), '{}'::jsonb))
+       where w.workshop = p_ws and w.month <> p_month and jsonb_typeof(w.data->'rows') = 'object';
+    end if;
+  elsif p_kind = 'ws' then
+    if p_data is null or p_data = '{}'::jsonb then delete from public.mat_ws where workshop = p_ws and month = p_month;
+    else insert into public.mat_ws(workshop, month, data, by_login, at) values (p_ws, p_month, p_data, me, now())
+         on conflict (workshop, month) do update set data = excluded.data, by_login = excluded.by_login, at = now(); end if;
+    if p_clear_open then
+      update public.mat_ws w set data = jsonb_set(w.data, '{rows}', coalesce((select jsonb_object_agg(k, v - 'open') from jsonb_each(w.data->'rows') e(k, v)), '{}'::jsonb))
+       where w.workshop = p_ws and w.month <> p_month and jsonb_typeof(w.data->'rows') = 'object';
+    end if;
+  else
+    if p_data is null or p_data = '{}'::jsonb then delete from public.mat_oil where workshop = p_ws and month = p_month;
+    else insert into public.mat_oil(workshop, month, data, by_login, at) values (p_ws, p_month, p_data, me, now())
+         on conflict (workshop, month) do update set data = excluded.data, by_login = excluded.by_login, at = now(); end if;
+    if p_clear_open then
+      update public.mat_oil w set data = jsonb_set(w.data, '{o}', coalesce((select jsonb_object_agg(k, v - 'open') from jsonb_each(w.data->'o') e(k, v)), '{}'::jsonb))
+       where w.workshop = p_ws and w.month <> p_month and jsonb_typeof(w.data->'o') = 'object';
+    end if;
+  end if;
+  return 'saved';
+end $$;
+
+create or replace function public.mat_recv_save(p_ws text, p_id bigint, p_day date, p_kind text, p_src text, p_qty numeric, p_note text) returns bigint
+language plpgsql security definer set search_path = public as $$
+declare me text; nid bigint;
+begin
+  if not public.mr_edit_ok(p_ws) then raise exception 'You cannot change the Oil Receive of this workshop.'; end if;
+  if p_kind not in ('fresh', 'reclaim', 'ou', 'reclaim_ou') then raise exception 'Choose the oil: Fresh, Reclaim, O&U or Reclaimed (O&U).'; end if;
+  if p_day is null or p_day > current_date or p_day < date '2000-01-01' then raise exception 'Wrong date (a future date is not allowed).'; end if;
+  if p_qty is null or p_qty <= 0 or p_qty > 10000000 then raise exception 'Wrong quantity.'; end if;
+  if length(coalesce(p_src, '')) > 120 or length(coalesce(p_note, '')) > 300 then raise exception 'Text too long.'; end if;
+  select login_id into me from public.profiles where user_id = auth.uid();
+  if p_id is null then
+    insert into public.mat_recv(workshop, day, kind, src, qty, note, by_login) values (p_ws, p_day, p_kind, nullif(btrim(p_src), ''), p_qty, nullif(btrim(p_note), ''), me) returning id into nid;
+  else
+    update public.mat_recv set day = p_day, kind = p_kind, src = nullif(btrim(p_src), ''), qty = p_qty, note = nullif(btrim(p_note), ''), by_login = me, at = now()
+     where id = p_id and workshop = p_ws returning id into nid;
+    if nid is null then raise exception 'Entry not found.'; end if;
+  end if;
+  return nid;
+end $$;
+revoke all on function public.mat_get(text), public.mat_save(text, text, text, jsonb, boolean), public.mat_recv_save(text, bigint, date, text, text, numeric, text) from public, anon;
+grant execute on function public.mat_get(text), public.mat_save(text, text, text, jsonb, boolean), public.mat_recv_save(text, bigint, date, text, text, numeric, text) to authenticated;
+notify pgrst, 'reload schema';
