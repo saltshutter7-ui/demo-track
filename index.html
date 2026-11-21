@@ -2512,6 +2512,8 @@ nav button#tmr{margin-top:auto}
         <div class="bar"><input type="text" id="wcn" placeholder="Short name, e.g. azamgarh" autocapitalize="off" spellcheck="false" style="max-width:240px"><button class="btn" id="wcr" type="button">Get workshop code</button></div>
         <div id="wcshow"></div>
       </div>
+      <div class="card acard hide" id="secard"><h3>Share with SE Workshop <span class="muted" style="font-weight:400">(read only)</span></h3><div id="sebox"></div><div id="semsg"></div></div>
+      <div class="card acard hide" id="sdcard"><h3>Divisions <span class="muted" style="font-weight:400">(SE Workshop)</span></h3><div id="sdbox"></div><div id="sdmsg"></div></div>
       <div class="card acard hide" id="ulcard"><h3>Login without code <span class="muted" style="font-weight:400">(ID and password only)</span></h3><div id="ulbox"></div><div id="ulmsg"></div></div>
       <div class="card acard hide" id="udcard"><h3>Admin directory <span class="muted" style="font-weight:400">(App Creator)</span></h3><div id="udbox"></div><div id="udmsg"></div></div>
       <div class="card acard hide" id="archard"><h3>Google Drive archive <span class="muted" style="font-weight:400">(M&amp;R Repair + Testing Register)</span></h3><div id="arbox"></div><div id="armsg"></div></div>
@@ -2907,7 +2909,7 @@ function showLogin(note) {
   $('lp').value = ''; msg('lmsg', note || '', note ? 'info' : '');
 }
 function showApp() { document.body.classList.remove('on-home'); $('login').classList.add('hide'); $('app').classList.remove('hide'); }
-var ROLE = { creator: 'App Creator', discom: 'DISCOM head', admin: 'Admin', je: 'User' };
+var ROLE = { creator: 'App Creator', discom: 'DISCOM head', admin: 'Admin', je: 'User', se: 'SE Workshop' };
 function enter(user) {
   return SB.from('profiles').select('login_id,display,role,org_division,scope,can_edit,active,must_change,tabs').eq('user_id', user.id).maybeSingle().then(function (r) {
     var p = r.data;
@@ -3024,7 +3026,7 @@ function initDates() {
 var CURTAB = 'sum', SSEQ = 0;
 var WSDIV = {}, DRV = [];
 function allowedTabs() {
-  var base = { creator: ['sum', 'emg', 'adm'], discom: ['sum', 'cmp', 'emg'], admin: ['sum', 'data', 'drv', 'cmp', 'emg', 'adm'], je: ['sum', 'data', 'drv', 'cmp', 'emg'] }[ME.role] || ['sum'];
+  var base = { se: ['sum', 'cmp', 'adm'], creator: ['sum', 'emg', 'adm'], discom: ['sum', 'cmp', 'emg'], admin: ['sum', 'data', 'drv', 'cmp', 'emg', 'adm'], je: ['sum', 'data', 'drv', 'cmp', 'emg'] }[ME.role] || ['sum'];
   if (ME.tabs && ME.role === 'je') base = base.filter(function (t) { return t === 'cmp' || ME.tabs.indexOf(t) >= 0; });
   else if (ME.tabs && ME.role !== 'je') base = base.filter(function (t) { return t === 'adm' || t === 'cmp' || ME.tabs.indexOf(t) >= 0; });
   if (typeof mrAccess === 'function' && mrAccess()) base = (mrOnly() ? ['sum'] : base).concat('mr');
@@ -5515,7 +5517,7 @@ printHtml = function (title, inner) {
 var MR = { on: false, tab: 'msum', month: '', ws: '', st: 'all', q: '', rows: [], total: 0, cnt: {}, dirty: {}, kws: '', kday: '', kd: null, sum: null, qt: null };
 var MR_SECT = { msum: 't-mrsum', mdtc: 't-mrdtc', mkit: 't-mrkit', mrep: 't-mrrep', msc: 't-mrsc', mtst: 't-mrtst', mmat: 't-mrmat' };
 var MR_WORD = ['AZAMGARH', 'MAU', 'BALLIA'];
-function mrAccess() { return !!ME && (ME.role === 'admin' || (ME.tabs && ME.tabs.indexOf('mr') >= 0)); }
+function mrAccess() { return !!ME && (ME.role === 'admin' || ME.role === 'se' || (ME.tabs && ME.tabs.indexOf('mr') >= 0)); }
 function mrOnly() { return !!ME && ME.role !== 'admin' && !!ME.tabs && ME.tabs.indexOf('mr') >= 0 && ME.tabs.indexOf('sum') < 0; }
 function mrIso(s) { var m = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(s || ''); return m ? m[3] + '-' + m[2] + '-' + m[1] : null; }
 function mrDmy(s) { var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(s || ''); return m ? m[3] + '.' + m[2] + '.' + m[1] : ''; }
@@ -8529,6 +8531,126 @@ function homeFit() {
 window.addEventListener('resize', homeFit); window.addEventListener('load', function () { setTimeout(homeFit, 50); });
 new MutationObserver(function () { setTimeout(homeFit, 30); }).observe(document.body, { attributes: true, attributeFilter: ['class'] });
 </script>
-<script>if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(function () {});</script>
+<script>if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(function () {});
+/* =====================  SE WORKSHOP  =====================
+   The SE logs in to the DEFAULT project (role 'se'). Each division's Admin shares chosen reports with a secret code (se_share).
+   The SE adds the divisions (se_src); every report he opens asks each division's project (se_call, read only) and the answers are put together. */
+var SE = { list: [], byId: {}, cl: {}, map: {}, warn: {} }, SEG = null, SE_NEW = '';
+var SE_PERMS = [['sum', 'R&R Summary (division wise, capacity wise, age wise)'], ['rrs', 'R&R Repair / Assembly / Oven daily report'], ['mrs', 'M&R Summary and Kitty'], ['scrap', 'Scrap'],
+  ['mat_ws', 'Material Management: Wire & Strip consumption'], ['mat_oil', 'Material Management: Oil Recovery Sheet (and Oil Found Below STD)'], ['mat_ins', 'Material Management: Insulating Material'], ['mat_rcv', 'Material Management: Oil Receive list'], ['mat_req', 'Material Management: Material Requirement'],
+  ['cmp', 'Reports: PR Comparative'], ['day', 'Reports: Daywise & Division wise PR and Repair'], ['plinth', 'Reports: Same Plinth Damage']];
+var SE_FED = {}; 'summary_json dashboard_json rr_summary_json mr_summary_json mr_repair_json mr_pending_json kitty_range_json kitty_json kitty_cmp_json kitty_lyk_json kitty_need_json scrap_json scrap_range_json scrap_cap_json mat_get mat_rep mat_dtc mat_low_adj mat_low_list mat_recv_list mat_req_pr compare_all installed_all_json daywise_json plinth_json'.split(' ').forEach(function (f) { SE_FED[f] = 1; });
+var _rpcBase = rpc;
+rpc = function (fn, args) { return (ME && ME.role === 'se' && SE_FED[fn]) ? seFed(fn, args || {}) : _rpcBase(fn, args); };
+var _wsSelBase = wsSelect;
+wsSelect = function () { return (ME && ME.role === 'se') ? seBoot().then(function (rows) { return { data: rows }; }) : _wsSelBase(); };
+function seBoot() {
+  return _rpcBase('se_src_list', {}).then(function (list) {
+    SE.list = list; SE.byId = {}; SE.cl = {}; SE.map = {}; SE.warn = {}; var rows = [];
+    return Promise.all(list.map(function (x) {
+      SE.byId[x.id] = x; SE.cl[x.id] = window.supabase.createClient(x.url, x.key, { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } });
+      return SE.cl[x.id].rpc('se_info', { p_code: x.code }).then(function (r) {
+        if (r.error) throw new Error(friendly(r.error)); x.perms = r.data.perms || {}; x.label = r.data.label || x.name;
+        (r.data.wd || (r.data.ws || []).map(function (n) { return { name: n, div: x.label }; })).forEach(function (w) { SE.map[w.name] = x.id; rows.push({ name: w.name, org_division: w.div || x.label }); });
+      }).catch(function (e) { SE.warn[x.name] = e.message; });
+    })).then(function () { seWarnShow(); return rows; });
+  });
+}
+function seWarnShow() {
+  var d = $('sewarn'); if (!d) { d = document.createElement('div'); d.id = 'sewarn'; d.style.cssText = 'position:fixed;right:12px;bottom:12px;max-width:340px;z-index:90;background:#fff7ed;border:1px solid #fdba74;border-radius:10px;padding:8px 12px;font-size:12.5px;color:#9a3412;box-shadow:0 4px 14px rgba(0,0,0,.15)'; document.body.appendChild(d); }
+  var k = Object.keys(SE.warn); if (!k.length) { d.style.display = 'none'; return; }
+  d.style.display = 'block'; d.innerHTML = '<b>Not shown:</b> ' + k.map(function (n) { return esc(n) + ' (' + esc(SE.warn[n]) + ')'; }).join(' &middot; ') + ' <a href="#" id="sewx" style="margin-left:6px">hide</a>';
+}
+document.addEventListener('click', function (e) { if (e.target && e.target.id === 'sewx') { e.preventDefault(); $('sewarn').style.display = 'none'; } });
+function seCall(id, fn, args) {
+  var x = SE.byId[id]; if (!x) return Promise.reject(new Error('Division not found.'));
+  return SE.cl[id].rpc('se_call', { p_code: x.code, p_fn: fn, p_args: args || {} }).then(function (r) {
+    if (r.error) throw new Error(friendly(r.error)); var d = r.data; if (d && typeof d === 'object' && !Array.isArray(d) && 'edit' in d) d.edit = false; return d;     // the SE only looks
+  });
+}
+function seMerge(list) {
+  var out; list.forEach(function (v) {
+    if (out === undefined) { out = JSON.parse(JSON.stringify(v)); return; }
+    if (Array.isArray(out) && Array.isArray(v)) { out = out.concat(v); return; }
+    if (out && v && typeof out === 'object' && typeof v === 'object') for (var k in v) { if (Array.isArray(v[k]) && Array.isArray(out[k])) out[k] = out[k].concat(v[k]); else if (out[k] === undefined || out[k] === null) out[k] = v[k]; }
+  });
+  return out;
+}
+function seFed(fn, args) {
+  var w = args.p_ws; if (w && w !== '__ALL__') { if (SE.map[w]) return seCall(SE.map[w], fn, args); return Promise.reject(new Error('This workshop is not in your divisions.')); }
+  var ids = Object.keys(SE.byId).filter(function (id) { return !SE.warn[SE.byId[id].name] || true; });
+  if (!ids.length) return Promise.reject(new Error('No division added yet. Open the Admin tab and add a division.'));
+  SE.warn = {}; var bad = [];
+  return Promise.all(ids.map(function (id) { return seCall(id, fn, args).then(function (v) { return { v: v }; }).catch(function (e) { SE.warn[SE.byId[id].name] = e.message; return null; }); })).then(function (rs) {
+    seWarnShow(); var ok = rs.filter(function (x) { return x && x.v !== undefined && x.v !== null; }).map(function (x) { return x.v; });
+    if (!ok.length) throw new Error('No division has shared this report yet.');
+    return seMerge(ok);
+  });
+}
+/* ---- Admin side: share with the SE ---- */
+function seShareLoad() {
+  rpc('se_share_get', {}).then(function (r) { SEG = r; seShareDraw(); }).catch(function (e) { $('sebox').innerHTML = ''; msg('semsg', /Could not find the function|schema cache|does not exist/i.test(e.message) ? 'Run the new <b>setup.sql</b> (STEP 115) in your Supabase SQL Editor once, then reload.' : esc(e.message), 'err'); });
+}
+function seConnText(code) { var C = ttConn(); return 'TFSE1.' + btoa(unescape(encodeURIComponent(JSON.stringify({ n: (($('sel') || {}).value || SEG.label || '').trim(), u: C.u, k: C.k, c: code })))); }
+function seShareDraw() {
+  var g = SEG, h = '<p class="muted" style="font-size:12.5px;margin:0 0 8px">The SE Workshop can <b>only look</b> at the reports you tick here. Nothing else leaves your project. You can stop it any time.</p>' +
+    '<div class="bar" style="align-items:flex-end"><div><label>Division name (the SE sees this)</label><input id="sel" type="text" value="' + esc(g.label || '') + '" style="min-width:240px"></div><span class="pill ' + (g.active ? 'ok' : '') + '" style="font-weight:700">' + (g.active ? 'SHARING IS ON' : 'sharing is off') + '</span></div><div class="seg" style="margin:8px 0">';
+  SE_PERMS.forEach(function (p) { h += '<label style="display:flex;gap:8px;align-items:center;margin:3px 0;font-size:13.5px"><input type="checkbox" data-sp="' + p[0] + '"' + (g.perms[p[0]] ? ' checked' : '') + '> ' + esc(p[1]) + '</label>'; });
+  h += '</div><div class="bar"><button class="btn sec" id="sesv" type="button">Save ticks</button><button class="btn" id="senc" type="button">' + (g.has_code ? 'New code (old stops)' : 'Start sharing: make code') + '</button>' + (g.active ? '<button class="btn sec" id="sest" type="button">Stop sharing</button>' : '') + '</div>';
+  if (SE_NEW) h += '<div class="msg ok" style="margin-top:10px"><b>Give this text to the SE Workshop.</b> It is shown only now; if you lose it, make a new code.<br><textarea id="sect" readonly rows="4" style="width:100%;font-size:12px;margin:6px 0">' + esc(SE_NEW) + '</textarea><button class="btn sm" id="secp" type="button">Copy</button></div>';
+  $('sebox').innerHTML = h;
+}
+function sePerms() { var o = {}; document.querySelectorAll('#sebox [data-sp]').forEach(function (c) { o[c.dataset.sp] = c.checked; }); return o; }
+function seShareSet(code, active) {
+  msg('semsg', 'Saving...', 'info');
+  return rpc('se_share_set', { p_perms: sePerms(), p_active: active, p_new_code: code, p_label: ($('sel').value || '').trim() }).then(function (r) {
+    if (r && r.code) SE_NEW = seConnText(r.code); else if (!active) SE_NEW = ''; msg('semsg', 'Saved', 'ok'); return rpc('se_share_get', {}).then(function (x) { SEG = x; seShareDraw(); });
+  }).catch(function (e) { msg('semsg', esc(e.message), 'err'); });
+}
+document.addEventListener('click', function (e) {
+  var t = e.target && e.target.closest ? e.target.closest('button') : null; if (!t) return;
+  if (t.id === 'sesv') seShareSet(false, !!SEG.active);
+  else if (t.id === 'senc') { if (SEG.has_code && !confirm('Make a NEW code? The old code stops working and the SE must add the new text.')) return; seShareSet(true, true); }
+  else if (t.id === 'sest') { if (confirm('Stop sharing with the SE Workshop?')) seShareSet(false, false); }
+  else if (t.id === 'secp') { var a = $('sect'); a.select(); try { navigator.clipboard.writeText(a.value); } catch (x) { document.execCommand('copy'); } t.textContent = 'Copied'; }
+  else if (t.id === 'sdadd') seDivAdd();
+  else if (t.dataset && t.dataset.sdel) { if (confirm('Remove this division?')) _rpcBase('se_src_del', { p_id: +t.dataset.sdel }).then(function () { seBootAgain(); }).catch(function (er) { msg('sdmsg', esc(er.message), 'err'); }); }
+  else if (t.id === 'sdreq') { var tx = 'Sir, please open the app > Admin tab > "Share with SE Workshop", tick the reports you can share, press "Start sharing: make code", then copy the text and send it to me.'; try { navigator.clipboard.writeText(tx); } catch (x) { } t.textContent = 'Request text copied'; }
+});
+/* ---- SE side: divisions ---- */
+function seParse(t) {
+  t = String(t || '').trim(); var m = /^TFSE1\.([A-Za-z0-9+\/=]+)$/.exec(t); if (!m) return null;
+  try { var o = JSON.parse(decodeURIComponent(escape(atob(m[1])))); return o && o.u && o.k && o.c ? o : null; } catch (e) { return null; }
+}
+function seDivAdd() {
+  var o = seParse($('sdt').value) || { n: $('sdn').value, u: $('sdu').value, k: $('sdk').value, c: $('sdc').value };
+  if (!o.u) return msg('sdmsg', 'Paste the text you got from the Admin, or fill the details below.', 'err');
+  msg('sdmsg', 'Checking...', 'info'); var cl = window.supabase.createClient(String(o.u).trim(), String(o.k).trim(), { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } });
+  cl.rpc('se_info', { p_code: String(o.c).trim() }).then(function (r) {
+    if (r.error) throw new Error(friendly(r.error)); var nm = (o.n || '').trim() || r.data.label || o.u;
+    return _rpcBase('se_src_add', { p_name: nm, p_url: o.u, p_key: o.k, p_code: o.c }).then(function () { msg('sdmsg', 'Added: ' + esc(nm) + ' (' + (r.data.ws || []).length + ' workshops)', 'ok'); $('sdt').value = ''; seBootAgain(); });
+  }).catch(function (e) { msg('sdmsg', esc(e.message), 'err'); });
+}
+function seBootAgain() { return seBoot().then(function (rows) { WSL = rows.map(function (x) { return x.name; }); WSDIV = {}; rows.forEach(function (x) { WSDIV[x.name] = sp(x.org_division); }); seDivDraw(); }); }
+function seDivDraw() {
+  var h = '<p class="muted" style="font-size:12.5px;margin:0 0 8px">Each division\'s Admin ticks the reports he shares and sends you a text. Paste it here once. Then Summary, M&amp;R and Reports show every division together.</p>' +
+    '<div class="bar" style="align-items:flex-end"><div style="flex:1;min-width:260px"><label>Text from the Admin</label><input id="sdt" type="text" placeholder="TFSE1...." autocomplete="off" spellcheck="false" style="width:100%"></div><button class="btn" id="sdadd" type="button">Add division</button><button class="btn sec" id="sdreq" type="button">Copy request text for an Admin</button></div>' +
+    '<details style="margin:6px 0"><summary class="muted" style="cursor:pointer;font-size:12.5px">Or type the details</summary><div class="bar"><input id="sdn" placeholder="Division name"><input id="sdu" placeholder="https://xxxx.supabase.co"><input id="sdk" placeholder="Publishable key"><input id="sdc" placeholder="Share code"></div></details>';
+  h += '<div class="wrap"><table class="mkt mmt"><thead><tr><th>Division</th><th>Workshops</th><th>Shared reports</th><th>Status</th><th></th></tr></thead><tbody>';
+  SE.list.forEach(function (x) {
+    var wsn = Object.keys(SE.map).filter(function (w) { return SE.map[w] === x.id; }), pm = x.perms ? SE_PERMS.filter(function (p) { return x.perms[p[0]]; }).map(function (p) { return p[1].replace(/^Material Management: /, '').replace(/^Reports: /, ''); }) : [], er = SE.warn[x.name];
+    h += '<tr><td class="nm"><b>' + esc(x.name) + '</b></td><td class="nm">' + esc(wsn.join(', ')) + '</td><td class="nm wide">' + esc(pm.join(', ')) + '</td><td>' + (er ? '<span style="color:#b91c1c">' + esc(er) + '</span>' : '<span style="color:#15803d">OK</span>') + '</td><td><button class="btn sec sm" type="button" data-sdel="' + x.id + '">Remove</button></td></tr>';
+  });
+  if (!SE.list.length) h += '<tr><td colspan="5" class="nm">No division yet.</td></tr>';
+  $('sdbox').innerHTML = h + '</tbody></table></div>';
+}
+function seAdmInit() {
+  if (!$('secard')) return; var r = ME && ME.role;
+  $('secard').classList.toggle('hide', r !== 'admin'); $('sdcard').classList.toggle('hide', r !== 'se');
+  if (r === 'se') { [].forEach.call($('t-adm').children, function (el) { if (el.id !== 'sdcard') el.classList.add('hide'); }); seDivDraw(); }
+  else if (r === 'admin') seShareLoad();
+}
+var _admLoadBase = admLoad; admLoad = function () { var p = _admLoadBase.apply(this, arguments); try { seAdmInit(); } catch (e) { } return p; };
+</script>
 </body>
 </html>

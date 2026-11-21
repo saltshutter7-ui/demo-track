@@ -4563,3 +4563,148 @@ end $$;
 revoke all on function public.kitty_lykd_json(text, date), public.kitty_lykd_set(text, jsonb) from public, anon;
 grant execute on function public.kitty_lykd_json(text, date), public.kitty_lykd_set(text, jsonb) to authenticated;
 notify pgrst, 'reload schema';
+
+-- ================================================================================================================
+-- STEP 115 : SE WORKSHOP - an Admin SHARES chosen reports (read only) with the SE Workshop by a secret code; the SE adds the divisions.
+--   Every project (the Admin's own project):  se_share (one row)  + se_share_get / se_share_set (Admin)  + se_info / se_call (open to anyone who has the code).
+--   The SE's own login lives in the DEFAULT (directory) project with role 'se';  se_src keeps the divisions he added (URL, publishable key, code).
+--   se_call runs ONLY the read-only reports on the list below, ONLY those the Admin ticked, as the Admin of the project, in a read-only transaction.
+-- Safe to run again.
+-- ================================================================================================================
+alter table public.profiles drop constraint if exists profiles_role_check;
+alter table public.profiles add constraint profiles_role_check check (role in ('creator', 'discom', 'admin', 'je', 'se'));
+
+create table if not exists public.se_share (
+  id int primary key default 1 check (id = 1),
+  code_hash text, active boolean not null default false, perms jsonb not null default '{}'::jsonb, label text, at timestamptz not null default now()
+);
+alter table public.se_share enable row level security;
+revoke all on public.se_share from public, anon, authenticated;
+
+-- which report (function) needs which ticks (any of them)
+create or replace function public.se_perm_of(p_fn text) returns text[] language sql immutable as $$
+  select case p_fn
+    when 'summary_json' then array['sum'] when 'dashboard_json' then array['sum']
+    when 'rr_summary_json' then array['rrs']
+    when 'mr_summary_json' then array['mrs'] when 'mr_repair_json' then array['mrs'] when 'mr_pending_json' then array['mrs']
+    when 'kitty_range_json' then array['mrs'] when 'kitty_json' then array['mrs'] when 'kitty_cmp_json' then array['mrs'] when 'kitty_lyk_json' then array['mrs'] when 'kitty_need_json' then array['mrs']
+    when 'scrap_json' then array['scrap'] when 'scrap_range_json' then array['scrap'] when 'scrap_cap_json' then array['scrap']
+    when 'mat_get' then array['mat_ws', 'mat_oil', 'mat_ins', 'mat_rcv', 'mat_req']
+    when 'mat_rep' then array['mat_ws', 'mat_oil', 'mat_ins', 'mat_req']
+    when 'mat_dtc' then array['mat_oil'] when 'mat_low_adj' then array['mat_oil'] when 'mat_low_list' then array['mat_oil']
+    when 'mat_recv_list' then array['mat_rcv'] when 'mat_req_pr' then array['mat_req']
+    when 'compare_all' then array['cmp'] when 'installed_all_json' then array['cmp']
+    when 'daywise_json' then array['day'] when 'plinth_json' then array['plinth']
+    else null end $$;
+
+create or replace function public.se_share_get() returns jsonb language plpgsql stable security definer set search_path = public as $$
+declare c public.profiles := public.tf_caller(); s public.se_share;
+begin
+  if c.user_id is null or c.role <> 'admin' then raise exception 'Only an Admin can do this.'; end if;
+  select * into s from public.se_share where id = 1;
+  return jsonb_build_object('active', coalesce(s.active, false), 'perms', coalesce(s.perms, '{}'::jsonb), 'has_code', s.code_hash is not null, 'label', coalesce(s.label, c.org_division, ''), 'at', s.at);
+end $$;
+
+-- p_new_code = true makes a NEW secret code (the old one stops working) and returns it ONCE.
+create or replace function public.se_share_set(p_perms jsonb, p_active boolean, p_new_code boolean default false, p_label text default null) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare c public.profiles := public.tf_caller(); code text; k text; pm jsonb := '{}'::jsonb;
+begin
+  if c.user_id is null or c.role <> 'admin' then raise exception 'Only an Admin can do this.'; end if;
+  foreach k in array array['sum', 'rrs', 'mrs', 'scrap', 'mat_ws', 'mat_oil', 'mat_ins', 'mat_rcv', 'mat_req', 'cmp', 'day', 'plinth'] loop
+    pm := pm || jsonb_build_object(k, coalesce((p_perms->>k)::boolean, false));
+  end loop;
+  insert into public.se_share(id, perms, active, label) values (1, pm, false, nullif(btrim(coalesce(p_label, '')), ''))
+    on conflict (id) do update set perms = excluded.perms, label = coalesce(nullif(btrim(coalesce(p_label, '')), ''), public.se_share.label), at = now();
+  if coalesce(p_new_code, false) then
+    code := replace(gen_random_uuid()::text || gen_random_uuid()::text, '-', '');
+    update public.se_share set code_hash = encode(sha256(convert_to(code, 'utf8')), 'hex') where id = 1;
+  end if;
+  update public.se_share set active = coalesce(p_active, false) and code_hash is not null where id = 1;
+  return jsonb_build_object('code', code);
+end $$;
+
+create or replace function public.se_chk(p_code text) returns public.se_share language plpgsql stable security definer set search_path = public as $$
+declare s public.se_share;
+begin
+  select * into s from public.se_share where id = 1;
+  if s.id is null or not s.active or s.code_hash is null or s.code_hash <> encode(sha256(convert_to(coalesce(p_code, ''), 'utf8')), 'hex') then
+    perform pg_sleep(0.4); raise exception 'This code is not valid, or sharing is stopped.';
+  end if;
+  return s;
+end $$;
+
+create or replace function public.se_info(p_code text) returns jsonb language plpgsql stable security definer set search_path = public as $$
+declare s public.se_share := public.se_chk(p_code);
+begin
+  return jsonb_build_object('label', coalesce(s.label, ''), 'perms', s.perms, 'ws', coalesce((select jsonb_agg(w.name order by w.name) from public.workshops w), '[]'::jsonb),
+    'wd', coalesce((select jsonb_agg(jsonb_build_object('name', w.name, 'div', coalesce(w.org_division, '')) order by w.name) from public.workshops w), '[]'::jsonb));
+end $$;
+
+create or replace function public.se_call(p_code text, p_fn text, p_args jsonb default '{}'::jsonb) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare s public.se_share := public.se_chk(p_code); need text[] := public.se_perm_of(p_fn); ok boolean := false; k text; uid uuid; fo oid; names text[]; types oid[]; lst text := ''; i int; res jsonb;
+begin
+  if need is null then raise exception 'This report is not available.'; end if;
+  foreach k in array need loop if coalesce((s.perms->>k)::boolean, false) then ok := true; end if; end loop;
+  if not ok then raise exception 'This report is not shared.'; end if;
+  select user_id into uid from public.profiles where role = 'admin' and active order by user_id limit 1;
+  if uid is null then raise exception 'This project has no active Admin.'; end if;
+  select p.oid, p.proargnames, string_to_array(p.proargtypes::text, ' ')::oid[] into fo, names, types from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = p_fn limit 1;
+  if fo is null then raise exception 'This report is not available.'; end if;
+  for i in 1 .. coalesce(array_length(types, 1), 0) loop
+    if coalesce(p_args, '{}'::jsonb) ? names[i] then
+      lst := lst || case when lst = '' then '' else ', ' end || quote_ident(names[i]) || ' => ' ||
+             case when format_type(types[i], null) = 'jsonb' then '($1->' || quote_literal(names[i]) || ')' else '($1->>' || quote_literal(names[i]) || ')::' || format_type(types[i], null) end;
+    end if;
+  end loop;
+  perform set_config('request.jwt.claim.sub', uid::text, true);
+  perform set_config('request.jwt.claims', jsonb_build_object('sub', uid, 'role', 'authenticated')::text, true);
+  perform set_config('transaction_read_only', 'on', true);
+  execute 'select to_jsonb(public.' || quote_ident(p_fn) || '(' || lst || '))' into res using coalesce(p_args, '{}'::jsonb);
+  if p_fn = 'mat_get' and jsonb_typeof(res) = 'object' then          -- only the parts that are ticked
+    if not coalesce((s.perms->>'mat_ws')::boolean, false) and not coalesce((s.perms->>'mat_req')::boolean, false) then res := res - 'ws'; end if;
+    if not coalesce((s.perms->>'mat_oil')::boolean, false) then res := res - 'oil'; end if;
+    if not coalesce((s.perms->>'mat_ins')::boolean, false) and not coalesce((s.perms->>'mat_req')::boolean, false) then res := res - 'ins'; end if;
+    if not coalesce((s.perms->>'mat_rcv')::boolean, false) and not coalesce((s.perms->>'mat_oil')::boolean, false) then res := res - 'recv'; end if;
+  end if;
+  return res;
+end $$;
+revoke all on function public.se_perm_of(text), public.se_chk(text) from public, anon, authenticated;
+revoke all on function public.se_share_get(), public.se_share_set(jsonb, boolean, boolean, text), public.se_info(text), public.se_call(text, text, jsonb) from public, anon;
+grant execute on function public.se_share_get(), public.se_share_set(jsonb, boolean, boolean, text) to authenticated;
+grant execute on function public.se_info(text), public.se_call(text, text, jsonb) to anon, authenticated;
+
+-- the SE Workshop (default / directory project): the divisions he added
+create table if not exists public.se_src (
+  id bigint generated always as identity primary key, owner uuid not null, name text not null, url text not null, anon_key text not null, code text not null, at timestamptz not null default now(),
+  unique (owner, url)
+);
+alter table public.se_src enable row level security;
+revoke all on public.se_src from public, anon, authenticated;
+create or replace function public.se_ok() returns boolean language sql stable security definer set search_path = public as $$ select coalesce((select p.active and p.role = 'se' from public.profiles p where p.user_id = auth.uid()), false) $$;
+create or replace function public.se_src_list() returns jsonb language plpgsql stable security definer set search_path = public as $$
+begin
+  if not public.se_ok() then raise exception 'Only the SE Workshop can do this.'; end if;
+  return coalesce((select jsonb_agg(jsonb_build_object('id', s.id, 'name', s.name, 'url', s.url, 'key', s.anon_key, 'code', s.code) order by s.name) from public.se_src s where s.owner = auth.uid()), '[]'::jsonb);
+end $$;
+create or replace function public.se_src_add(p_name text, p_url text, p_key text, p_code text) returns bigint language plpgsql security definer set search_path = public as $$
+declare id bigint; u text := lower(btrim(coalesce(p_url, ''))); k text := btrim(coalesce(p_key, ''));
+begin
+  if not public.se_ok() then raise exception 'Only the SE Workshop can do this.'; end if;
+  if u !~ '^https://[a-z0-9]+\.supabase\.co/?$' then raise exception 'The Project URL must look like https://xxxx.supabase.co'; end if;
+  if k like 'sb_secret_%' or k = '' or length(k) < 20 then raise exception 'Paste the PUBLISHABLE key, never the secret key.'; end if;
+  if length(btrim(coalesce(p_code, ''))) < 20 then raise exception 'The share code is too short.'; end if;
+  if (select count(*) from public.se_src where owner = auth.uid()) >= 100 then raise exception 'Too many divisions.'; end if;
+  insert into public.se_src(owner, name, url, anon_key, code) values (auth.uid(), left(btrim(coalesce(nullif(p_name, ''), u)), 80), rtrim(u, '/'), k, btrim(p_code))
+    on conflict (owner, url) do update set name = excluded.name, anon_key = excluded.anon_key, code = excluded.code, at = now() returning se_src.id into id;
+  return id;
+end $$;
+create or replace function public.se_src_del(p_id bigint) returns void language plpgsql security definer set search_path = public as $$
+begin
+  if not public.se_ok() then raise exception 'Only the SE Workshop can do this.'; end if;
+  delete from public.se_src where id = p_id and owner = auth.uid();
+end $$;
+revoke all on function public.se_ok(), public.se_src_list(), public.se_src_add(text, text, text, text), public.se_src_del(bigint) from public, anon;
+grant execute on function public.se_ok(), public.se_src_list(), public.se_src_add(text, text, text, text), public.se_src_del(bigint) to authenticated;
+notify pgrst, 'reload schema';
