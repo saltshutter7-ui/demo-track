@@ -2653,14 +2653,14 @@ nav button#tmr{margin-top:auto}
           <div class="ptitle"><b>Kitty</b><span>daily stock of repaired transformers</span></div>
           <div><label>Workshop</label><select id="mkw"></select></div>
           <div><label>Date</label><div class="tg"><button class="ib" id="mkprev" title="Previous day">&#9664;</button><div class="dt"><input type="text" class="dtx" id="mkd" inputmode="numeric" placeholder="DD.MM.YYYY"><span class="calw">&#128197;<input type="date" data-c="mkd"></span></div><button class="ib" id="mknext" title="Next day">&#9654;</button><button class="btn sec sm" id="mktoday" type="button">Today</button></div></div>
-          <div class="tg" style="align-self:flex-end"><button class="btn sec sm hide" id="mklyb" type="button" title="Fill last year's repair">LY repair</button></div>
+          <div class="tg" style="align-self:flex-end"><button class="btn sec sm hide" id="mklyb" type="button" title="Admin: fill last year's kitty day by day">LY Kitty</button></div>
         </div>
       </div>
       <div id="mkmsg"></div>
       <div id="mkout"></div>
       <div id="mklyo" class="ov hide" style="z-index:80"><div class="md" style="max-width:460px">
-        <div class="bar" style="justify-content:space-between;align-items:center"><h2 style="margin:0">Last year repair</h2><button class="btn sec" id="mklyx" type="button">Close &#10005;</button></div>
-        <div class="muted ins" style="font-size:12.5px;margin:6px 0">How many transformers were repaired on each day of last year, capacity wise (saved by itself). Used for "Next month need". This button goes away by itself once the kitty has its own repair figures for that time.</div>
+        <div class="bar" style="justify-content:space-between;align-items:center"><h2 style="margin:0">Last year kitty</h2><button class="btn sec" id="mklyx" type="button">Close &#10005;</button></div>
+        <div class="muted ins" style="font-size:12.5px;margin:6px 0">Only the Admin fills this. The kitty (stock of repaired transformers) of each day of last year, capacity wise. Type or paste from Excel (saved by itself). Used in <b>Kitty compared with last year</b>. Users do not see this.</div>
         <div class="bar"><div><label>Month</label><input type="month" id="mklym"></div></div>
         <div id="mklyt"></div>
         <button id="mklys" type="button" class="hide"></button>
@@ -6878,10 +6878,10 @@ $('kspr').onclick = function () {
 };
 /* ---- LY REPAIR, DAY BY DAY: one table for a workshop and a month of last year (rows = days, columns = capacities) ---- */
 var LYG = {};
-function lyGrid(host, msgId, ws, m) {
-  var g = LYG[host] = { ws: ws, m: m, dirty: {}, msgId: msgId, seq: ((LYG[host] || {}).seq || 0) + 1 }, seq = g.seq;
+function lyGrid(host, msgId, ws, m, kind) {
+  var g = LYG[host] = { ws: ws, m: m, kind: kind || 'rep', dirty: {}, msgId: msgId, seq: ((LYG[host] || {}).seq || 0) + 1 }, seq = g.seq;
   msg(msgId, ''); $(host).innerHTML = '<div class="msg info">Loading...</div>';
-  rpc('kitty_lyd_json', { p_ws: ws, p_month: m + '-01' }).then(function (r) {
+  rpc(g.kind === 'kit' ? 'kitty_lykd_json' : 'kitty_lyd_json', { p_ws: ws, p_month: m + '-01' }).then(function (r) {
     if (LYG[host].seq !== seq) return; var y = +m.slice(0, 4), mo = +m.slice(5), nd = new Date(y, mo, 0).getDate(), v = {}, today = mrIso(fmt(new Date()));
     (r.rows || []).forEach(function (x) { v[x[0] + '|' + x[1]] = x[2]; }); g.ed = !!r.edit;
     var h = '<div class="wrap"><table class="mkt xg" data-lyd="1"><thead><tr><th class="l">DAY</th>' + STD_CAPS.map(function (c) { return '<th>' + c + '</th>'; }).join('') + '<th class="ed">TOTAL</th></tr></thead><tbody>';
@@ -6907,10 +6907,10 @@ function lyTot(host) {
 }
 function lySave(host) {
   var g = LYG[host]; if (!g) return; var rows = [], k;
-  for (k in g.dirty) { var x = k.split('|'); rows.push({ day: x[0], cap: +x[1], repair: g.dirty[k] }); }
+  for (k in g.dirty) { var x = k.split('|'), o = { day: x[0], cap: +x[1] }; o[g.kind === 'kit' ? 'qty' : 'repair'] = g.dirty[k]; rows.push(o); }
   if (!rows.length) return; var sent = g.dirty; g.dirty = {}; msg(g.msgId, 'Saving...', 'info');
-  rpc('kitty_lyd_set', { p_ws: g.ws, p_rows: rows }).then(function () {
-    asMsg(g.msgId, 'Saved', 'ok'); if ($('mkneedout') && $('mkneedout').innerHTML && MR.kd && host === 'mklyt') mrNeedLoad();
+  rpc(g.kind === 'kit' ? 'kitty_lykd_set' : 'kitty_lyd_set', { p_ws: g.ws, p_rows: rows }).then(function () {
+    asMsg(g.msgId, 'Saved', 'ok'); if (g.kind === 'kit') { if (MR.lkOn && $('mklkout')) mrLykLoad(); } else if ($('mkneedout') && $('mkneedout').innerHTML && MR.kd && host === 'mklyt') mrNeedLoad();
   }).catch(function (er) { for (var q in sent) if (!(q in g.dirty)) g.dirty[q] = sent[q]; msg(g.msgId, esc(er.message), 'err'); });
 }
 document.addEventListener('input', function (e) {
@@ -7492,12 +7492,12 @@ document.addEventListener('change', function (e) { var t = e.target; if (t && t.
 
 
 
-/* ---- KITTY: small buttons on top (Compare, LY repair), next month need ---- */
+/* ---- KITTY: small buttons on top (Compare, LY Kitty), next month need ---- */
 function mrKitTop(K, r) {
   var d = parseD(K.d), ly = (d.getFullYear() - 1) + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate());
-  MR.kmanual = !!r.base && !!r.edit && (!r.first || ly < r.first);      // last year of this date is before the kitty started
-  $('mklyb').classList.toggle('hide', !MR.kmanual);
-  if (!MR.kmanual) $('mklyo').classList.add('hide');
+  var adm = !!ME && ME.role === 'admin' && !!r.base;                    // LY Kitty: the Admin only, users do not see it
+  $('mklyb').classList.toggle('hide', !adm);
+  if (!adm) $('mklyo').classList.add('hide');
 }
 function mrNeedHtml() {
   return '<div class="card" id="mkneed"><h3>Next month need <span class="muted" style="text-transform:none;font-weight:600">- last year same month</span></h3>' +
@@ -7513,7 +7513,7 @@ function mrNeedLoad() {
 function mrNeedDraw() {
   var r = MR.need, K = MR.kd, tot = [0, 0, 0, 0, 0, 0], need = [];
   var h = '';
-  if (r.manual && !r.ly_any) h += '<div class="msg info" style="margin:8px 0">Last year\'s repair is not filled yet. Tap <b>LY repair</b> at the top and fill it, then check again.</div>';
+  if (r.manual && !r.ly_any) h += '<div class="msg info" style="margin:8px 0">Last year\'s repair is not filled yet. Ask the Admin to fill <b>LY Repair</b> (Repair tab), then check again.</div>';
   h += '<div class="muted" style="font-size:12.5px;margin:8px 0 6px">Kitty of <b>' + esc(K.d) + '</b> &middot; last year days <b>' + mrDmy(r.w1) + '</b> to <b>' + mrDmy(r.w2) + '</b> (' + r.days + ' days)</div>' +
     '<div class="wrap"><table class="mkt xg"><thead><tr><th class="l">CAPACITY IN KVA</th><th>KITTY</th><th>+ LAST YEAR REPAIR</th><th>LAST YEAR PR</th><th>PR + ' + r.pct + '%</th><th>KITTY AFTER</th><th class="ed">NEED</th></tr></thead><tbody>';
   r.rows.forEach(function (x) {
@@ -7526,13 +7526,13 @@ function mrNeedDraw() {
 }
 function mrMonName(m) { var x = /^(\d{4})-(\d{2})/.exec(m || ''); return x ? ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'][+x[2] - 1] + ' ' + x[1] : ''; }
 
-/* LY repair: last year's repair, a month total per capacity */
+/* LY Kitty (Admin): last year's kitty, day by day, capacity wise */
 function mrLyOpen() {
   var K = MR.kd; if (!K) return; var d = parseD(K.d), m = (d.getFullYear() - 1) + '-' + p2(d.getMonth() + 1);
   var o = $('mklyo'); o.classList.remove('hide'); $('mklym').value = MR.lym || m; mrLyLoad();
 }
 function mrLyLoad() {
-  var m = $('mklym').value; if (!/^\d{4}-\d{2}$/.test(m)) return; MR.lym = m; lyGrid('mklyt', 'mklymsg', MR.kd.ws, m);
+  var m = $('mklym').value; if (!/^\d{4}-\d{2}$/.test(m)) return; MR.lym = m; lyGrid('mklyt', 'mklymsg', MR.kd.ws, m, 'kit');
 }
 $('mklyb').onclick = mrLyOpen;
 $('mklym').addEventListener('change', mrLyLoad);
@@ -7579,7 +7579,7 @@ document.addEventListener('input', function (e) {
 
 
 /* ---- KITTY vs LAST YEAR: one table like the Excel sheet - capacity rows, every workshop: last year | this year, totals, DIFF.
-        Last year's kitty is typed or pasted (all workshops together) for the same date last year; if that date is missing the nearest date within 5 days is used. ---- */
+        Last year's kitty is filled by the Admin (LY Kitty button, day by day); if that date is missing the nearest date within 5 days is used. ---- */
 function mrLykHtml() {
   return '<div class="card" id="mklk"><div class="bar" style="justify-content:space-between;align-items:center"><h3 style="margin:0">Kitty compared with last year <span class="muted" style="text-transform:none;font-weight:600">- same date, last year</span></h3><span><button class="btn" id="mklkb" type="button">Compare</button> <button class="btn sec hide" id="mklkpr" type="button">&#128424; Print</button> <button class="btn sec hide" id="mklkxl" type="button">&#11015; Excel</button></span></div><div id="mklkmsg"></div><div id="mklkout"></div></div>';
 }
@@ -7596,21 +7596,8 @@ function mrLykDraw() {
   L.ly = W.map(function (w) { var m = {}; w.rows.forEach(function (x) { m[x[0]] = x[2]; }); return m; });
   var canAny = W.some(function (w) { return w.edit; }), isAdm = !!ME && ME.role === 'admin';
   var h = '<div class="lkw">';
-  /* 1. last year's kitty: type or paste here (all workshops together) */
-  if (isAdm) {
-  h += '<details class="lkd" id="mklkd"' + (MR.lkOpen ? ' open' : '') + '><summary>LAST YEAR KITTY ON ' + esc(mrDmy(L.r.ly)) + (canAny ? ' <span>- click to open, then paste or type (saved by itself)</span>' : ' <span>- click to open</span>') + '</summary>' +
-    '<div class="wrap"><table class="lkt xg" id="mklky" data-lyk="1"><thead><tr><th rowspan="2">SL</th><th rowspan="2">CAPACITY OF<br>TRANSFORMERS</th><th colspan="' + n + '" class="wn">NAME OF WORKSHOP</th><th rowspan="2">TOTAL</th></tr><tr>' +
-    W.map(function (w) { return '<th class="wn">' + esc(dwNm(w.ws)) + '<div class="yr">AVAILABILITY</div></th>'; }).join('') + '</tr></thead><tbody>';
-  KCAPS.forEach(function (c, j) {
-    h += '<tr data-c="' + c + '"><td class="sl">' + (j + 1) + '</td><td class="cp">' + c + ' KVA</td>';
-    W.forEach(function (w, i) { h += '<td class="lyc">' + (w.edit ? '<input type="text" inputmode="numeric" autocomplete="off" class="mklk" data-w="' + esc(w.ws) + '" data-i="' + i + '" value="' + (L.ly[i][c] || 0) + '">' : '<span class="cl">' + (L.ly[i][c] || 0) + '</span>') + '</td>'; });
-    h += '<td class="rt"></td></tr>';
-  });
-  h += '<tr class="T"><td></td><td>TOTAL</td>' + W.map(function () { return '<td class="ct"></td>'; }).join('') + '<td class="rt gt"></td></tr></tbody></table></div>' +
-    '<div class="muted ins" style="font-size:12.5px;margin:6px 0 4px;font-family:Inter,system-ui,sans-serif">' + (canAny ? 'Copy the Excel block (rows = capacity, columns = workshops; a copied 800 KVA row is skipped) and paste it into the first cell.' : 'View only.') + '</div></details>';
-  }
   /* 2. the comparison, like the Excel sheet */
-  h += '<div class="wrap" style="margin-top:' + (isAdm ? '12' : '0') + 'px"><table class="lkt" id="mklkt"><thead><tr><th rowspan="3">CAPACITY<br>IN KVA</th><th colspan="' + (n * 2) + '" class="wn">NAME OF WORKSHOP</th>' + (n > 1 ? '<th rowspan="3" class="tl">' + ly + ' TOTAL</th><th rowspan="3" class="tl">' + ty + ' TOTAL</th>' : '') + '<th rowspan="3" class="tl">DIFF</th></tr>' +
+  h += '<div class="wrap" style="margin-top:0"><table class="lkt" id="mklkt"><thead><tr><th rowspan="3">CAPACITY<br>IN KVA</th><th colspan="' + (n * 2) + '" class="wn">NAME OF WORKSHOP</th>' + (n > 1 ? '<th rowspan="3" class="tl">' + ly + ' TOTAL</th><th rowspan="3" class="tl">' + ty + ' TOTAL</th>' : '') + '<th rowspan="3" class="tl">DIFF</th></tr>' +
     '<tr>' + W.map(function (w) { return '<th colspan="2" class="wn">' + esc(dwNm(w.ws)) + '</th>'; }).join('') + '</tr><tr>' + W.map(function () { return '<th class="yr">' + ly + '</th><th class="yr">' + ty + '</th>'; }).join('') + '</tr></thead><tbody>';
   KCAPS.forEach(function (c, j) {
     h += '<tr data-c="' + c + '"><td class="cp">' + c + '</td>';

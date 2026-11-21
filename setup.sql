@@ -4525,3 +4525,41 @@ end $$;
 revoke all on function public.mat_req_pr(text, date, int) from public, anon;
 grant execute on function public.mat_req_pr(text, date, int) to authenticated;
 notify pgrst, 'reload schema';
+
+-- ================================================================================================================
+-- STEP 114 : LY KITTY, DAY BY DAY (Kitty tab, Admin only): last year's kitty of one workshop, one day and one capacity, saved in kitty_lyk
+-- (the same table "Kitty compared with last year" already reads: the same date, or the nearest date within 5 days).  Safe to run again.
+-- ================================================================================================================
+create or replace function public.kitty_lykd_json(p_ws text, p_month date) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare m date := date_trunc('month', p_month)::date;
+begin
+  if not public.mr_ok() then raise exception 'No access to the M&R dashboard.'; end if;
+  if not (p_ws = any (public.my_workshops())) then raise exception 'This workshop is not yours.'; end if;
+  return jsonb_build_object('month', m, 'edit', (public.mr_edit_ok(p_ws) and (public.tf_caller()).role = 'admin'),
+    'rows', coalesce((select jsonb_agg(jsonb_build_array(l.day, l.cap, l.qty) order by l.day, l.cap) from public.kitty_lyk l
+                       where l.workshop = p_ws and l.day >= m and l.day < (m + interval '1 month')::date and l.qty > 0), '[]'::jsonb));
+end $$;
+
+create or replace function public.kitty_lykd_set(p_ws text, p_rows jsonb) returns text
+language plpgsql security definer set search_path = public as $$
+declare e jsonb; c public.profiles := public.tf_caller(); n int := 0; d date; cp int; q int;
+begin
+  if c.role is distinct from 'admin' or not public.mr_edit_ok(p_ws) then raise exception 'Only the Admin can fill the last year kitty.'; end if;
+  if jsonb_array_length(coalesce(p_rows, '[]')) > 400 then raise exception 'Too many rows at once.'; end if;
+  for e in select * from jsonb_array_elements(coalesce(p_rows, '[]')) loop
+    d := (e->>'day')::date; cp := (e->>'cap')::int; q := coalesce((e->>'qty')::int, 0);
+    if cp not in (10, 16, 25, 63, 100, 160, 250, 400, 630, 1000) then continue; end if;
+    if d >= current_date then raise exception 'Choose a day of the past.'; end if;
+    if q < 0 or q > 100000 then raise exception 'Numbers must be 0 or more.'; end if;
+    if q = 0 then delete from public.kitty_lyk where workshop = p_ws and day = d and cap = cp;
+    else insert into public.kitty_lyk(workshop, day, cap, qty, by_login, at) values (p_ws, d, cp, q, c.login_id, now())
+      on conflict (workshop, day, cap) do update set qty = excluded.qty, by_login = excluded.by_login, at = now();
+    end if;
+    n := n + 1;
+  end loop;
+  return 'saved ' || n;
+end $$;
+revoke all on function public.kitty_lykd_json(text, date), public.kitty_lykd_set(text, jsonb) from public, anon;
+grant execute on function public.kitty_lykd_json(text, date), public.kitty_lykd_set(text, jsonb) to authenticated;
+notify pgrst, 'reload schema';
