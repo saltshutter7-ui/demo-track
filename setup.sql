@@ -4504,3 +4504,24 @@ end $$;
 revoke all on function public.mat_get(text), public.mat_save(text, text, text, jsonb, boolean), public.mat_recv_save(text, bigint, date, text, text, numeric, text) from public, anon;
 grant execute on function public.mat_get(text), public.mat_save(text, text, text, jsonb, boolean), public.mat_recv_save(text, bigint, date, text, text, numeric, text) to authenticated;
 notify pgrst, 'reload schema';
+
+-- ================================================================================================================
+-- STEP 113 : MATERIAL MANAGEMENT - MATERIAL REQUIREMENT: last year's PRs of the same days, capacity wise (PR date, not duplicate).
+-- mat_req_pr(workshop, date, days) -> {w1, w2, days, rows:[[capacity, PR count], ...]}  (w1 = date - 1 year, w2 = w1 + days - 1).   Safe to run again.
+-- ================================================================================================================
+create or replace function public.mat_req_pr(p_ws text, p_day date, p_days int default 30) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare n int := least(greatest(coalesce(p_days, 30), 1), 365); w1 date; w2 date;
+begin
+  if not public.mr_ok() then raise exception 'No access to the M&R dashboard.'; end if;
+  if not (p_ws = any (public.my_workshops())) then raise exception 'This workshop is not yours.'; end if;
+  if p_day is null then raise exception 'Choose the date.'; end if;
+  w1 := (p_day - interval '1 year')::date; w2 := w1 + n - 1;
+  return jsonb_build_object('w1', w1, 'w2', w2, 'days', n,
+    'rows', coalesce((select jsonb_agg(jsonb_build_array(cap, c) order by cap)
+                        from (select coalesce(capacity, 0)::int cap, count(*)::int c from public.data
+                               where workshop = p_ws and not dup and pr_date between w1 and w2 group by 1) x), '[]'::jsonb));
+end $$;
+revoke all on function public.mat_req_pr(text, date, int) from public, anon;
+grant execute on function public.mat_req_pr(text, date, int) to authenticated;
+notify pgrst, 'reload schema';

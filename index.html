@@ -2146,6 +2146,9 @@ table.tst td.rx button:hover{background:#fee2e2}
 #mmout input.mmn,#mmout input.mmr,#mmout select.mmr,#mmstdo input.mmn{display:block;width:100%;min-width:70px;height:100%;min-height:24px;margin:0;border:0!important;border-radius:0!important;background:transparent!important;text-align:right;padding:2px 6px!important;font:inherit;box-sizing:border-box;box-shadow:none!important;outline:none}
 #mmout input.mmr[data-rf=src],#mmout input.mmr[data-rf=note]{text-align:left;min-width:150px}
 #mmout input.mmr[type=date],#mmout select.mmr{text-align:left;min-width:120px}
+#mmout td.in{position:relative;padding:0!important;min-width:70px;height:26px}
+#mmout td.in>input.mmn{position:absolute;left:0;top:0;right:0;bottom:0;width:100%!important;max-width:none!important;height:100%;min-width:0}
+#mmout input.mmn,#mmout input.mmr,#mmout select.mmr{max-width:none!important}
 #mmout input.mmn:focus,#mmout input.mmr:focus,#mmout select.mmr:focus,#mmstdo input.mmn:focus{outline:2px solid #217346!important;outline-offset:-2px;background:#fff!important}
 #mmout table.mkt td.std{font-weight:700!important;background:#fff2cc!important;vertical-align:middle}
 #mmout td.wide{min-width:240px;max-width:380px}
@@ -5545,8 +5548,9 @@ var MM_S = [['10 KVA', '7.1x4.1 MM Al. Strip'], ['', '6.6x4.8 MM Al. Strip'], ['
 var MM_W = [['10 KVA', '10 KVA(19/20SWG SE)'], ['25 KVA', '21 SWG SE'], ['', '21 SWG DPC'], ['63 KVA', '17 SWG SE'], ['', '17.5 SWG SE'], ['', '17 SWG DPC'], ['', '17.5 SWG DPC'], ['100 KVA', '16 SWG SE'], ['', '16.5 SWG SE'], ['', '16 SWG DPC'], ['', '16.5 SWG DPC'], ['160 KVA', '14 SWG DPC Al.'], ['250 KVA', '12.5 SWG DPC Al.'], ['', '13 SWG DPC Al.']];
 var MM_IT = MM_S.map(function (x) { return { cat: 'Strip', sl: x[0], name: x[1], unit: 'Kg' }; }).concat(MM_W.map(function (x) { return { cat: 'Wire', sl: x[0], name: x[1], unit: 'Kg' }; }));
 var MM_INS_G = [["Material", [["Press Board Sheet 1 mm Type-D", "Kg"], ["Press Board Sheet 1.5 mm Type-D", "Kg"], ["Press Board Sheet 3 mm Type-D", "Kg"], ["Press Board Block 25x30x3 mm", "Kg"], ["Press Board Block 40x45x3 mm", "Kg"], ["Craft Paper of size 4 Mile X (40”/36”)", "Kg"], ["Craft Paper of size 10 Mile X (40”/36”)", "Kg"], ["HT Porcelain Bushing", "No"], ["LT Porcelain Bushing (25 to 100 KVA)", "No"], ["LT Procelain Bushing (250 KVA to 400 KVA)", "No"], ["LT Porcelain Bushing (630 KVA)", "No"], ["Fresh transformer Oil", "KL"], ["HT Bushing rod (25 to 100 KVA)", "No"], ["HT Bushing rod (250 to 400 KVA)", "No"], ["LT Bushing rod (25 to 100 KVA)", "No"], ["LT Bushing rod (250 to 400 KVA)", "No"], ["LT Bushing rod (630 KVA)", "No"], ["Breather 250gm", "No"], ["Breather 500gm", "No"], ["Arcing horn", "No"], ["Al. Clamping ring", "No"]]], ["Backlite Tube", [["Backlite Tube 4 mm", "No"], ["Backlite Tube 6 mm", "No"], ["Backlite Tube 8 mm", "No"], ["Backlite Tube 10 mm", "No"], ["Backlite Tube 12 mm", "No"]]], ["Fiber Glass Sleeves", [["Fiber Glass Sleeves 1MMX 1 MTR", "No"], ["Fiber Glass Sleeves 2MMX 1 MTR", "No"], ["Fiber Glass Sleeves 3MMX 1 MTR", "No"], ["Fiber Glass Sleeves 4 MMX 1 MTR", "No"], ["Fiber Glass Sleeves 6MMX 1 MTR", "No"], ["Fiber Glass Sleeves 10MMX 1 MTR", "No"], ["Fiber Glass Sleeves 12 MMX 1 MTR", "No"], ["Gasket of Set (10 KVA to 100 KVA)", "No"], ["Gasket of Set (160 KVA to400 KVA)", "No"]]], ["Oil Seal", [["Oil seal LT 12mm", "No"], ["Oil seal LT 20mm", "No"], ["Oil seal HT12mm", "No"]]], ["Other", [["Weaving Tape 25mmx50 mtr.", "No"], ["Clamping Member (Al. casting with MS Hexagonal nut).", "No"], ["Cotton Tape 1” x 50 Mtr.", "Mtr."]]]];
-var MM_INS = [];
-(function () { var i = 25; MM_INS_G.forEach(function (g) { var n = 0; g[1].forEach(function (x) { if (x[0] !== 'Fresh transformer Oil') MM_INS.push({ i: i, cat: g[0], sl: ++n, name: x[0], unit: x[1] }); i++; }); }); })();   // the Fresh oil of the sheet is handled by the Oil Recovery Sheet
+var MM_INS = [], MM_INS_O = [["Material", ["Press Board Sheet 1 mm Type-D", "Press Board Sheet 1.5 mm Type-D", "Press Board Sheet 3 mm Type-D", "Press Board Block 25x30x3 mm", "Press Board Block 40x45x3 mm", "Gasket of Set (10 KVA to 100 KVA)", "Gasket of Set (160 KVA to400 KVA)", "Craft Paper of size 4 Mile X (40”/36”)", "Craft Paper of size 10 Mile X (40”/36”)", "HT Porcelain Bushing", "LT Porcelain Bushing (25 to 100 KVA)", "LT Procelain Bushing (250 KVA to 400 KVA)", "LT Porcelain Bushing (630 KVA)", "Breather 250gm", "Breather 500gm", "Arcing horn", "Al. Clamping ring"]], ["ROD", ["HT Bushing rod (25 to 100 KVA)", "HT Bushing rod (250 to 400 KVA)", "LT Bushing rod (25 to 100 KVA)", "LT Bushing rod (250 to 400 KVA)", "LT Bushing rod (630 KVA)"]], ["Backlite Tube", ["Backlite Tube 4 mm", "Backlite Tube 6 mm", "Backlite Tube 8 mm", "Backlite Tube 10 mm", "Backlite Tube 12 mm"]], ["Fiber Glass Sleeves", ["Fiber Glass Sleeves 1MMX 1 MTR", "Fiber Glass Sleeves 2MMX 1 MTR", "Fiber Glass Sleeves 3MMX 1 MTR", "Fiber Glass Sleeves 4 MMX 1 MTR", "Fiber Glass Sleeves 6MMX 1 MTR", "Fiber Glass Sleeves 10MMX 1 MTR", "Fiber Glass Sleeves 12 MMX 1 MTR"]], ["Oil Seal", ["Oil seal LT 12mm", "Oil seal LT 20mm", "Oil seal HT12mm"]], ["Other", ["Weaving Tape 25mmx50 mtr.", "Clamping Member (Al. casting with MS Hexagonal nut).", "Cotton Tape 1” x 50 Mtr."]]];   // the order of the Excel sheet (Daily Stock)
+(function () { var i = 25, ix = {}; MM_INS_G.forEach(function (g) { g[1].forEach(function (x) { ix[x[0].replace(/\s+/g, ' ').trim()] = { i: i, unit: x[1] }; i++; }); });
+  MM_INS_O.forEach(function (g) { var n = 0; g[1].forEach(function (nm) { var q = ix[nm.replace(/\s+/g, ' ').trim()]; if (q) MM_INS.push({ i: q.i, cat: g[0], sl: ++n, name: nm, unit: q.unit }); }); }); })();   // the Fresh oil of the sheet is handled by the Oil Recovery Sheet
 var MM_RK = { fresh: 'Fresh Oil', reclaim: 'Reclaim Oil', ou: 'O&U Oil', reclaim_ou: 'Reclaimed (O&U) Oil' };
 var MM_K = ['10', '16', '25', '63', '100', '160', '250(al)', '250(cu)', '400', '630'];
 var MMK_STD = ['10', '16', '25', '63', '100', '160', '250(al)', '400', '630'];   // the Cu 250 KVA is not counted in the wire / strip consumption
@@ -5612,6 +5616,7 @@ var MM_DEFS = [
   { k: 'oil', t: 'Oil Recovery Sheet', s: 'Oil account and recovery from DTC', i: '\u{1F6E2}️', c: '#fff4cc' },
   { k: 'rcv', t: 'Oil Receive', s: 'Fresh / Reclaim oil received: date, from where', i: '\u26FD', c: '#e0f2fe' },
   { k: 'ins', t: 'Insulating Material', s: 'Press board, bushing, rod, tube, sleeve, seal...: stock, consumed, as per STD', i: '\u{1F9F1}', c: '#efe6ff' },
+  { k: 'req', t: 'Material Requirement', s: 'Wire, strip and insulating: need for N days from last year PRs minus stock', i: '\u{1F4CB}', c: '#ffe8d6' },
   { k: 'low', t: 'Oil Found Below STD', s: 'PR wise: oil found, reason of low oil', i: '\u{1F4C9}', c: '#fde8e8' }
 ];
 function mmHome() {
@@ -5622,7 +5627,7 @@ function mmOpen(k) {
   MM.kind = k; if (!MM.month) MM.month = mmNow(); if (!MM.to) MM.to = mmNow(); if (!MM.from) MM.from = MM.to.slice(0, 4) + '-01';
   $('mmmenu').classList.add('hide'); $('mmpanel').classList.remove('hide');
   $('mmtt').textContent = MM_DEFS.filter(function (d) { return d.k === k; })[0].t;
-  $('mmstd').classList.toggle('hide', k === 'rcv' || k === 'low'); $('mmreset') && 0;
+  $('mmstd').classList.toggle('hide', k === 'rcv' || k === 'low' || k === 'req'); var mt = document.querySelector('[data-mmmode]'); if (mt) mt.parentNode.classList.toggle('hide', k === 'req'); if (k === 'req') MM.mode = 'entry'; $('mmreset') && 0;
   var ws = mrWs(), o = ws.map(function (w) { return '<option' + wsAttr(w) + '>' + esc(w) + '</option>'; }).join('');
   MM.all = !!(ME && ME.role === 'admin' && ws.length > 1);
   $('mmw').dataset.o = o; mmSetMode(MM.mode || 'entry', true);
@@ -5634,7 +5639,7 @@ function mmSetMode(m, noLoad) {
   if (cur && [].some.call($('mmw').options, function (x) { return x.value === cur; })) $('mmw').value = cur; else { var f1 = [].filter.call($('mmw').options, function (x) { return x.value !== '__ALL__'; })[0]; if (f1) $('mmw').value = f1.value; } MM.ws = $('mmw').value;
   document.querySelectorAll('[data-mmmode]').forEach(function (b) { b.classList.toggle('on', b.dataset.mmmode === m); });
   var cm = mmNow();
-  $('mmper').innerHTML = m === 'entry'
+  $('mmper').innerHTML = MM.kind === 'req' ? mmReqCtl() : m === 'entry'
     ? '<div class="tg"><button class="ib" type="button" id="mmprev" title="Previous month">&#9664;</button><input type="month" id="mmm" value="' + MM.month + '" max="' + cm + '"><button class="ib" type="button" id="mmnext" title="Next month">&#9654;</button><button class="btn sec sm" type="button" id="mmnow">This month</button></div>'
     : '<div class="mmrng"><label>From <input type="month" id="mmf" value="' + MM.from + '" max="' + cm + '"></label><label>To <input type="month" id="mmt" value="' + MM.to + '" max="' + cm + '"></label><button class="btn sm" type="button" id="mmgo">Show</button></div>';
   if (!noLoad || true) mmLoad();
@@ -5645,11 +5650,13 @@ document.addEventListener('click', function (e) {
   if (t.closest('[data-mmback]')) { asFlushAll(); return mmHome(); }
   b = t.closest('[data-mmmode]'); if (b) return mmSetMode(b.dataset.mmmode);
   if (t.closest('#mmprev')) return mmGo(mmShift(MM.month, -1)); if (t.closest('#mmnext')) return mmGo(mmShift(MM.month, 1)); if (t.closest('#mmnow')) return mmGo(mmNow());
+  if (t.closest('#mmqgo')) return mmReqGo();
   if (t.closest('#mmgo')) { MM.from = $('mmf').value; MM.to = $('mmt').value; return mmLoad(); }
   if (t.closest('#mmstd')) return mmStdOpen();
   if (t.closest('#mmxl')) return mmExcel();
   if (t.closest('#mmreset')) return mmReset();
 });
+document.addEventListener('keydown', function (e) { if (e.key === 'Enter' && e.target && /^mmq[dnp]$/.test(e.target.id || '')) mmReqGo(); });
 document.addEventListener('change', function (e) {
   var t0 = e.target; if (t0 && t0.dataset && t0.dataset.ins && MM.kind === 'ins') { mmInsRecalc(); }
   var t = e.target; if (!t || !t.id) return;
@@ -6066,6 +6073,50 @@ function mmInsSum() {
   mmKvaTot('mmr', [1]);
 }
 
+/* ---- Material Requirement: PRs of the same days of last year x STD (+ damage %), minus the stock, = actual requirement ---- */
+function mmTodayIso() { var t = new Date(); return t.getFullYear() + '-' + p2(t.getMonth() + 1) + '-' + p2(t.getDate()); }
+function mmReqCtl() {
+  if (!MM.qd) MM.qd = mmTodayIso(); if (!MM.qn) MM.qn = 30; if (MM.qp == null) MM.qp = 5;
+  return '<div class="mmrng"><label>From date <input type="date" id="mmqd" value="' + MM.qd + '"></label><label>Days <input type="number" id="mmqn" min="1" max="365" step="1" value="' + MM.qn + '" style="width:80px"></label><label>Damage % (PR increase) <input type="number" id="mmqp" min="0" max="100" step="0.5" value="' + MM.qp + '" style="width:80px"></label><button class="btn sm" type="button" id="mmqgo">Show</button></div>';
+}
+function mmReqGo() {
+  var d = $('mmqd').value, n = parseInt($('mmqn').value, 10), pc = parseFloat($('mmqp').value);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) return msg('mmmsg', 'Choose the date.', 'err');
+  MM.qd = d; MM.qn = Math.max(1, Math.min(365, isNaN(n) ? 30 : n)); MM.qp = isNaN(pc) ? 5 : Math.max(0, Math.min(100, pc)); $('mmqn').value = MM.qn; $('mmqp').value = MM.qp; mmLoad();
+}
+function mmReqClose(rows) { return rows ? mmR3(rows.open + rows.recv - rows.tr - rows.cons) : 0; }
+function mmReqShow() {
+  MM.cur = null; var n = MM.qn, pc = MM.qp, now = mmNow(), cap = {}, lyc = {}, tot = { w1: '', w2: '' };
+  MM_K.forEach(function (k) { cap[k] = 0; }); MM_OC.forEach(function (k) { lyc[k] = 0; });
+  var req = {}, avl = {}, items = [];
+  MM_IT.forEach(function (x, i) { items.push({ i: i, cat: x.cat, name: x.name, unit: x.unit, src: 'ws' }); }); MM_INS.forEach(function (x) { items.push({ i: x.i, cat: x.cat, name: x.name, unit: x.unit, src: 'ins' }); });
+  items.forEach(function (x) { req[x.src + x.i] = 0; avl[x.src + x.i] = 0; });
+  MM.names.forEach(function (w) {
+    var P = MM.per[w], q = P.q || { rows: [] }, c = {}, ms = mmMstd(P), wch = mmWsChain(P.g.ws || {}, now), ich = mmInsChain(P, now);
+    tot.w1 = q.w1; tot.w2 = q.w2; MM_K.forEach(function (k) { c[k] = 0; });
+    (q.rows || []).forEach(function (r) { var k = +r[0] === 250 ? '250(al)' : String(r[0]); if (+r[0] === 250) lyc['250'] += +r[1]; else if (k in lyc) lyc[k] += +r[1]; if (k in c) c[k] += Math.ceil(+r[1] * (1 + pc / 100) - 1e-9); });   // PR has no Al / Cu: 250 KVA is taken as Al
+    MM_K.forEach(function (k) { cap[k] += c[k]; });
+    items.forEach(function (x) {
+      var key = x.src + x.i;
+      req[key] += x.src === 'ws' ? mmStdOf(x.i, c, ms) : mmStdI(x.i, c, ms);
+      avl[key] += x.src === 'ws' ? mmReqClose((wch[now] || {})[x.i]) : mmReqClose((ich[now] || {})[x.i]);
+    });
+  });
+  var h = mmNote('Last year PRs of <b>' + esc(mrDmy(tot.w1 || '')) + '</b> to <b>' + esc(mrDmy(tot.w2 || '')) + '</b> (' + n + ' days), PR + <b>' + pc + '%</b> damage, x material STD of each capacity = <b>Required as per STD</b>. <b>Available</b> = closing balance of ' + esc(mmMonthName(now)) + ' (Wire &amp; Strip, Insulating Material sheets). <b>Actual requirement</b> = Required - Available (0 when the stock is enough). 250 KVA PRs are taken as Al (a PR does not tell Al / Cu).' + (MM.names.length > 1 ? ' <b>All workshops added up.</b>' : ''), true);
+  var ck = ['10', '16', '25', '63', '100', '160', '250', '400', '630'];
+  h += '<div class="wrap"><table class="mkt mmt" id="mmqc" style="width:auto"><thead><tr><th class="ttl" colspan="' + (ck.length + 2) + '">Last year PR (' + esc(mrDmy(tot.w1 || '')) + ' to ' + esc(mrDmy(tot.w2 || '')) + ')</th></tr><tr><th>Capacity in KVA</th>' + ck.map(function (k) { return '<th>' + k + '</th>'; }).join('') + '<th>TOTAL</th></tr></thead><tbody><tr><td class="l">Last year PR</td>' +
+    ck.map(function (k) { return '<td class="c" data-v="' + lyc[k] + '">' + mmF(lyc[k]) + '</td>'; }).join('') + '<td class="c" data-v="' + ck.reduce(function (a, k) { return a + lyc[k]; }, 0) + '">' + mmF(ck.reduce(function (a, k) { return a + lyc[k]; }, 0)) + '</td></tr><tr><td class="l">PR + ' + pc + '%</td>' +
+    ck.map(function (k) { var v = cap[k === '250' ? '250(al)' : k]; return '<td class="c" data-v="' + v + '">' + mmF(v) + '</td>'; }).join('') + '<td class="c" data-v="' + ck.reduce(function (a, k) { return a + cap[k === '250' ? '250(al)' : k]; }, 0) + '">' + mmF(ck.reduce(function (a, k) { return a + cap[k === '250' ? '250(al)' : k]; }, 0)) + '</td></tr></tbody></table></div><div style="height:12px"></div>';
+  h += '<div class="wrap"><table class="mkt mmt" id="mmq"><thead><tr><th colspan="6" class="ttl">Material Requirement for ' + n + ' days from ' + esc(mrDmy(MM.qd)) + ' (last year PR + ' + pc + '%)</th></tr><tr><th>Sl No</th><th>Name of Material</th><th>Unit</th><th>Required as per STD</th><th>Available (' + esc(mmMonthName(now)) + ' closing)</th><th class="ed">ACTUAL REQUIREMENT</th></tr><tr class="nm"><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6 = 4-5</th></tr></thead><tbody>';
+  var last = '', sl = 0;
+  items.forEach(function (x) {
+    var key = x.src + x.i, q = mmR3(req[key]), a = mmR3(avl[key]), act = Math.max(0, mmR3(q - a)); if (x.unit === 'No') act = Math.ceil(act - 1e-9);
+    var g = (x.src === 'ws' ? '' : '') + x.cat; if (g !== last) { last = g; sl = 0; h += '<tr class="grp"><td colspan="6">' + esc(g) + '</td></tr>'; }
+    h += '<tr class="it"><td class="l">' + (++sl) + '</td><td class="nm">' + esc(x.name) + '</td><td>' + esc(x.unit) + '</td><td class="c" data-v="' + q + '">' + mmF(q) + '</td><td class="c' + (a < 0 ? ' neg' : '') + '" data-v="' + a + '">' + mmF(a) + '</td><td class="c std" data-v="' + act + '">' + mmF(act) + '</td></tr>';
+  });
+  $('mmout').innerHTML = h + '</tbody></table></div>';
+}
+
 /* ---- STD dialog (v2) ---- */
 function mmStdOpen() {
   var P = MM.per && MM.per[MM.ws]; if (!P) return msg('mmmsg', 'Choose one workshop for the STD.', 'err');
@@ -6106,6 +6157,7 @@ function mmLoad() {
     return rpc('mat_get', { p_ws: w }).then(function (g) {
       var P = { g: g || {}, w: w, rep: [], dtc: [], list: null }, ps = [];
       if (k === 'low') ps.push(rpc('mat_low_list', { p_ws: w, p_from: a, p_to: b }).then(function (r) { P.low = r || []; }));
+      else if (k === 'req') ps.push(rpc('mat_req_pr', { p_ws: w, p_day: MM.qd, p_days: MM.qn }).then(function (r) { P.q = r || { rows: [] }; }));
       else if (k === 'rcv') ps.push(rpc('mat_recv_list', { p_ws: w, p_from: a, p_to: b }).then(function (r) { P.list = r || { rows: [], srcs: [] }; }));
       else ps.push(rpc('mat_rep', { p_ws: w, p_from: a, p_to: b }).then(function (r) { P.rep = r || []; }));
       if (k === 'oil') { var st = mmOilStartM(P), df = st && st < a ? st : a, lim = mmShift(b, -119); if (df < lim) df = lim; ps.push(rpc('mat_dtc', { p_ws: w, p_from: df, p_to: b }).then(function (r) { P.dtc = r || []; })); ps.push(rpc('mat_low_adj', { p_ws: w, p_from: df, p_to: b }).then(function (r) { P.adj = r || []; })); }
@@ -6114,15 +6166,15 @@ function mmLoad() {
   })).then(function (arr) {
     if (seq !== MM.seq) return; msg('mmmsg', ''); MM.per = {}; MM.names = names; names.forEach(function (w, i) { MM.per[w] = arr[i]; });
     var sf = MM.from, st2 = MM.to; if (!sum0) { MM.from = MM.month; MM.to = MM.month; }
-    try { if (k === 'wsc') (sum ? mmWscSum() : mmWscEntry()); else if (k === 'ins') (sum ? mmInsSum() : mmInsEntry()); else if (k === 'oil') (sum ? mmOilSum() : mmOilEntry()); else if (k === 'low') (sum ? mmLowSum() : mmLowEntry()); else (sum ? mmRcvSum() : mmRcvEntry()); } finally { MM.from = sf; MM.to = st2; }
+    try { if (k === 'wsc') (sum ? mmWscSum() : mmWscEntry()); else if (k === 'ins') (sum ? mmInsSum() : mmInsEntry()); else if (k === 'req') mmReqShow(); else if (k === 'oil') (sum ? mmOilSum() : mmOilEntry()); else if (k === 'low') (sum ? mmLowSum() : mmLowEntry()); else (sum ? mmRcvSum() : mmRcvEntry()); } finally { MM.from = sf; MM.to = st2; }
   }).catch(function (e) { if (seq === MM.seq) msg('mmmsg', /mat_|function/i.test(e.message || '') ? 'Run the new setup.sql in Supabase once (Material Management is not switched on in your database yet).' : esc(e.message), 'err'); });
 }
 function mmExcel() {
-  var ids = (MM.kind === 'wsc' || MM.kind === 'ins') ? [['mmg', MM.kind === 'ins' ? 'Insulating Material' : 'Wire & Strip'], ['mmr', 'Repaired Qty']] : MM.kind === 'oil' ? [['mmot', 'Oil std'], ['mmoo', 'Oil account'], ['mmoc', 'Oil recovery'], ['mmow', 'Closing wise']] : (MM.mode === 'sum' ? [['mmrm', 'Month wise'], ['mmrs', 'From wise'], ['mmrl', 'Register']] : [['mmrg', 'Oil Receive']]);
+  var ids = MM.kind === 'req' ? [['mmqc', 'LY PR'], ['mmq', 'Material Requirement']] : (MM.kind === 'wsc' || MM.kind === 'ins') ? [['mmg', MM.kind === 'ins' ? 'Insulating Material' : 'Wire & Strip'], ['mmr', 'Repaired Qty']] : MM.kind === 'oil' ? [['mmot', 'Oil std'], ['mmoo', 'Oil account'], ['mmoc', 'Oil recovery'], ['mmow', 'Closing wise']] : (MM.mode === 'sum' ? [['mmrm', 'Month wise'], ['mmrs', 'From wise'], ['mmrl', 'Register']] : [['mmrg', 'Oil Receive']]);
   if (MM.kind === 'low') ids = MM.mode === 'sum' ? [['mmll', 'Oil found below STD']] : [['mmlg', 'Oil found below STD']];
   var sh = []; ids.forEach(function (x) { var t = $(x[0]); if (t) sh.push(mmSheet(t, x[1])); });
   if (!sh.length) return msg('mmmsg', 'Nothing to download yet.', 'err');
-  var per = MM.mode === 'sum' ? MM.from + '_to_' + MM.to : MM.month, nm = MM.kind === 'ins' ? 'Insulating_Material_' : MM.kind === 'wsc' ? 'Wire_Strip_Consumption_' : MM.kind === 'oil' ? 'Oil_Recovery_' : MM.kind === 'low' ? 'Oil_Found_Below_STD_' : 'Oil_Receive_';
+  var per = MM.kind === 'req' ? MM.qd : MM.mode === 'sum' ? MM.from + '_to_' + MM.to : MM.month, nm = MM.kind === 'req' ? 'Material_Requirement_' : MM.kind === 'ins' ? 'Insulating_Material_' : MM.kind === 'wsc' ? 'Wire_Strip_Consumption_' : MM.kind === 'oil' ? 'Oil_Recovery_' : MM.kind === 'low' ? 'Oil_Found_Below_STD_' : 'Oil_Receive_';
   xlsxDownload(nm + mrFile(MM.ws === '__ALL__' ? 'All' : MM.ws) + '_' + per + '.xlsx', sh);
 }
 
